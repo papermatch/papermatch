@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ppmdating",
-    "slug": "ppmdating",
+    "name": "papermatch",
+    "slug": "papermatch",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ppmdating.ppmdating"
+      "bundleIdentifier": "ch.papermat.papermatch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ppmdating.ppmdating"
+      "package": "ch.papermat.papermatch"
     },
     "web": {
       "bundler": "metro",
