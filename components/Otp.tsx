@@ -2,21 +2,29 @@ import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Button, Input } from "react-native-elements";
-import { ROUTES, useNavigate } from "../lib/routing";
+import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 
-export default function Auth() {
-  const [phone, setPhone] = useState("");
+export default function Otp() {
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const phone = location.state?.phone || "";
   const navigate = useNavigate();
 
-  async function signIn() {
+  if (!phone) {
+    navigate(ROUTES.AUTH, { replace: true });
+  }
+
+  async function verify() {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone });
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: phone,
+      token: otp,
+      type: "sms",
+    });
 
     if (error) {
       Alert.alert(error.message);
-    } else {
-      navigate(ROUTES.OTP, { state: { phone } });
     }
     setLoading(false);
   }
@@ -25,16 +33,15 @@ export default function Auth() {
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
-          label="Phone"
-          leftIcon={{ type: "font-awesome", name: "phone" }}
-          onChangeText={setPhone}
-          value={phone}
-          placeholder="+13115552368"
-          autoCapitalize={"none"}
+          label="OTP"
+          onChangeText={setOtp}
+          value={otp}
+          keyboardType="numeric"
+          placeholder="Enter your OTP"
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={signIn} />
+        <Button title="Verify" disabled={loading} onPress={verify} />
       </View>
     </View>
   );

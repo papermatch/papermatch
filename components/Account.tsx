@@ -79,7 +79,6 @@ export default function Account({ session }: { session: Session }) {
   }
 
   return (
-    console.log(avatarUrl),
     <View style={styles.container}>
       <View>
         <Avatar
