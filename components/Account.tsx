@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { StyleSheet, View, Alert } from "react-native";
-import { Button, Input } from "react-native-elements";
+import { Button, Input } from "@rneui/themed";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
+import { ROUTES, useNavigate } from "../lib/routing";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [website, setWebsite] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (session) getProfile();
@@ -78,6 +80,12 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  function viewProfile() {
+    if (session?.user?.id) {
+      navigate(`${ROUTES.PROFILE}/${session.user.id}`);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -116,6 +124,10 @@ export default function Account({ session }: { session: Session }) {
           }
           disabled={loading}
         />
+      </View>
+
+      <View style={styles.verticallySpaced}>
+        <Button title="View Profile" onPress={viewProfile} />
       </View>
 
       <View style={styles.verticallySpaced}>

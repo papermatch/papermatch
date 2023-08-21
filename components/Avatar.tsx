@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 interface Props {
   size: number;
   url: string | null;
-  onUpload: (filePath: string) => void;
+  onUpload?: (filePath: string) => void;
 }
 
 export default function Avatar({ url, size = 150, onUpload }: Props) {
@@ -71,7 +71,9 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
         throw new Error("Could not create signed url");
       }
 
-      onUpload(data.signedUrl);
+      if (onUpload) {
+        onUpload(data.signedUrl);
+      }
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
@@ -89,18 +91,32 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
         <Image
           source={{ uri: avatarUrl }}
           aria-label="Avatar"
-          style={[avatarSize, styles.avatar, styles.image]}
+          style={[
+            avatarSize,
+            styles.avatar,
+            styles.image,
+            styles.verticallySpaced,
+          ]}
         />
       ) : (
-        <View style={[avatarSize, styles.avatar, styles.noImage]} />
-      )}
-      <View>
-        <Button
-          title={uploading ? "Uploading ..." : "Upload"}
-          onPress={uploadAvatar}
-          disabled={uploading}
+        <View
+          style={[
+            avatarSize,
+            styles.avatar,
+            styles.noImage,
+            styles.verticallySpaced,
+          ]}
         />
-      </View>
+      )}
+      {onUpload && (
+        <View style={styles.verticallySpaced}>
+          <Button
+            title={uploading ? "Uploading ..." : "Upload"}
+            onPress={uploadAvatar}
+            disabled={uploading}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -114,10 +130,20 @@ const styles = StyleSheet.create({
   image: {
     objectFit: "cover",
     paddingTop: 0,
+    // center image horizontally
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   noImage: {
     backgroundColor: "#333",
     border: "1px solid rgb(200, 200, 200)",
     borderRadius: 5,
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: "stretch",
   },
 });
