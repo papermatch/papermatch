@@ -4,6 +4,7 @@ import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
 import Otp from "./components/Otp";
+import Profile from "./components/Profile";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate } from "./lib/routing";
@@ -54,6 +55,12 @@ export default function App() {
           path={ROUTES.OTP}
           element={
             session?.user ? <Navigate to={ROUTES.ACCOUNT} replace /> : <Otp />
+          }
+        />
+        <Route
+          path={`${ROUTES.PROFILE}/:id`}
+          element={
+            session?.user ? <Profile /> : <Navigate to={ROUTES.AUTH} replace />
           }
         />
       </Routes>

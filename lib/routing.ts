@@ -5,6 +5,7 @@ import {
   Navigate as BrowserNavigate,
   useLocation as useLocationBrowser,
   useNavigate as useNavigateBrowser,
+  useParams as useParamsBrowser,
 } from "react-router-dom";
 import {
   NativeRouter,
@@ -12,6 +13,7 @@ import {
   Navigate as NativeNavigate,
   useLocation as useLocationNative,
   useNavigate as useNavigateNative,
+  useParams as useParamsNative,
 } from "react-router-native";
 
 export const ROUTES = {
@@ -19,6 +21,7 @@ export const ROUTES = {
   ACCOUNT: "/account",
   AUTH: "/auth",
   OTP: "/otp",
+  PROFILE: "/profile",
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;
@@ -29,3 +32,5 @@ export const useLocation =
   Platform.OS === "web" ? useLocationBrowser : useLocationNative;
 export const useNavigate =
   Platform.OS === "web" ? useNavigateBrowser : useNavigateNative;
+export const useParams =
+  Platform.OS === "web" ? useParamsBrowser : useParamsNative;
