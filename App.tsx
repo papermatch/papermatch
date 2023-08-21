@@ -5,22 +5,29 @@ import Auth from "./components/Auth";
 import Account from "./components/Account";
 import Otp from "./components/Otp";
 import Profile from "./components/Profile";
+import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate } from "./lib/routing";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       session && setSession(session);
+      setLoading(false);
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
   }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <Router>
@@ -61,6 +68,12 @@ export default function App() {
           path={`${ROUTES.PROFILE}/:id`}
           element={
             session?.user ? <Profile /> : <Navigate to={ROUTES.AUTH} replace />
+          }
+        />
+        <Route
+          path={ROUTES.PROFILES}
+          element={
+            session?.user ? <Profiles /> : <Navigate to={ROUTES.AUTH} replace />
           }
         />
       </Routes>
