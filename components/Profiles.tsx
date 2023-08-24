@@ -1,37 +1,73 @@
 import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
 import { Card } from "@rneui/themed";
+import { Session } from "@supabase/supabase-js";
 import { ROUTES, Link } from "../lib/routing";
-import { supabase } from "../lib/supabase";
+import { ProfileData } from "../lib/types";
 import Avatar from "./Avatar";
 
-type ProfileData = {
-  id: string | number; // depending on your data type
-  username: string;
-  avatar_url: string;
-};
-
-export default function Profiles() {
+export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
 
   useEffect(() => {
-    getProfiles();
-  }, []);
+    if (session) {
+      getProfiles();
+    }
+  }, [session]);
+
+  async function getBlocks(): Promise<string[]> {
+    const {
+      data: blockedData,
+      error: blockedError,
+      status: blockedStatus,
+    } = await supabase
+      .from("interactions")
+      .select("target_id")
+      .eq("user_id", session?.user.id)
+      .eq("interaction", "block");
+    if (blockedError && blockedStatus !== 406) {
+      throw blockedError;
+    }
+
+    const {
+      data: blockedByData,
+      error: blockedByError,
+      status: blockedByStatus,
+    } = await supabase
+      .from("interactions")
+      .select("user_id")
+      .eq("user_id", session?.user.id)
+      .eq("interaction", "block");
+    if (blockedByError && blockedByStatus !== 406) {
+      throw blockedByError;
+    }
+
+    const blocks = [
+      ...new Set([
+        ...(blockedData?.map((item) => item.target_id) || []),
+        ...(blockedByData?.map((item) => item.user_id) || []),
+      ]),
+    ];
+
+    return blocks;
+  }
 
   async function getProfiles() {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
-        .from("profiles")
-        .select(`id, username, avatar_url`);
+      let { data, error } = await supabase.from("profiles").select("*");
 
       if (error) {
         throw error;
       }
 
-      setProfiles(data || []);
+      const blocks = await getBlocks();
+      data = data?.filter((item) => !blocks.includes(item.id)) || [];
+
+      setProfiles(data);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);

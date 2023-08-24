@@ -67,13 +67,21 @@ export default function App() {
         <Route
           path={`${ROUTES.PROFILE}/:id`}
           element={
-            session?.user ? <Profile /> : <Navigate to={ROUTES.AUTH} replace />
+            session?.user ? (
+              <Profile key={session.user.id} session={session} />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
           }
         />
         <Route
           path={ROUTES.PROFILES}
           element={
-            session?.user ? <Profiles /> : <Navigate to={ROUTES.AUTH} replace />
+            session?.user ? (
+              <Profiles key={session.user.id} session={session} />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
           }
         />
       </Routes>
