@@ -17,41 +17,17 @@ export default function Profiles({ session }: { session: Session }) {
     }
   }, [session]);
 
-  async function getBlocks(): Promise<string[]> {
-    const {
-      data: blockedData,
-      error: blockedError,
-      status: blockedStatus,
-    } = await supabase
+  async function getBlockedIDs(): Promise<string[]> {
+    const { data, error, status } = await supabase
       .from("interactions")
       .select("target_id")
       .eq("user_id", session?.user.id)
       .eq("interaction", "block");
-    if (blockedError && blockedStatus !== 406) {
-      throw blockedError;
+    if (error && status !== 406) {
+      throw error;
     }
 
-    const {
-      data: blockedByData,
-      error: blockedByError,
-      status: blockedByStatus,
-    } = await supabase
-      .from("interactions")
-      .select("user_id")
-      .eq("user_id", session?.user.id)
-      .eq("interaction", "block");
-    if (blockedByError && blockedByStatus !== 406) {
-      throw blockedByError;
-    }
-
-    const blocks = [
-      ...new Set([
-        ...(blockedData?.map((item) => item.target_id) || []),
-        ...(blockedByData?.map((item) => item.user_id) || []),
-      ]),
-    ];
-
-    return blocks;
+    return data?.map((item) => item.target_id) || [];
   }
 
   async function getProfiles() {
@@ -64,8 +40,8 @@ export default function Profiles({ session }: { session: Session }) {
         throw error;
       }
 
-      const blocks = await getBlocks();
-      data = data?.filter((item) => !blocks.includes(item.id)) || [];
+      const blockedIDs = await getBlockedIDs();
+      data = data?.filter((item) => !blockedIDs.includes(item.id)) || [];
 
       setProfiles(data);
     } catch (error) {
@@ -75,6 +51,10 @@ export default function Profiles({ session }: { session: Session }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (loading) {
+    return null;
   }
 
   return (
