@@ -76,3 +76,28 @@ A pay-per-match dating app, using React Native and Supabase.
    ```
    npx supabase push
    ```
+
+### Stripe Local Setup
+
+1. [Install Stripe CLI](https://stripe.com/docs/stripe-cli#install)
+2. Start listening (and note the webhook signing secret for next step)
+    ```
+    stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
+    ```
+3. Create .env file in supabase/functions
+    ```
+    STRIPE_API_KEY=
+    STRIPE_WEBHOOK_SIGNING_SECRET=
+    ```
+4. Serve functions
+    ```
+    npx supabase functions serve --no-verify-jwt --env-file ./supabase/functions/.env
+    ```
+5. Trigger payment
+    ```
+    stripe trigger payment_intent.succeeded
+    ```
+6. Optionally update cache
+    ```
+    deno cache --reload supabase/functions/stripe-webhook/index.ts
+    ```
