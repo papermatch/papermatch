@@ -34,7 +34,7 @@ export default function Profiles({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase.from("profiles").select("*");
+      let { data, error } = await supabase.rpc("get_active_profiles").select("*");
 
       if (error) {
         throw error;

@@ -52,7 +52,7 @@ export default function Profile({ session }: { session: Session }) {
         .eq("user_id", session?.user.id)
         .eq("target_id", id)
         .limit(1)
-        .single();
+        .maybeSingle();
       if (error && status !== 406) {
         throw error;
       }
