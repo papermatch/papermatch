@@ -87,6 +87,7 @@ A pay-per-match dating app, using React Native and Supabase.
 3. Create .env file in supabase/functions
     ```
     STRIPE_API_KEY=
+    STRIPE_PRICE_ID=
     STRIPE_WEBHOOK_SIGNING_SECRET=
     ```
 4. Serve functions
