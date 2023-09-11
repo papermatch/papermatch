@@ -101,3 +101,17 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     deno cache --reload supabase/functions/stripe-webhook/index.ts
     ```
+
+## VSCode Setup
+
+```json
+{
+    "Prettier-SQL.SQLFlavourOverride": "postgresql",
+    "Prettier-SQL.logicalOperatorNewline": "after",
+    "Prettier-SQL.keywordCase": "lower",
+    "files.insertFinalNewline": true,
+    "deno.enablePaths": [
+        "./supabase/functions"
+    ]
+}
+```

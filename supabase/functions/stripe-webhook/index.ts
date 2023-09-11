@@ -9,18 +9,18 @@ import Stripe from "https://esm.sh/stripe@13.4.0?target=deno";
 const stripe = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
   // This is needed to use the Fetch API rather than relying on the Node http
   // package.
-  apiVersion: "2022-11-15",
+  apiVersion: "2023-08-16",
   httpClient: Stripe.createFetchHttpClient(),
 });
 
 console.log("Hello from Stripe Webhook!");
 
-serve(async (request) => {
-  const signature = request.headers.get("Stripe-Signature");
+serve(async (req) => {
+  const signature = req.headers.get("Stripe-Signature");
 
   // First step is to verify the event. The .text() method must be used as the
   // verification relies on the raw request body rather than the parsed JSON.
-  const body = await request.text();
+  const body = await req.text();
   let receivedEvent;
   try {
     receivedEvent = await stripe.webhooks.constructEventAsync(
@@ -30,10 +30,33 @@ serve(async (request) => {
       undefined
     );
   } catch (err) {
-    return new Response(err.message, { status: 400 });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
-  console.log(`🔔 Event received: ${receivedEvent.id}`);
-  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+
+  // Handle the event
+  switch (receivedEvent.type) {
+    case "checkout.session.completed": {
+      const session = receivedEvent.data.object;
+      if (!session.client_reference_id) {
+        console.warn(`🔔 No client reference id provided`);
+        break;
+      } else {
+        console.log(`🔔 Checkout session completed: ${session.id}`);
+      }
+      break;
+    }
+    default:
+      console.warn(`🔔 Unhandled event type: ${receivedEvent.type}`);
+      break;
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 });
 
 // To invoke:

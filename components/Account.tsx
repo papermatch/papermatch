@@ -86,6 +86,10 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  function getCredits() {
+    navigate(ROUTES.CHECKOUT);
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -128,6 +132,10 @@ export default function Account({ session }: { session: Session }) {
 
       <View style={styles.verticallySpaced}>
         <Button title="View Profile" onPress={viewProfile} />
+      </View>
+
+      <View style={styles.verticallySpaced}>
+        <Button title="Get Credits" onPress={getCredits} />
       </View>
 
       <View style={styles.verticallySpaced}>

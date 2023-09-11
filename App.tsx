@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
+import Checkout from "./components/Checkout";
 import Otp from "./components/Otp";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
@@ -56,6 +57,26 @@ export default function App() {
           path={ROUTES.AUTH}
           element={
             session?.user ? <Navigate to={ROUTES.ACCOUNT} replace /> : <Auth />
+          }
+        />
+        <Route
+          path={ROUTES.CHECKOUT}
+          element={
+            session?.user ? (
+              <Checkout key={session.user.id} session={session} />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
+          }
+        />
+        <Route
+          path={`${ROUTES.CHECKOUT}/:result`}
+          element={
+            session?.user ? (
+              <Navigate to={ROUTES.ACCOUNT} replace />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
           }
         />
         <Route
