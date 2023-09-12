@@ -6,7 +6,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 import Stripe from "https://esm.sh/stripe@13.4.0?target=deno";
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.33.2";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
   // This is needed to use the Fetch API rather than relying on the Node http
