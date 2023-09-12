@@ -4,7 +4,7 @@
 import {
   assert,
   assertEquals,
-} from "https://deno.land/std@0.168.0/testing/asserts.ts";
+} from "https://deno.land/std@0.201.0/testing/asserts.ts";
 import {
   createClient,
   SupabaseClient,
