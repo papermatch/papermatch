@@ -15,7 +15,7 @@ const stripe = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
+const supabaseUrl = Deno.env.get("SUPABASE_API_URL") as string;
 const supabaseServiceRoleKey = Deno.env.get(
   "SUPABASE_SERVICE_ROLE_KEY"
 ) as string;

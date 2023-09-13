@@ -1,4 +1,4 @@
-import { SUPABASE_URL } from "@env";
+import { SUPABASE_API_URL } from "@env";
 import React, { useState } from "react";
 import { StyleSheet, Platform, Alert, Text, View } from "react-native";
 import { Button, Input } from "@rneui/themed";
@@ -20,7 +20,7 @@ export default function Checkout({ session }: { session: Session }) {
       if (!session?.user) throw new Error("No user on the session!");
 
       const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/stripe-checkout`,
+        `${SUPABASE_API_URL}/functions/v1/stripe-checkout`,
         {
           method: "POST",
           headers: {

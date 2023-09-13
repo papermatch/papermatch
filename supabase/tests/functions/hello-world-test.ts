@@ -10,8 +10,10 @@ import {
   SupabaseClient,
 } from "https://esm.sh/@supabase/supabase-js@2.33.2";
 
+import "https://deno.land/x/dotenv@v3.2.2/load.ts";
+
 // Set up the configuration for the Supabase client
-const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+const supabaseUrl = Deno.env.get("SUPABASE_API_URL") ?? "";
 const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const options = {
   auth: {
@@ -44,8 +46,8 @@ const testClientCreation = async () => {
   assert(table_data, "Data should be returned from the query.");
 };
 
-// Test the 'hello-world' function
-const testHelloWorld = async () => {
+// Test the 'get_active_profiles' function
+const testGetActiveProfiles = async () => {
   const client: SupabaseClient = createClient(
     supabaseUrl,
     supabaseKey,
@@ -71,4 +73,4 @@ const testHelloWorld = async () => {
 
 // Register and run the tests
 Deno.test("Client Creation Test", testClientCreation);
-Deno.test("Hello-world Function Test", testHelloWorld);
+Deno.test("Get Active Profiles Function Test", testGetActiveProfiles);

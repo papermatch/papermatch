@@ -8,16 +8,16 @@ A pay-per-match dating app, using React Native and Supabase.
 2. Create a .env file in the base directory as follows (with information from the Project Settings/API page)
     ```
     SUPABASE_ANON_KEY=''
-    SUPABASE_URL=''
+    SUPABASE_API_URL=''
     ```
-    Note: `SUPABASE_URL` should be set to 'http://localhost:54321' for local development
+    Note: `SUPABASE_API_URL` should be set to 'http://localhost:54321' for local development
 4. Create another .env file in the supabase/ directory as follows (with information from the Project Settings/API page)
     ```
+    SUPABASE_API_URL=''
     SUPABASE_SERVICE_ROLE_KEY=''
-    SUPABASE_URL=''
     ```
-    Note: `SUPABASE_URL` should be set to 'http://supabase_kong_papermatch:8000' for local development
-5. Also create a new Encryption Key (e.g. papermatch) on your Project Settings/Vault page, then insert your `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` as new "secrets"
+    Note: `SUPABASE_API_URL` should be set to 'http://supabase_kong_papermatch:8000' for local development
+5. Also create a new Encryption Key (e.g. papermatch) on your Project Settings/Vault page, then insert your `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_API_URL` as new "secrets"
 
 ## Local Development
 
@@ -36,17 +36,17 @@ A pay-per-match dating app, using React Native and Supabase.
     npx supabase start
     ```
 4. Use the output from the previous command to update your .env files as described [above](#supabase-setup)
-5. In the local [Supabase Studio](http://localhost:54323/project/default/sql/1) add the `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` secrets to the Vault
+5. In the local [Supabase Studio](http://localhost:54323/project/default/sql/1) add the `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_API_URL` secrets to the Vault
     ```sql
+    select vault.create_secret(
+      'http://supabase_kong_papermatch:8000',
+      'SUPABASE_API_URL'
+    );
+
     select vault.create_secret(
       '',
       'SUPABASE_SERVICE_ROLE_KEY'
      );
-    
-    select vault.create_secret(
-      'http://supabase_kong_papermatch:8000',
-      'SUPABASE_URL'
-    );
     ```
 6. Run the React Native app
     ```
@@ -68,7 +68,7 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     npx supabase login
     ```
-3. Link your project (where `<project_id>` is the unique character string in your `SUPABASE_URL`)
+3. Link your project (where `<project_id>` is the unique character string in your `SUPABASE_API_URL`)
     ```
     npx supabase link --project-ref <project-id>
     ```
@@ -116,3 +116,6 @@ A pay-per-match dating app, using React Native and Supabase.
     ]
 }
 ```
+## Unit Testing
+
+Add the `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN` in [GitHub settings](/settings/secrets/actions).
