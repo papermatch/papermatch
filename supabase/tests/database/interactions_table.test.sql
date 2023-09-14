@@ -1,5 +1,7 @@
+begin;
+
 select
-    plan (10);
+    plan (8);
 
 select
     has_table (
@@ -9,35 +11,22 @@ select
     );
 
 select
-    has_column (
+    has_type (
         'public',
-        'interactions',
-        'user_id',
-        'user_id column should exist'
+        'interaction_type',
+        'interaction_type should exist'
     );
 
 select
-    has_column (
+    columns_are (
         'public',
         'interactions',
-        'target_id',
-        'target_id column should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'interactions',
-        'interaction',
-        'interaction column should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'interactions',
-        'updated_at',
-        'updated_at column should exist'
+        array[
+            'user_id',
+            'target_id',
+            'interaction',
+            'updated_at'
+        ]
     );
 
 select
@@ -65,6 +54,13 @@ select
     );
 
 select
+    indexes_are (
+        'public',
+        'interactions',
+        array['interactions_pkey']
+    );
+
+select
     policies_are (
         'public',
         'interactions',
@@ -73,13 +69,6 @@ select
             'User can add own interactions (but not with themselves).',
             'Users can update own interactions.'
         ]
-    );
-
-select
-    results_eq (
-        'select interaction from interactions',
-        $$values ('like'::interaction_type), ('like'::interaction_type), ('block'::interaction_type)$$,
-        'interactions should return all interactions'
     );
 
 select

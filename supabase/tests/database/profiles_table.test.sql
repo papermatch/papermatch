@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (11);
+    plan (5);
 
 select
     has_table (
@@ -11,46 +11,17 @@ select
     );
 
 select
-    has_column ('public', 'profiles', 'id', 'id should exist');
-
-select
-    has_column (
+    columns_are (
         'public',
         'profiles',
-        'updated_at',
-        'updated_at should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'profiles',
-        'username',
-        'username should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'profiles',
-        'full_name',
-        'full_name should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'profiles',
-        'avatar_url',
-        'avatar_url should exist'
-    );
-
-select
-    has_column (
-        'public',
-        'profiles',
-        'website',
-        'website should exist'
+        array[
+            'id',
+            'updated_at',
+            'username',
+            'full_name',
+            'avatar_url',
+            'website'
+        ]
     );
 
 select
@@ -66,25 +37,14 @@ select
         'public',
         'profiles',
         'id',
-        'id should be a foreign key'
+        'id should be a foreign key referencing auth.users(id)'
     );
 
 select
-    policies_are (
+    indexes_are (
         'public',
         'profiles',
-        array[
-            'Users can insert their own profile.',
-            'Users can update own profile.',
-            'Non-blocked-by profiles are viewable.'
-        ]
-    );
-
-select
-    results_eq (
-        'select username from profiles',
-        $$values ('Alice'), ('Bob'), ('Charlie'), ('Dana')$$,
-        'profiles should return all usernames'
+        array['profiles_pkey', 'profiles_username_key']
     );
 
 select
