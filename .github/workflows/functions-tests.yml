@@ -23,4 +23,4 @@ jobs:
       - run: supabase start
       - run: supabase functions serve &
       - run: supabase status -o env | sed  's/^/SUPABASE_/' > .env
-      - run: deno test --allow-all hello-world-test.ts
+      - run: deno test --allow-all
