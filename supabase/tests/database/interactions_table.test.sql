@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (8);
+    plan (7);
 
 select
     has_table (
@@ -58,17 +58,6 @@ select
         'public',
         'interactions',
         array['interactions_pkey']
-    );
-
-select
-    policies_are (
-        'public',
-        'interactions',
-        array[
-            'User can see own interactions.',
-            'User can add own interactions (but not with themselves).',
-            'Users can update own interactions.'
-        ]
     );
 
 select

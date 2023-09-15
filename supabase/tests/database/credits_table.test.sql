@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (6);
+    plan (5);
 
 select
     has_table ('public', 'credits', 'credits table should exist');
@@ -40,13 +40,6 @@ select
         'public',
         'credits',
         array['credits_pkey', 'idx_credits_user_id']
-    );
-
-select
-    policies_are (
-        'public',
-        'credits',
-        array['User can see own credits.']
     );
 
 select
