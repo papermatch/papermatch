@@ -118,4 +118,8 @@ A pay-per-match dating app, using React Native and Supabase.
 ```
 ## Unit Testing
 
-Add the `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN` in [GitHub settings](/settings/secrets/actions).
+Add the following (testing!) secrets to [GitHub settings](/settings/secrets/actions):
+
+- `STRIPE_API_KEY`
+- `STRIPE_PRICE_ID`
+- `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN`
