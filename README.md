@@ -5,18 +5,19 @@ A pay-per-match dating app, using React Native and Supabase.
 ## Supabase Setup
 
 1. Create a new [Supabase project](https://supabase.com/dashboard/projects) (e.g. papermatch) in your preferred organization (e.g. papermatch)
-2. Create a .env file in the base directory as follows (with information from the Project Settings/API page)
+2. Create a .env file in the root directory as follows (with information from the Project Settings/API page)
     ```
-    SUPABASE_ANON_KEY=''
-    SUPABASE_API_URL=''
+    SUPABASE_ANON_KEY=***
+    SUPABASE_API_URL=***
     ```
     Note: `SUPABASE_API_URL` should be set to 'http://localhost:54321' for local development
-4. Create another .env file in the supabase/ directory as follows (with information from the Project Settings/API page)
+4. Create another .env file in the supabase/ directory as follow
     ```
-    SUPABASE_API_URL=''
-    SUPABASE_SERVICE_ROLE_KEY=''
+    STRIPE_API_KEY=***
+    STRIPE_PRICE_ID=***
+    STRIPE_WEBHOOK_SIGNING_SECRET=***
+    TWILIO_AUTH_TOKEN=***
     ```
-    Note: `SUPABASE_API_URL` should be set to 'http://supabase_kong_papermatch:8000' for local development
 5. Also create a new Encryption Key (e.g. papermatch) on your Project Settings/Vault page, then insert your `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_API_URL` as new "secrets"
 
 ## Local Development
@@ -84,21 +85,15 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
     ```
-3. Create .env file in supabase/functions
+3. Serve functions
     ```
-    STRIPE_API_KEY=
-    STRIPE_PRICE_ID=
-    STRIPE_WEBHOOK_SIGNING_SECRET=
+    npx supabase functions serve --no-verify-jwt --env-file ./supabase/.env
     ```
-4. Serve functions
-    ```
-    npx supabase functions serve --no-verify-jwt --env-file ./supabase/functions/.env
-    ```
-5. Trigger payment
+4. Trigger payment
     ```
     stripe trigger payment_intent.succeeded
     ```
-6. Optionally update cache
+5. Optionally update cache, e.g.
     ```
     deno cache --reload supabase/functions/stripe-webhook/index.ts
     ```
@@ -118,7 +113,7 @@ A pay-per-match dating app, using React Native and Supabase.
 ```
 ## Unit Testing
 
-Add the following (testing!) secrets to [GitHub settings](/settings/secrets/actions):
+Add the following (test!) secrets to [GitHub settings](/settings/secrets/actions):
 
 - `STRIPE_API_KEY`
 - `STRIPE_PRICE_ID`

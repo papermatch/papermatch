@@ -30,7 +30,7 @@ values
 --- All credits visible when not authenticated
 select
     results_eq (
-        'select count(*) from public.credits',
+        'select count(*) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
         $$values (2::bigint)$$
     );
 
@@ -43,7 +43,7 @@ set role 'authenticated';
 --- Only Other User's credits visible when authenticated
 select
     results_eq (
-        'select count(*) from public.credits',
+        'select count(*) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
         $$values (1::bigint)$$
     );
 

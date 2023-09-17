@@ -3,7 +3,7 @@ on:
   pull_request:
 
 env:
-  SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN: ${{ secrets.SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN }}
+  TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
 
 jobs:
   build:
@@ -19,8 +19,8 @@ jobs:
       - run: supabase start
       - run: |
           echo -e "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}\nSTRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}" > .env
-          supabase functions serve --no-verify-jwt --env-file .env
-        working-directory: ./supabase/functions
+          supabase functions serve --no-verify-jwt --env-file $PWD/.env &
+        working-directory: ./supabase
       - run: |
           supabase status -o env | sed  's/^/SUPABASE_/' > .env
           deno test --allow-all

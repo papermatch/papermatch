@@ -83,10 +83,10 @@ enable_confirmations = true
 # Configure one of the supported SMS providers: `twilio`, `messagebird`, `textlocal`, `vonage`.
 [auth.sms.twilio]
 enabled = true
-account_sid = "AC5e1819dbfeb9492288b699145a9e3eec"
+account_sid = "ACe1ca85cb5bc9fa93ea05fa092a5925c7"
 message_service_sid = "+18663110972"
 # DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
-auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
+auth_token = "env(TWILIO_AUTH_TOKEN)"
 
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
