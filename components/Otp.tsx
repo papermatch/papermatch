@@ -8,19 +8,19 @@ export default function Otp() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const phone = location.state?.phone || "";
+  const email = location.state?.email || "";
   const navigate = useNavigate();
 
-  if (!phone) {
+  if (!email) {
     navigate(ROUTES.AUTH, { replace: true });
   }
 
   async function verify() {
     setLoading(true);
     const { data, error } = await supabase.auth.verifyOtp({
-      phone: phone,
+      email: email,
       token: otp,
-      type: "sms",
+      type: "magiclink",
     });
 
     if (error) {

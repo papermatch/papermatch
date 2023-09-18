@@ -2,9 +2,6 @@ name: 'functions-tests'
 on:
   pull_request:
 
-env:
-  TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
