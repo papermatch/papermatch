@@ -5,18 +5,18 @@ import { Button, Input } from "@rneui/themed";
 import { ROUTES, useNavigate } from "../lib/routing";
 
 export default function Auth() {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function signIn() {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone });
+    const { error } = await supabase.auth.signInWithOtp({ email: email });
 
     if (error) {
       Alert.alert(error.message);
     } else {
-      navigate(ROUTES.OTP, { state: { phone } });
+      navigate(ROUTES.OTP, { state: { email } });
     }
     setLoading(false);
   }
@@ -25,11 +25,11 @@ export default function Auth() {
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
-          label="Phone"
-          leftIcon={{ type: "font-awesome", name: "phone" }}
-          onChangeText={setPhone}
-          value={phone}
-          placeholder="+13115552368"
+          label="Email"
+          leftIcon={{ type: "font-awesome", name: "envelope" }}
+          onChangeText={setEmail}
+          value={email}
+          placeholder="user@example.com"
           autoCapitalize={"none"}
         />
       </View>
