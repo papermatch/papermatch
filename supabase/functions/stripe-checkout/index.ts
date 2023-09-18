@@ -1,14 +1,8 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 
 import Stripe from "https://esm.sh/stripe@13.4.0?target=deno";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
-  // This is needed to use the Fetch API rather than relying on the Node http
-  // package.
   apiVersion: "2023-08-16",
   httpClient: Stripe.createFetchHttpClient(),
 });
@@ -32,16 +26,67 @@ serve(async (req) => {
 
   let sessionUrl;
   try {
-    // Get client reference id, credit quantity, and app origin from request body
+    // Get client reference ID, credit quantity, and app origin from request body
     const { id, quantity, origin } = await req.json();
+
+    // Check for valid ID
     if (!id) {
-      return new Response(JSON.stringify({ error: "No id provided" }), {
+      return new Response(JSON.stringify({ error: "Missing parameter: id" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
+
+    // Check for valid quantity
+    if (!quantity) {
+      return new Response(
+        JSON.stringify({ error: "Missing parameter: quantity" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid parameter: quantity must be a positive integer",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Check for valid origin
+    if (!origin) {
+      return new Response(
+        JSON.stringify({ error: "Missing parameter: origin" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    try {
+      new URL(origin);
+    } catch {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid parameter: origin must be a valid URL",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     console.log(
-      `🔔 Creating checkout session for ${id} with quantity ${quantity} and origin ${origin}`
+      `Creating checkout session for ${id} with quantity ${quantity} and origin ${origin}`
     );
 
     // Create checkout session
@@ -52,7 +97,7 @@ serve(async (req) => {
       line_items: [
         {
           price: Deno.env.get("STRIPE_PRICE_ID") as string,
-          quantity: parseInt(quantity) || 1,
+          quantity: quantity,
         },
       ],
       mode: "payment",
@@ -67,15 +112,11 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
-  console.log(`🔔 Checkout session created: ${sessionUrl}`);
-  return new Response(JSON.stringify({ url: sessionUrl }), {
+
+  console.log(`Checkout session created: ${sessionUrl}`);
+
+  return new Response(JSON.stringify({ ok: true, url: sessionUrl }), {
     status: 200,
     headers: { "Content-Type": "application/json", ...corsHeaders },
   });
 });
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
