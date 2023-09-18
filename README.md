@@ -118,3 +118,5 @@ Add the following (test!) secrets to [GitHub settings](/settings/secrets/actions
 - `STRIPE_API_KEY`
 - `STRIPE_PRICE_ID`
 - `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN`
+
+Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env`

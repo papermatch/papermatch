@@ -32,7 +32,7 @@ const ExpoSecureStoreAdapter = Platform.select({
 
 const supabaseUrl = SUPABASE_API_URL;
 const supabaseAnonKey = SUPABASE_ANON_KEY;
-const options = {
+const supabaseClientOptions = {
   auth: {
     storage: ExpoSecureStoreAdapter as any,
     autoRefreshToken: true,
@@ -44,5 +44,5 @@ const options = {
 export const supabase: SupabaseClient = createClient(
   supabaseUrl,
   supabaseAnonKey,
-  options
+  supabaseClientOptions
 );

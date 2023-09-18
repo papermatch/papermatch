@@ -18,10 +18,11 @@ jobs:
           deno-version: 1.36.4
       - run: supabase start
       - run: |
-          echo -e "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}\nSTRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}" > .env
+          echo -e "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}\nSTRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}\nSTRIPE_WEBHOOK_SIGNING_SECRET=${{ secrets.STRIPE_WEBHOOK_SIGNING_SECRET }}" > .env
           supabase functions serve --no-verify-jwt --env-file $PWD/.env &
         working-directory: ./supabase
       - run: |
           supabase status -o env | sed  's/^/SUPABASE_/' > .env
+          echo -e "STRIPE_WEBHOOK_SIGNING_SECRET=${{ secrets.STRIPE_WEBHOOK_SIGNING_SECRET }}" >> .env
           deno test --allow-all
         working-directory: ./supabase/tests/functions

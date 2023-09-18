@@ -9,7 +9,7 @@ import "https://deno.land/x/dotenv@v3.2.2/load.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_API_URL") ?? "";
 const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-const options = {
+const supabaseClientOptions = {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -24,7 +24,7 @@ const testClientCreation = async () => {
   const supabase: SupabaseClient = createClient(
     supabaseUrl,
     supabaseKey,
-    options
+    supabaseClientOptions
   );
 
   const { error } = await supabase.from("profiles").select("*").limit(1);
