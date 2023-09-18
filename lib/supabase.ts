@@ -1,7 +1,7 @@
 import "react-native-url-polyfill/auto";
 import * as SecureStore from "expo-secure-store";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { SUPABASE_ANON_KEY, SUPABASE_API_URL } from "@env";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@env";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -30,7 +30,7 @@ const ExpoSecureStoreAdapter = Platform.select({
   },
 });
 
-const supabaseUrl = SUPABASE_API_URL;
+const supabaseUrl = SUPABASE_URL;
 const supabaseAnonKey = SUPABASE_ANON_KEY;
 const supabaseClientOptions = {
   auth: {
