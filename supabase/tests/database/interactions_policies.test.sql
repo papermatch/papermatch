@@ -14,18 +14,14 @@ select
         ]
     );
 
---- Setup
+-- Setup
 insert into
     auth.users (id, raw_user_meta_data)
 values
     (
         '11111111-1111-1111-1111-111111111111',
         '{"full_name": "Test User", "avatar_url": ""}'
-    );
-
-insert into
-    auth.users (id, raw_user_meta_data)
-values
+    ),
     (
         '22222222-2222-2222-2222-222222222222',
         '{"full_name": "Other User", "avatar_url": ""}'
@@ -40,20 +36,20 @@ values
         'block'
     );
 
---- All interactions visible when not authenticated
+-- All interactions visible when not authenticated
 select
     results_eq (
         'select count(*) from public.interactions',
         $$values (1::bigint)$$
     );
 
---- Authenticate as Other User
+-- Authenticate as Other User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
 set role 'authenticated';
 
---- Only Other User's interactions visible when authenticated
+-- Only Other User's interactions visible when authenticated
 select
     results_eq (
         'select count(*) from public.interactions',
@@ -75,7 +71,7 @@ select
         $$values (1::bigint)$$
     );
 
---- Inserting an interaction with self should fail
+-- Inserting an interaction with self should fail
 select
     throws_ok (
         $$
@@ -91,7 +87,7 @@ select
         '42501'
     );
 
---- Users can update own interactions
+-- Users can update own interactions
 update public.interactions
 set
     interaction = 'like'
@@ -105,7 +101,7 @@ select
         $$values ('like'::public.interaction_type)$$
     );
 
---- Cleanup
+-- Cleanup
 reset role;
 
 delete from auth.users

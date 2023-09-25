@@ -14,24 +14,20 @@ select
         ]
     );
 
---- Setup
+-- Setup
 insert into
     auth.users (id, raw_user_meta_data)
 values
     (
         '11111111-1111-1111-1111-111111111111',
         '{"full_name": "Test User", "avatar_url": ""}'
-    );
-
-insert into
-    auth.users (id, raw_user_meta_data)
-values
+    ),
     (
         '22222222-2222-2222-2222-222222222222',
         '{"full_name": "Other User", "avatar_url": ""}'
     );
 
---- Test User blocks Other User
+-- Test User blocks Other User
 insert into
     public.interactions (user_id, target_id, interaction)
 values
@@ -41,14 +37,14 @@ values
         'block'
     );
 
---- All profiles visible when not authenticated
+-- All profiles visible when not authenticated
 select
     results_eq (
         'select count(*) from public.profiles where id = ''11111111-1111-1111-1111-111111111111''',
         $$values (1::bigint)$$
     );
 
---- Authenticate as Other User
+-- Authenticate as Other User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
@@ -60,14 +56,14 @@ set
 where
     id = '22222222-2222-2222-2222-222222222222';
 
---- Other User is blocked and can't see Test User's profile
+-- Other User is blocked and can't see Test User's profile
 select
     results_eq (
         'select count(*) from public.profiles where id = ''11111111-1111-1111-1111-111111111111''',
         $$values (0::bigint)$$
     );
 
---- Cleanup
+-- Cleanup
 reset role;
 
 delete from auth.users
