@@ -189,3 +189,42 @@ begin
             (user1_id = auth.uid () or user2_id = auth.uid ());
 end;
 $$ language plpgsql;
+
+create table
+    messages (
+        id uuid default uuid_generate_v4 () not null,
+        match_id uuid references matches (id) on delete cascade not null,
+        user_id uuid references auth.users (id) on delete cascade not null,
+        message text not null,
+        created_at timestamptz not null default now(),
+        primary key (id)
+    );
+
+alter table messages enable row level security;
+
+create policy "Users can add messages to their active matches." on messages for insert
+with
+    check (
+        match_id in (
+            select
+                *
+            from
+                get_active_matches ()
+        ) and
+        auth.uid () = user_id
+    );
+
+create policy "Users can view messages from their active matches." on messages for
+select
+    using (
+        match_id in (
+            select
+                *
+            from
+                get_active_matches ()
+        )
+    );
+
+create policy "Users can delete their own messages." on messages for delete using (auth.uid () = user_id);
+
+alter table messages force row level security;

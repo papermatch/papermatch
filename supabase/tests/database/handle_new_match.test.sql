@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (4);
+    plan (6);
 
 select
     has_function (
@@ -34,8 +34,14 @@ values
 -- Both users should have initial credits
 select
     results_eq (
-        'select user_id, sum(credits) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'') group by user_id',
-        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 1::bigint), ('11111111-1111-1111-1111-111111111111'::uuid, 1::bigint)$$
+        'select sum(credits) from public.credits where user_id = ''11111111-1111-1111-1111-111111111111''',
+        $$values (1::bigint)$$
+    );
+
+select
+    results_eq (
+        'select sum(credits) from public.credits where user_id = ''22222222-2222-2222-2222-222222222222''',
+        $$values (1::bigint)$$
     );
 
 -- Insert new match between Test User and Other User
@@ -50,8 +56,14 @@ values
 -- Both users should now have 0 credits
 select
     results_eq (
-        'select user_id, sum(credits) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'') group by user_id',
-        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 0::bigint), ('11111111-1111-1111-1111-111111111111'::uuid, 0::bigint)$$
+        'select sum(credits) from public.credits where user_id = ''11111111-1111-1111-1111-111111111111''',
+        $$values (0::bigint)$$
+    );
+
+select
+    results_eq (
+        'select sum(credits) from public.credits where user_id = ''22222222-2222-2222-2222-222222222222''',
+        $$values (0::bigint)$$
     );
 
 -- Cleanup

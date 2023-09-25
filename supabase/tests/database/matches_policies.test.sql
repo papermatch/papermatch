@@ -37,7 +37,7 @@ set
 
 set role 'authenticated';
 
--- Users can view own matches
+-- Test User can view own matches
 select
     results_eq (
         'select count(*) from public.matches where user1_id = ''11111111-1111-1111-1111-111111111111'' or user2_id = ''11111111-1111-1111-1111-111111111111''',
@@ -48,6 +48,7 @@ select
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
+-- Other User can view own matches
 select
     results_eq (
         'select count(*) from public.matches where user1_id = ''22222222-2222-2222-2222-222222222222'' or user2_id = ''22222222-2222-2222-2222-222222222222''',
