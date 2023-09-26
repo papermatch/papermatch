@@ -21,9 +21,9 @@ begin
             select
                 1
             from
-                interactions i1 
+                public.interactions i1 
             join
-                interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
+                public.interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
             where
                 i1.user_id = new.user_id and
                 i1.interaction = 'like' and
@@ -33,7 +33,7 @@ begin
     if is_match then
         -- Check for an existing match
         select into match *
-        from matches
+        from public.matches
         where 
             ((user1_id = new.user_id and user2_id = new.target_id) or
             (user1_id = new.target_id and user2_id = new.user_id));
@@ -41,7 +41,7 @@ begin
         if found then
             -- Reactivate the existing inactive match
             if match.active is not true then
-                update matches
+                update public.matches
                 set active = true, updated_at = now()
                 where id = match.id;
             -- Match shouldn't already exist, but might (depending on trigger behavior)
@@ -50,12 +50,12 @@ begin
             end if;
         else
             -- Check that both users have available credits
-            select sum(credits) into user1_credits from credits where user_id = new.user_id;
-            select sum(credits) into user2_credits from credits where user_id = new.target_id;
+            select sum(credits) into user1_credits from public.credits where user_id = new.user_id;
+            select sum(credits) into user2_credits from public.credits where user_id = new.target_id;
 
             -- Only create a new match if both users have a credit sum > 0
             if (user1_credits > 0) and (user2_credits > 0) then
-                insert into matches (user1_id, user2_id)
+                insert into public.matches (user1_id, user2_id)
                 values (new.user_id, new.target_id);
             end if;
         end if;
@@ -72,7 +72,7 @@ declare
 begin
     -- Check for an active match
     select into match_id id
-    from matches
+    from public.matches
     where 
         ((user1_id = new.user_id and user2_id = new.target_id) or
         (user1_id = new.target_id and user2_id = new.user_id)) and
@@ -80,7 +80,7 @@ begin
 
     if found then
         -- Deactivate the active match
-        update matches
+        update public.matches
         set active = false, updated_at = now()
         where id = match_id;
     end if;
@@ -101,31 +101,31 @@ begin
     select
         i2.user_id as user2_id
     from
-        interactions i1 
+        public.interactions i1 
     join
-        interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
+        public.interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
     where
         i1.user_id = new.user_id and
         i1.interaction = 'like' and
         i2.interaction = 'like' and
         not exists (
             select 1
-            from matches
+            from public.matches
             where 
                 (user1_id = i1.user_id and user2_id = i2.user_id) or
                 (user1_id = i2.user_id and user2_id = i1.user_id)
         )
     loop
         -- Check that both users have available credits
-        select sum(credits) into user1_credits from credits where user_id = new.user_id;
-        select sum(credits) into user2_credits from credits where user_id = pending_match.user2_id;
+        select sum(credits) into user1_credits from public.credits where user_id = new.user_id;
+        select sum(credits) into user2_credits from public.credits where user_id = pending_match.user2_id;
 
         -- Exit loop if user1 (a.k.a. new.user_id, who initiated the check) has no more credits
         exit when user1_credits <= 0;
 
         if (user2_credits > 0) then
             -- Create a new match
-            insert into matches (user1_id, user2_id)
+            insert into public.matches (user1_id, user2_id)
             values (new.user_id, pending_match.user2_id);
         end if;
     end loop;
@@ -179,10 +179,10 @@ after insert on matches for each row
 execute function handle_new_match ();
 
 -- Function to get active matches for the current user
-create function get_active_matches () returns setof uuid as $$
+create function get_active_matches () returns setof matches as $$
 begin
     return query
-        select id
+        select *
         from matches
         where
             active = true and
@@ -207,7 +207,7 @@ with
     check (
         match_id in (
             select
-                *
+                id
             from
                 get_active_matches ()
         ) and
@@ -219,7 +219,7 @@ select
     using (
         match_id in (
             select
-                *
+                id
             from
                 get_active_matches ()
         )
@@ -228,3 +228,24 @@ select
 create policy "Users can delete their own messages." on messages for delete using (auth.uid () = user_id);
 
 alter table messages force row level security;
+
+create view
+    active as
+select
+    user_id as id
+from
+    credits
+group by
+    user_id
+having
+    sum(credits) > 0;
+
+create or
+replace function public.get_active_profiles () returns setof profiles as $$
+begin
+    return query
+        select p.*
+        from public.profiles as p
+        join public.active as a on p.id = a.id;
+end;
+$$ language plpgsql security definer;

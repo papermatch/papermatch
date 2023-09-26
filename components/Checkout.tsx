@@ -1,5 +1,5 @@
 import { SUPABASE_URL } from "@env";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Platform, Alert, Text, View } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import { Session } from "@supabase/supabase-js";
@@ -9,11 +9,16 @@ import { ROUTES, useNavigate } from "../lib/routing";
 export default function Checkout({ session }: { session: Session }) {
   const currentOrigin =
     Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
-
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (Platform.OS === "web" && checkoutUrl) {
+      window.location.href = checkoutUrl;
+    }
+  }, [checkoutUrl]);
 
   const fetchCheckoutUrl = async () => {
     try {
@@ -78,12 +83,6 @@ export default function Checkout({ session }: { session: Session }) {
     fetchCheckoutUrl();
   };
 
-  React.useEffect(() => {
-    if (Platform.OS === "web" && checkoutUrl) {
-      window.location.href = checkoutUrl;
-    }
-  }, [checkoutUrl]);
-
   return (
     <View style={styles.verticallySpaced}>
       <Input
@@ -92,7 +91,11 @@ export default function Checkout({ session }: { session: Session }) {
         onChangeText={setQuantity}
         placeholder="Enter Quantity"
       />
-      <Button title="Continue Checkout" onPress={handleSubmit} disabled={loading} />
+      <Button
+        title="Continue Checkout"
+        onPress={handleSubmit}
+        disabled={loading}
+      />
       {Platform.OS !== "web" && checkoutUrl ? (
         <WebView
           source={{ uri: checkoutUrl }}
