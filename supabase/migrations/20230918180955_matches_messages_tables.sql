@@ -249,3 +249,6 @@ begin
         join public.active as a on p.id = a.id;
 end;
 $$ language plpgsql security definer;
+
+alter publication supabase_realtime
+add table messages;

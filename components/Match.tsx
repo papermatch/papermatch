@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Alert,
+  Text,
+  FlatList,
+  TextInput,
+  Button,
+} from "react-native";
 import { Card } from "@rneui/themed";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, Link } from "../lib/routing";
@@ -13,12 +21,40 @@ export default function Match({ session }: { session: Session }) {
   const [match, setMatch] = useState<MatchData | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [message, setMessage] = useState("");
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (id && session) {
       getData();
     }
+
+    const messagesChannel = supabase
+      .channel("messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+          filter: `match_id=eq.${id}`,
+        },
+        (payload) => {
+          switch (payload.eventType) {
+            case "INSERT":
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                payload.new as MessageData,
+              ]);
+              break;
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(messagesChannel);
+    };
   }, [id, session]);
 
   async function getData() {
@@ -39,9 +75,11 @@ export default function Match({ session }: { session: Session }) {
         throw error;
       }
 
-      setMatch(data);
+      await getProfile(
+        data?.user1_id === session.user.id ? data.user2_id : data?.user1_id
+      );
 
-      await getProfile();
+      setMatch(data);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert("Error", error.message);
@@ -57,7 +95,7 @@ export default function Match({ session }: { session: Session }) {
         .from("messages")
         .select("*")
         .eq("match_id", id)
-        .order("inserted_at", { ascending: true });
+        .order("created_at", { ascending: true });
 
       if (error) {
         throw error;
@@ -73,11 +111,8 @@ export default function Match({ session }: { session: Session }) {
     }
   }
 
-  async function getProfile() {
+  async function getProfile(userID: string) {
     try {
-      const userID =
-        match?.user1_id === session.user.id ? match.user2_id : match?.user1_id;
-
       let { data, error, status } = await supabase
         .from("profiles")
         .select("*")
@@ -91,6 +126,30 @@ export default function Match({ session }: { session: Session }) {
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
+      }
+    }
+  }
+
+  async function handleMessage() {
+    if (message.trim() === "") {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("messages").insert({
+        match_id: id,
+        user_id: session.user.id,
+        message: message,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMessage("");
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert("Error sending message", error.message);
       }
     }
   }
@@ -120,6 +179,13 @@ export default function Match({ session }: { session: Session }) {
           </Card>
         )}
       />
+      <TextInput
+        value={message}
+        onChangeText={setMessage}
+        placeholder="Type a message"
+        style={styles.input}
+      />
+      <Button title="Send" onPress={handleMessage} />
     </View>
   );
 }
@@ -136,5 +202,12 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 4,
     alignSelf: "stretch",
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 12,
+    padding: 10,
   },
 });
