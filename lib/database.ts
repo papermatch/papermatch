@@ -187,7 +187,19 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      active: {
+        Row: {
+          id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credits_user_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
       delete_avatar: {
@@ -205,7 +217,13 @@ export interface Database {
       }
       get_active_matches: {
         Args: Record<PropertyKey, never>
-        Returns: string[]
+        Returns: {
+          active: boolean
+          id: string
+          updated_at: string
+          user1_id: string
+          user2_id: string
+        }[]
       }
       get_active_profiles: {
         Args: Record<PropertyKey, never>
