@@ -6,8 +6,8 @@ select
 select
     policies_are (
         'public',
-        'credits',
-        array['User can see own credits.']
+        'matches',
+        array['Users can view own matches.']
     );
 
 -- Setup
@@ -23,23 +23,35 @@ values
         '{"full_name": "Other User", "avatar_url": ""}'
     );
 
--- All credits visible when not authenticated
+insert into
+    public.matches (user1_id, user2_id)
+values
+    (
+        '11111111-1111-1111-1111-111111111111',
+        '22222222-2222-2222-2222-222222222222'
+    );
+
+-- Authenticate as Test User
+set
+    local "request.jwt.claims" to '{"sub": "11111111-1111-1111-1111-111111111111" }';
+
+set role 'authenticated';
+
+-- Test User can view own matches
 select
     results_eq (
-        'select count(*) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
-        $$values (2::bigint)$$
+        'select count(*) from public.matches where user1_id = ''11111111-1111-1111-1111-111111111111'' or user2_id = ''11111111-1111-1111-1111-111111111111''',
+        $$values (1::bigint)$$
     );
 
 -- Authenticate as Other User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
-set role 'authenticated';
-
--- Only Other User's credits visible when authenticated
+-- Other User can view own matches
 select
     results_eq (
-        'select count(*) from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        'select count(*) from public.matches where user1_id = ''22222222-2222-2222-2222-222222222222'' or user2_id = ''22222222-2222-2222-2222-222222222222''',
         $$values (1::bigint)$$
     );
 

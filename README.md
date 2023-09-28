@@ -45,7 +45,7 @@ A pay-per-match dating app, using React Native and Supabase.
     );
 
     select vault.create_secret(
-      '',
+      '***',
       'SUPABASE_SERVICE_ROLE_KEY'
      );
     ```

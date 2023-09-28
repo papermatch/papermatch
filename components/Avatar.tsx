@@ -17,7 +17,9 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
   const avatarSize = { height: size, width: size };
 
   useEffect(() => {
-    if (url) setAvatarUrl(url);
+    if (url) {
+      setAvatarUrl(url);
+    }
   }, [url]);
 
   function getContentTypeAndExtension(uri: string) {

@@ -6,8 +6,8 @@ select
 select
     has_function (
         'public',
-        'get_active_profiles',
-        'get_active_profiles function should exist'
+        'get_active_matches',
+        'get_active_matches function should exist'
     );
 
 -- Setup
@@ -23,29 +23,20 @@ values
         '{"full_name": "Other User", "avatar_url": ""}'
     );
 
--- Profiles created with initial credits when users created
-select
-    results_eq (
-        'select count(*) from public.get_active_profiles()',
-        $$values (2::bigint)$$
-    );
-
--- Test User spends initial credit
+-- Insert match between Test User and Other User
 insert into
-    public.credits (user_id, creditor, creditor_id, credits)
+    matches (user1_id, user2_id)
 values
     (
         '11111111-1111-1111-1111-111111111111',
-        'match',
-        'match_id',
-        -1
+        '22222222-2222-2222-2222-222222222222'
     );
 
--- Test User has no more credits and is no longer active
+-- Check that "unauthenticated" call returns no matches
 select
     results_eq (
-        'select count(*) from public.get_active_profiles()',
-        $$values (1::bigint)$$
+        'select count(*) from public.get_active_matches()',
+        $$values (0::bigint)$$
     );
 
 -- Authenticate as Test User
@@ -54,10 +45,21 @@ set
 
 set role 'authenticated';
 
--- Test User can still see Other User
+-- Check that active match is now visible for Test User
 select
     results_eq (
-        'select count(*) from public.get_active_profiles()',
+        'select count(*) from public.get_active_matches()',
+        $$values (1::bigint)$$
+    );
+
+-- Authenticate as Other User
+set
+    local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
+
+-- Check that active match is now visible for Other User
+select
+    results_eq (
+        'select count(*) from public.get_active_matches()',
         $$values (1::bigint)$$
     );
 

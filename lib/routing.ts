@@ -22,6 +22,8 @@ export const ROUTES = {
   ROOT: "/",
   ACCOUNT: "/account",
   AUTH: "/auth",
+  MATCH: "/match",
+  MATCHES: "/matches",
   CHECKOUT: "/checkout",
   OTP: "/otp",
   PROFILE: "/profile",

@@ -4,6 +4,8 @@ import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
 import Checkout from "./components/Checkout";
+import Match from "./components/Match";
+import Matches from "./components/Matches";
 import Otp from "./components/Otp";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
@@ -21,8 +23,21 @@ export default function App() {
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    supabase.auth.onAuthStateChange((event, session) => {
+      switch (event) {
+        case "SIGNED_IN":
+          setSession((prevSession) => {
+            if (!prevSession) {
+              return session;
+            } else {
+              return prevSession;
+            }
+          });
+          break;
+        default:
+          setSession(session);
+          break;
+      }
     });
   }, []);
 
@@ -74,6 +89,26 @@ export default function App() {
           element={
             session?.user ? (
               <Navigate to={ROUTES.ACCOUNT} replace />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
+          }
+        />
+        <Route
+          path={`${ROUTES.MATCH}/:id`}
+          element={
+            session?.user ? (
+              <Match key={session.user.id} session={session} />
+            ) : (
+              <Navigate to={ROUTES.AUTH} replace />
+            )
+          }
+        />
+        <Route
+          path={ROUTES.MATCHES}
+          element={
+            session?.user ? (
+              <Matches key={session.user.id} session={session} />
             ) : (
               <Navigate to={ROUTES.AUTH} replace />
             )

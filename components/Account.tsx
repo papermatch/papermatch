@@ -14,7 +14,9 @@ export default function Account({ session }: { session: Session }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session) getProfile();
+    if (session) {
+      getProfile();
+    }
   }, [session]);
 
   async function getProfile() {
