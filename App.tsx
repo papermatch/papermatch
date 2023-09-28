@@ -6,6 +6,7 @@ import Account from "./components/Account";
 import Checkout from "./components/Checkout";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
+import Navigation from "./components/Navigation";
 import Otp from "./components/Otp";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
@@ -13,7 +14,8 @@ import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate } from "./lib/routing";
 import { useFonts, Caveat_400Regular } from "@expo-google-fonts/caveat";
-import { PaperProvider } from 'react-native-paper';
+import { PaperProvider } from "react-native-paper";
+import { theme } from "./lib/theme";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -49,7 +51,7 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <Router>
         <Routes>
           <Route
@@ -149,6 +151,7 @@ export default function App() {
             }
           />
         </Routes>
+        <Navigation />
       </Router>
     </PaperProvider>
   );

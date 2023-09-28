@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import { Card, Text, Button } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useParams } from "../lib/routing";
@@ -90,15 +90,15 @@ export default function Profile({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <Card>
         <View>
           <Avatar size={200} url={profile?.avatar_url || null} />
         </View>
-        <View style={(styles.verticallySpaced, styles.mt20)}>
+        <View>
           <Text>{profile?.username || ""}</Text>
         </View>
-        <View style={styles.buttonContainer}>
+        <View>
           {interaction !== "like" ? (
             <Button
               onPress={() => handleInteraction("like")}
@@ -149,23 +149,3 @@ export default function Profile({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-  },
-});

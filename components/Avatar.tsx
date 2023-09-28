@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Image } from "react-native";
-import { Button } from "react-native-paper";
+import { View, Alert } from "react-native";
+import { Avatar as RNPAvatar, Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,6 @@ interface Props {
 export default function Avatar({ url, size = 150, onUpload }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
-  const avatarSize = { height: size, width: size };
 
   useEffect(() => {
     if (url) {
@@ -91,28 +90,12 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
   return (
     <View>
       {avatarUrl ? (
-        <Image
-          source={{ uri: avatarUrl }}
-          aria-label="Avatar"
-          style={[
-            avatarSize,
-            styles.avatar,
-            styles.image,
-            styles.verticallySpaced,
-          ]}
-        />
+        <RNPAvatar.Image size={size} source={{ uri: avatarUrl }} />
       ) : (
-        <View
-          style={[
-            avatarSize,
-            styles.avatar,
-            styles.noImage,
-            styles.verticallySpaced,
-          ]}
-        />
+        <View />
       )}
       {onUpload && (
-        <View style={styles.verticallySpaced}>
+        <View>
           <Button onPress={uploadAvatar} disabled={uploading}>
             {uploading ? "Uploading ..." : "Upload"}
           </Button>
@@ -121,30 +104,3 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  avatar: {
-    borderRadius: 5,
-    overflow: "hidden",
-    maxWidth: "100%",
-  },
-  image: {
-    objectFit: "cover",
-    paddingTop: 0,
-    // center image horizontally
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  noImage: {
-    backgroundColor: "#333",
-    border: "1px solid rgb(200, 200, 200)",
-    borderRadius: 5,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

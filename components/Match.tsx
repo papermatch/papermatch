@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, FlatList } from "react-native";
+import { View, Alert, FlatList } from "react-native";
 import { Card, Text, TextInput, Button } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, Link } from "../lib/routing";
@@ -151,13 +151,13 @@ export default function Match({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-        <Card style={styles.card}>
+        <Card>
           <View>
             <Avatar size={100} url={profile?.avatar_url || ""} />
           </View>
-          <View style={styles.verticallySpaced}>
+          <View>
             <Text>{profile?.username || ""}</Text>
           </View>
         </Card>
@@ -166,7 +166,7 @@ export default function Match({ session }: { session: Session }) {
         data={messages}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Card style={styles.card}>
+          <Card>
             <Text>{item.message}</Text>
           </Card>
         )}
@@ -175,31 +175,8 @@ export default function Match({ session }: { session: Session }) {
         value={message}
         onChangeText={setMessage}
         placeholder="Type a message"
-        style={styles.input}
       />
       <Button onPress={handleMessage}>Send</Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 10,
-  },
-});

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -93,7 +93,7 @@ export default function Account({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <View>
         <Avatar
           size={200}
@@ -104,17 +104,17 @@ export default function Account({ session }: { session: Session }) {
           }}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <View>
         <TextInput label="Email" value={session?.user?.email} disabled />
       </View>
-      <View style={styles.verticallySpaced}>
+      <View>
         <TextInput
           label="Username"
           value={username || ""}
           onChangeText={(text) => setUsername(text)}
         />
       </View>
-      <View style={styles.verticallySpaced}>
+      <View>
         <TextInput
           label="Website"
           value={website || ""}
@@ -122,7 +122,7 @@ export default function Account({ session }: { session: Session }) {
         />
       </View>
 
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <View>
         <Button
           onPress={() =>
             updateProfile({ username, website, avatar_url: avatarUrl })
@@ -133,32 +133,17 @@ export default function Account({ session }: { session: Session }) {
         </Button>
       </View>
 
-      <View style={styles.verticallySpaced}>
+      <View>
         <Button onPress={viewProfile}>View Profile</Button>
       </View>
 
-      <View style={styles.verticallySpaced}>
+      <View>
         <Button onPress={getCredits}>Get Credits</Button>
       </View>
 
-      <View style={styles.verticallySpaced}>
+      <View>
         <Button onPress={() => supabase.auth.signOut()}>Sign Out</Button>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-});

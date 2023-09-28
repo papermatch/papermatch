@@ -1,6 +1,6 @@
 import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
-import { StyleSheet, Platform, Alert, View } from "react-native";
+import { Platform, Alert, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
@@ -84,7 +84,7 @@ export default function Checkout({ session }: { session: Session }) {
   };
 
   return (
-    <View style={styles.verticallySpaced}>
+    <View>
       <TextInput
         keyboardType="numeric"
         value={quantity}
@@ -103,11 +103,3 @@ export default function Checkout({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

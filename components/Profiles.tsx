@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, FlatList } from "react-native";
+import { View, Alert, FlatList } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
+import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import Avatar from "./Avatar";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -60,17 +60,17 @@ export default function Profiles({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <FlatList
         data={profiles}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.PROFILE}/${item.id}`}>
-            <Card style={styles.card}>
+            <Card>
               <View>
                 <Avatar size={100} url={item.avatar_url} />
               </View>
-              <View style={styles.verticallySpaced}>
+              <View>
                 <Text>{item.username || ""}</Text>
               </View>
             </Card>
@@ -80,18 +80,3 @@ export default function Profiles({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});
