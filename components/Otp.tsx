@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, Input } from "@rneui/themed";
+import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 
 export default function Otp() {
@@ -32,7 +32,7 @@ export default function Otp() {
   return (
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
+        <TextInput
           label="OTP"
           onChangeText={setOtp}
           value={otp}
@@ -41,7 +41,9 @@ export default function Otp() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Verify" disabled={loading} onPress={verify} />
+        <Button disabled={loading} onPress={verify}>
+          Verify
+        </Button>
       </View>
     </View>
   );

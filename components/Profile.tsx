@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Text, Button } from "react-native";
-import { Card } from "@rneui/themed";
+import { StyleSheet, View, Alert } from "react-native";
+import { Card, Text, Button } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useParams } from "../lib/routing";
 import { ProfileData } from "../lib/types";
@@ -101,42 +101,48 @@ export default function Profile({ session }: { session: Session }) {
         <View style={styles.buttonContainer}>
           {interaction !== "like" ? (
             <Button
-              title="Like"
               onPress={() => handleInteraction("like")}
               disabled={loading}
-            />
+            >
+              Like
+            </Button>
           ) : (
             <Button
-              title="Unlike"
               onPress={() => handleInteraction("none")}
               disabled={loading}
-            />
+            >
+              Unlike
+            </Button>
           )}
           {interaction !== "pass" ? (
             <Button
-              title="Pass"
               onPress={() => handleInteraction("pass")}
               disabled={loading}
-            />
+            >
+              Pass
+            </Button>
           ) : (
             <Button
-              title="Unpass"
               onPress={() => handleInteraction("none")}
               disabled={loading}
-            />
+            >
+              Unpass
+            </Button>
           )}
           {interaction !== "block" ? (
             <Button
-              title="Block"
               onPress={() => handleInteraction("block")}
               disabled={loading}
-            />
+            >
+              Block
+            </Button>
           ) : (
             <Button
-              title="Unblock"
               onPress={() => handleInteraction("none")}
               disabled={loading}
-            />
+            >
+              Unblock
+            </Button>
           )}
         </View>
       </Card>

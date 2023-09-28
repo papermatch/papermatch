@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, Input } from "@rneui/themed";
+import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useNavigate } from "../lib/routing";
 
 export default function Auth() {
@@ -24,9 +24,8 @@ export default function Auth() {
   return (
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
+        <TextInput
           label="Email"
-          leftIcon={{ type: "font-awesome", name: "envelope" }}
           onChangeText={setEmail}
           value={email}
           placeholder="user@example.com"
@@ -34,7 +33,9 @@ export default function Auth() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={signIn} />
+        <Button disabled={loading} onPress={signIn}>
+          Sign In
+        </Button>
       </View>
     </View>
   );

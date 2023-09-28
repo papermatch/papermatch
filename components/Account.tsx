@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { StyleSheet, View, Alert } from "react-native";
-import { Button, Input } from "@rneui/themed";
+import { Button, TextInput } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -105,17 +105,17 @@ export default function Account({ session }: { session: Session }) {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input label="Email" value={session?.user?.email} disabled />
+        <TextInput label="Email" value={session?.user?.email} disabled />
       </View>
       <View style={styles.verticallySpaced}>
-        <Input
+        <TextInput
           label="Username"
           value={username || ""}
           onChangeText={(text) => setUsername(text)}
         />
       </View>
       <View style={styles.verticallySpaced}>
-        <Input
+        <TextInput
           label="Website"
           value={website || ""}
           onChangeText={(text) => setWebsite(text)}
@@ -124,24 +124,25 @@ export default function Account({ session }: { session: Session }) {
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
-          title={loading ? "Loading ..." : "Update"}
           onPress={() =>
             updateProfile({ username, website, avatar_url: avatarUrl })
           }
           disabled={loading}
-        />
+        >
+          {loading ? "Loading ..." : "Update"}
+        </Button>
       </View>
 
       <View style={styles.verticallySpaced}>
-        <Button title="View Profile" onPress={viewProfile} />
+        <Button onPress={viewProfile}>View Profile</Button>
       </View>
 
       <View style={styles.verticallySpaced}>
-        <Button title="Get Credits" onPress={getCredits} />
+        <Button onPress={getCredits}>Get Credits</Button>
       </View>
 
       <View style={styles.verticallySpaced}>
-        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+        <Button onPress={() => supabase.auth.signOut()}>Sign Out</Button>
       </View>
     </View>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Image, Button } from "react-native";
+import { StyleSheet, View, Alert, Image } from "react-native";
+import { Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -112,11 +113,9 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
       )}
       {onUpload && (
         <View style={styles.verticallySpaced}>
-          <Button
-            title={uploading ? "Uploading ..." : "Upload"}
-            onPress={uploadAvatar}
-            disabled={uploading}
-          />
+          <Button onPress={uploadAvatar} disabled={uploading}>
+            {uploading ? "Uploading ..." : "Upload"}
+          </Button>
         </View>
       )}
     </View>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
-import { Card } from "@rneui/themed";
+import { StyleSheet, View, Alert, FlatList } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, Link } from "../lib/routing";
 import { MatchData, ProfileData } from "../lib/types";
@@ -90,7 +90,7 @@ export default function Matches({ session }: { session: Session }) {
         keyExtractor={(item) => item.match.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-            <Card containerStyle={styles.card}>
+            <Card style={styles.card}>
               <View>
                 <Avatar size={100} url={item.profile.avatar_url} />
               </View>

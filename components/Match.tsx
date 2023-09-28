@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  StyleSheet,
-  View,
-  Alert,
-  Text,
-  FlatList,
-  TextInput,
-  Button,
-} from "react-native";
-import { Card } from "@rneui/themed";
+import { StyleSheet, View, Alert, FlatList } from "react-native";
+import { Card, Text, TextInput, Button } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, Link } from "../lib/routing";
 import { useParams } from "../lib/routing";
@@ -161,7 +153,7 @@ export default function Match({ session }: { session: Session }) {
   return (
     <View style={styles.container}>
       <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-        <Card containerStyle={styles.card}>
+        <Card style={styles.card}>
           <View>
             <Avatar size={100} url={profile?.avatar_url || ""} />
           </View>
@@ -174,7 +166,7 @@ export default function Match({ session }: { session: Session }) {
         data={messages}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Card containerStyle={styles.card}>
+          <Card style={styles.card}>
             <Text>{item.message}</Text>
           </Card>
         )}
@@ -185,7 +177,7 @@ export default function Match({ session }: { session: Session }) {
         placeholder="Type a message"
         style={styles.input}
       />
-      <Button title="Send" onPress={handleMessage} />
+      <Button onPress={handleMessage}>Send</Button>
     </View>
   );
 }
