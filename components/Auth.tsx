@@ -3,6 +3,7 @@ import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -22,21 +23,22 @@ export default function Auth() {
   }
 
   return (
-    <View>
-      <View>
-        <TextInput
-          label="Email"
-          onChangeText={setEmail}
-          value={email}
-          placeholder="user@example.com"
-          autoCapitalize={"none"}
-        />
-      </View>
-      <View>
-        <Button disabled={loading} onPress={signIn}>
-          Sign In
-        </Button>
-      </View>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Email"
+        onChangeText={setEmail}
+        value={email}
+        placeholder="user@example.com"
+        autoCapitalize={"none"}
+      />
+      <Button
+        style={styles.verticallySpaced}
+        disabled={loading}
+        onPress={signIn}
+      >
+        Sign In
+      </Button>
     </View>
   );
 }

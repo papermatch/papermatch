@@ -14,8 +14,8 @@ import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate } from "./lib/routing";
 import { useFonts, Caveat_400Regular } from "@expo-google-fonts/caveat";
-import { PaperProvider } from "react-native-paper";
-import { theme } from "./lib/theme";
+import { PaperProvider, Text } from "react-native-paper";
+import theme from "./lib/theme";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -151,7 +151,9 @@ export default function App() {
             }
           />
         </Routes>
-        <Navigation />
+        {session?.user ? (
+          <Navigation key={session.user.id} session={session} />
+        ) : null}
       </Router>
     </PaperProvider>
   );

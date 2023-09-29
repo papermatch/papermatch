@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Chip } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
 import { ProfileData } from "../lib/types";
+import styles from "../lib/styles";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -60,18 +61,19 @@ export default function Profiles({ session }: { session: Session }) {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Text variant="headlineLarge">Profiles</Text>
       <FlatList
         data={profiles}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.PROFILE}/${item.id}`}>
-            <Card>
-              <View>
+            <Card style={styles.verticallySpaced}>
+              <View style={styles.cardContent}>
                 <Avatar size={100} url={item.avatar_url} />
-              </View>
-              <View>
-                <Text>{item.username || ""}</Text>
+                <View style={styles.textColumn}>
+                  <Text variant="titleLarge">{item.username || ""}</Text>
+                </View>
               </View>
             </Card>
           </Link>

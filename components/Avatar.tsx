@@ -5,6 +5,7 @@ import { Avatar as RNPAvatar, Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
+import styles from "../lib/styles";
 
 interface Props {
   size: number;
@@ -90,16 +91,22 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
   return (
     <View>
       {avatarUrl ? (
-        <RNPAvatar.Image size={size} source={{ uri: avatarUrl }} />
+        <RNPAvatar.Image
+          style={styles.verticallySpaced}
+          size={size}
+          source={{ uri: avatarUrl }}
+        />
       ) : (
         <View />
       )}
       {onUpload && (
-        <View>
-          <Button onPress={uploadAvatar} disabled={uploading}>
-            {uploading ? "Uploading ..." : "Upload"}
-          </Button>
-        </View>
+        <Button
+          style={styles.verticallySpaced}
+          onPress={uploadAvatar}
+          disabled={uploading}
+        >
+          {uploading ? "Uploading ..." : "Upload"}
+        </Button>
       )}
     </View>
   );

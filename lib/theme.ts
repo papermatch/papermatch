@@ -9,7 +9,9 @@ const fontConfig = {
   }),
 };
 
-export const theme = {
+const theme = {
   ...MD3LightTheme,
   fonts: configureFonts({ config: fontConfig }),
 };
+
+export default theme;

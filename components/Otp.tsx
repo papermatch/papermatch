@@ -3,6 +3,7 @@ import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Otp() {
   const [otp, setOtp] = useState("");
@@ -30,21 +31,22 @@ export default function Otp() {
   }
 
   return (
-    <View>
-      <View>
-        <TextInput
-          label="OTP"
-          onChangeText={setOtp}
-          value={otp}
-          keyboardType="numeric"
-          placeholder="Enter your OTP"
-        />
-      </View>
-      <View>
-        <Button disabled={loading} onPress={verify}>
-          Verify
-        </Button>
-      </View>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="OTP"
+        onChangeText={setOtp}
+        value={otp}
+        keyboardType="numeric"
+        placeholder="Enter your OTP"
+      />
+      <Button
+        style={styles.verticallySpaced}
+        disabled={loading}
+        onPress={verify}
+      >
+        Verify
+      </Button>
     </View>
   );
 }

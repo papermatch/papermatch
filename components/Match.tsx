@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, TextInput, Button } from "react-native-paper";
+import { Card, Text, TextInput, Button, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { ROUTES, Link } from "../lib/routing";
-import { useParams } from "../lib/routing";
-import { MatchData, MessageData, ProfileData } from "../lib/types";
 import Avatar from "./Avatar";
+import { ROUTES, Link } from "../lib/routing";
+import { useParams, useNavigate } from "../lib/routing";
+import { MatchData, MessageData, ProfileData } from "../lib/types";
+import styles from "../lib/styles";
 
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,7 @@ export default function Match({ session }: { session: Session }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -152,31 +154,42 @@ export default function Match({ session }: { session: Session }) {
 
   return (
     <View>
-      <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-        <Card>
-          <View>
+      <Appbar.Header>
+        <Appbar.BackAction
+          onPress={() => {
+            navigate(-1);
+          }}
+        />
+        <Appbar.Content title={profile?.username || ""} />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
+          <Card style={styles.verticallySpaced}>
             <Avatar size={100} url={profile?.avatar_url || ""} />
-          </View>
-          <View>
-            <Text>{profile?.username || ""}</Text>
-          </View>
-        </Card>
-      </Link>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Card>
-            <Text>{item.message}</Text>
+            <Text style={styles.verticallySpaced}>
+              {profile?.username || ""}
+            </Text>
           </Card>
-        )}
-      />
-      <TextInput
-        value={message}
-        onChangeText={setMessage}
-        placeholder="Type a message"
-      />
-      <Button onPress={handleMessage}>Send</Button>
+        </Link>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Card style={styles.verticallySpaced}>
+              <Text style={styles.verticallySpaced}>{item.message}</Text>
+            </Card>
+          )}
+        />
+        <TextInput
+          style={styles.verticallySpaced}
+          value={message}
+          onChangeText={setMessage}
+          placeholder="Type a message"
+        />
+        <Button style={styles.verticallySpaced} onPress={handleMessage}>
+          Send
+        </Button>
+      </View>
     </View>
   );
 }

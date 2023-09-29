@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert } from "react-native";
-import { Card, Text, Button } from "react-native-paper";
+import { Button, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { useParams } from "../lib/routing";
-import { ProfileData } from "../lib/types";
 import Avatar from "./Avatar";
+import { useParams, useNavigate } from "../lib/routing";
+import { ProfileData } from "../lib/types";
+import styles from "../lib/styles";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [interaction, setInteraction] = useState(null);
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -91,61 +93,70 @@ export default function Profile({ session }: { session: Session }) {
 
   return (
     <View>
-      <Card>
-        <View>
+      <Appbar.Header>
+        <Appbar.BackAction
+          onPress={() => {
+            navigate(-1);
+          }}
+        />
+        <Appbar.Content title={profile?.username || ""} />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <View style={styles.centerAligned}>
           <Avatar size={200} url={profile?.avatar_url || null} />
         </View>
-        <View>
-          <Text>{profile?.username || ""}</Text>
-        </View>
-        <View>
-          {interaction !== "like" ? (
-            <Button
-              onPress={() => handleInteraction("like")}
-              disabled={loading}
-            >
-              Like
-            </Button>
-          ) : (
-            <Button
-              onPress={() => handleInteraction("none")}
-              disabled={loading}
-            >
-              Unlike
-            </Button>
-          )}
-          {interaction !== "pass" ? (
-            <Button
-              onPress={() => handleInteraction("pass")}
-              disabled={loading}
-            >
-              Pass
-            </Button>
-          ) : (
-            <Button
-              onPress={() => handleInteraction("none")}
-              disabled={loading}
-            >
-              Unpass
-            </Button>
-          )}
-          {interaction !== "block" ? (
-            <Button
-              onPress={() => handleInteraction("block")}
-              disabled={loading}
-            >
-              Block
-            </Button>
-          ) : (
-            <Button
-              onPress={() => handleInteraction("none")}
-              disabled={loading}
-            >
-              Unblock
-            </Button>
-          )}
-        </View>
-      </Card>
+        {interaction !== "like" ? (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("like")}
+            disabled={loading}
+          >
+            Like
+          </Button>
+        ) : (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("none")}
+            disabled={loading}
+          >
+            Unlike
+          </Button>
+        )}
+        {interaction !== "pass" ? (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("pass")}
+            disabled={loading}
+          >
+            Pass
+          </Button>
+        ) : (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("none")}
+            disabled={loading}
+          >
+            Unpass
+          </Button>
+        )}
+        {interaction !== "block" ? (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("block")}
+            disabled={loading}
+          >
+            Block
+          </Button>
+        ) : (
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => handleInteraction("none")}
+            disabled={loading}
+          >
+            Unblock
+          </Button>
+        )}
+      </View>
     </View>
   );
 }

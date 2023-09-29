@@ -6,6 +6,7 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
 import { MatchData, ProfileData } from "../lib/types";
+import styles from "../lib/styles";
 
 type MatchProfileData = {
   match: MatchData;
@@ -84,19 +85,18 @@ export default function Matches({ session }: { session: Session }) {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Text variant="headlineLarge">Matches</Text>
       <FlatList
         data={matchProfiles}
         keyExtractor={(item) => item.match.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-            <Card>
-              <View>
-                <Avatar size={100} url={item.profile.avatar_url} />
-              </View>
-              <View>
-                <Text>{item.profile.username || ""}</Text>
-              </View>
+            <Card style={styles.verticallySpaced}>
+              <Avatar size={100} url={item.profile.avatar_url} />
+              <Text style={styles.verticallySpaced}>
+                {item.profile.username || ""}
+              </Text>
             </Card>
           </Link>
         )}
