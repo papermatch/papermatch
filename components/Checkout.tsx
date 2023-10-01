@@ -1,10 +1,11 @@
 import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
-import { StyleSheet, Platform, Alert, Text, View } from "react-native";
-import { Button, Input } from "@rneui/themed";
+import { Platform, Alert, View } from "react-native";
+import { Button, TextInput, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import { ROUTES, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Checkout({ session }: { session: Session }) {
   const currentOrigin =
@@ -84,18 +85,23 @@ export default function Checkout({ session }: { session: Session }) {
   };
 
   return (
-    <View style={styles.verticallySpaced}>
-      <Input
+    <View style={styles.container}>
+      <Text variant="headlineLarge">Checkout</Text>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Credits"
         keyboardType="numeric"
         value={quantity}
         onChangeText={setQuantity}
         placeholder="Enter Quantity"
       />
       <Button
-        title="Continue Checkout"
+        style={styles.verticallySpaced}
         onPress={handleSubmit}
         disabled={loading}
-      />
+      >
+        Continue Checkout
+      </Button>
       {Platform.OS !== "web" && checkoutUrl ? (
         <WebView
           source={{ uri: checkoutUrl }}
@@ -105,11 +111,3 @@ export default function Checkout({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

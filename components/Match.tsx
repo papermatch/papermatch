@@ -1,20 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  StyleSheet,
-  View,
-  Alert,
-  Text,
-  FlatList,
-  TextInput,
-  Button,
-} from "react-native";
-import { Card } from "@rneui/themed";
+import { View, Alert, FlatList } from "react-native";
+import { Card, Text, TextInput, Button, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { ROUTES, Link } from "../lib/routing";
-import { useParams } from "../lib/routing";
-import { MatchData, MessageData, ProfileData } from "../lib/types";
 import Avatar from "./Avatar";
+import { ROUTES, Link } from "../lib/routing";
+import { useParams, useNavigate } from "../lib/routing";
+import { MatchData, MessageData, ProfileData } from "../lib/types";
+import styles from "../lib/styles";
 
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -22,6 +15,7 @@ export default function Match({ session }: { session: Session }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -159,55 +153,48 @@ export default function Match({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-        <Card containerStyle={styles.card}>
-          <View>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header>
+        <Appbar.BackAction
+          onPress={() => {
+            navigate(-1);
+          }}
+        />
+        <Appbar.Content title={profile?.username || ""} />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
+          <Card style={styles.verticallySpaced}>
             <Avatar size={100} url={profile?.avatar_url || ""} />
-          </View>
-          <View style={styles.verticallySpaced}>
-            <Text>{profile?.username || ""}</Text>
-          </View>
-        </Card>
-      </Link>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Card containerStyle={styles.card}>
-            <Text>{item.message}</Text>
+            <Text variant="titleLarge">{profile?.username || ""}</Text>
           </Card>
-        )}
-      />
-      <TextInput
-        value={message}
-        onChangeText={setMessage}
-        placeholder="Type a message"
-        style={styles.input}
-      />
-      <Button title="Send" onPress={handleMessage} />
+        </Link>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Card style={styles.verticallySpaced}>
+              <Text
+                style={
+                  (styles.verticallySpaced,
+                  item.user_id === session.user.id && { alignSelf: "flex-end" })
+                }
+              >
+                {item.message}
+              </Text>
+            </Card>
+          )}
+        />
+        <TextInput
+          style={styles.verticallySpaced}
+          value={message}
+          onChangeText={setMessage}
+          placeholder="Type a message"
+        />
+        <Button style={styles.verticallySpaced} onPress={handleMessage}>
+          Send
+        </Button>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 10,
-  },
-});

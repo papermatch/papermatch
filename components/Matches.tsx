@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
-import { Card } from "@rneui/themed";
+import { View, Alert, FlatList } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
+import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
 import { MatchData, ProfileData } from "../lib/types";
-import Avatar from "./Avatar";
+import styles from "../lib/styles";
 
 type MatchProfileData = {
   match: MatchData;
@@ -85,18 +86,17 @@ export default function Matches({ session }: { session: Session }) {
 
   return (
     <View style={styles.container}>
+      <Text variant="headlineLarge">Matches</Text>
       <FlatList
         data={matchProfiles}
         keyExtractor={(item) => item.match.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-            <Card containerStyle={styles.card}>
-              <View>
-                <Avatar size={100} url={item.profile.avatar_url} />
-              </View>
-              <View style={styles.verticallySpaced}>
-                <Text>{item.profile.username || ""}</Text>
-              </View>
+            <Card style={styles.verticallySpaced}>
+              <Avatar size={100} url={item.profile.avatar_url} />
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                {item.profile.username || ""}
+              </Text>
             </Card>
           </Link>
         )}
@@ -104,18 +104,3 @@ export default function Matches({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

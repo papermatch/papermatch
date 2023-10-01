@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert } from "react-native";
-import { Button, Input } from "@rneui/themed";
+import { View, Alert, ScrollView } from "react-native";
+import { Button, TextInput, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -93,8 +94,9 @@ export default function Account({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
-      <View>
+    <ScrollView style={styles.container}>
+      <Text variant="headlineLarge">Account</Text>
+      <View style={styles.centerAligned}>
         <Avatar
           size={200}
           url={avatarUrl}
@@ -104,60 +106,45 @@ export default function Account({ session }: { session: Session }) {
           }}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input label="Email" value={session?.user?.email} disabled />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Username"
-          value={username || ""}
-          onChangeText={(text) => setUsername(text)}
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Website"
-          value={website || ""}
-          onChangeText={(text) => setWebsite(text)}
-        />
-      </View>
-
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          title={loading ? "Loading ..." : "Update"}
-          onPress={() =>
-            updateProfile({ username, website, avatar_url: avatarUrl })
-          }
-          disabled={loading}
-        />
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        <Button title="View Profile" onPress={viewProfile} />
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        <Button title="Get Credits" onPress={getCredits} />
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-      </View>
-    </View>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Email"
+        value={session?.user?.email}
+        disabled
+      />
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Username"
+        value={username || ""}
+        onChangeText={(text) => setUsername(text)}
+      />
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Website"
+        value={website || ""}
+        onChangeText={(text) => setWebsite(text)}
+      />
+      <Button
+        style={styles.verticallySpaced}
+        onPress={() =>
+          updateProfile({ username, website, avatar_url: avatarUrl })
+        }
+        disabled={loading}
+      >
+        {loading ? "Loading ..." : "Update"}
+      </Button>
+      <Button style={styles.verticallySpaced} onPress={viewProfile}>
+        View Profile
+      </Button>
+      <Button style={styles.verticallySpaced} onPress={getCredits}>
+        Get Credits
+      </Button>
+      <Button
+        style={styles.verticallySpaced}
+        onPress={() => supabase.auth.signOut()}
+      >
+        Sign Out
+      </Button>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-});

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Image, Button } from "react-native";
+import { View, Alert } from "react-native";
+import { Avatar as RNPAvatar, Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
+import styles from "../lib/styles";
 
 interface Props {
   size: number;
@@ -14,7 +16,6 @@ interface Props {
 export default function Avatar({ url, size = 150, onUpload }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
-  const avatarSize = { height: size, width: size };
 
   useEffect(() => {
     if (url) {
@@ -90,62 +91,23 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
   return (
     <View>
       {avatarUrl ? (
-        <Image
+        <RNPAvatar.Image
+          style={styles.verticallySpaced}
+          size={size}
           source={{ uri: avatarUrl }}
-          aria-label="Avatar"
-          style={[
-            avatarSize,
-            styles.avatar,
-            styles.image,
-            styles.verticallySpaced,
-          ]}
         />
       ) : (
-        <View
-          style={[
-            avatarSize,
-            styles.avatar,
-            styles.noImage,
-            styles.verticallySpaced,
-          ]}
-        />
+        <View />
       )}
       {onUpload && (
-        <View style={styles.verticallySpaced}>
-          <Button
-            title={uploading ? "Uploading ..." : "Upload"}
-            onPress={uploadAvatar}
-            disabled={uploading}
-          />
-        </View>
+        <Button
+          style={styles.verticallySpaced}
+          onPress={uploadAvatar}
+          disabled={uploading}
+        >
+          {uploading ? "Uploading ..." : "Upload"}
+        </Button>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  avatar: {
-    borderRadius: 5,
-    overflow: "hidden",
-    maxWidth: "100%",
-  },
-  image: {
-    objectFit: "cover",
-    paddingTop: 0,
-    // center image horizontally
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  noImage: {
-    backgroundColor: "#333",
-    border: "1px solid rgb(200, 200, 200)",
-    borderRadius: 5,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

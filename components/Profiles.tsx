@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
-import { Card } from "@rneui/themed";
+import { View, Alert, FlatList } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
+import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import Avatar from "./Avatar";
+import styles from "../lib/styles";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -34,6 +35,7 @@ export default function Profiles({ session }: { session: Session }) {
     try {
       setLoading(true);
 
+      // Get active profiles (except current user)
       let { data, error } = await supabase
         .rpc("get_active_profiles")
         .select("*");
@@ -44,6 +46,8 @@ export default function Profiles({ session }: { session: Session }) {
 
       const blockedIDs = await getBlockedIDs();
       data = data?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
+
+      data = data?.filter((profile) => profile.id !== session.user.id) || [];
 
       setProfiles(data);
     } catch (error) {
@@ -61,18 +65,17 @@ export default function Profiles({ session }: { session: Session }) {
 
   return (
     <View style={styles.container}>
+      <Text variant="headlineLarge">Profiles</Text>
       <FlatList
         data={profiles}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Link to={`${ROUTES.PROFILE}/${item.id}`}>
-            <Card containerStyle={styles.card}>
-              <View>
-                <Avatar size={100} url={item.avatar_url} />
-              </View>
-              <View style={styles.verticallySpaced}>
-                <Text>{item.username || ""}</Text>
-              </View>
+            <Card style={styles.verticallySpaced}>
+              <Avatar size={100} url={item.avatar_url} />
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                {item.username || ""}
+              </Text>
             </Card>
           </Link>
         )}
@@ -80,18 +83,3 @@ export default function Profiles({ session }: { session: Session }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});

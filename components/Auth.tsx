@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, Input } from "@rneui/themed";
+import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -23,34 +24,21 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
-          label="Email"
-          leftIcon={{ type: "font-awesome", name: "envelope" }}
-          onChangeText={setEmail}
-          value={email}
-          placeholder="user@example.com"
-          autoCapitalize={"none"}
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={signIn} />
-      </View>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="Email"
+        onChangeText={setEmail}
+        value={email}
+        placeholder="user@example.com"
+        autoCapitalize={"none"}
+      />
+      <Button
+        style={styles.verticallySpaced}
+        disabled={loading}
+        onPress={signIn}
+      >
+        Sign In
+      </Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-});

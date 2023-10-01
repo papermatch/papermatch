@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, Input } from "@rneui/themed";
+import { Button, TextInput } from "react-native-paper";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
+import styles from "../lib/styles";
 
 export default function Otp() {
   const [otp, setOtp] = useState("");
@@ -31,33 +32,21 @@ export default function Otp() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
-          label="OTP"
-          onChangeText={setOtp}
-          value={otp}
-          keyboardType="numeric"
-          placeholder="Enter your OTP"
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Verify" disabled={loading} onPress={verify} />
-      </View>
+      <TextInput
+        style={styles.verticallySpaced}
+        label="OTP"
+        onChangeText={setOtp}
+        value={otp}
+        keyboardType="numeric"
+        placeholder="Enter your OTP"
+      />
+      <Button
+        style={styles.verticallySpaced}
+        disabled={loading}
+        onPress={verify}
+      >
+        Verify
+      </Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-});
