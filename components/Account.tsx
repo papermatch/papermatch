@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
+import { View, Alert, ScrollView } from "react-native";
 import { Button, TextInput, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -94,7 +94,7 @@ export default function Account({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text variant="headlineLarge">Account</Text>
       <View style={styles.centerAligned}>
         <Avatar
@@ -145,6 +145,6 @@ export default function Account({ session }: { session: Session }) {
       >
         Sign Out
       </Button>
-    </View>
+    </ScrollView>
   );
 }

@@ -94,7 +94,7 @@ export default function Matches({ session }: { session: Session }) {
           <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
             <Card style={styles.verticallySpaced}>
               <Avatar size={100} url={item.profile.avatar_url} />
-              <Text style={styles.verticallySpaced}>
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
                 {item.profile.username || ""}
               </Text>
             </Card>

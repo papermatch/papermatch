@@ -153,7 +153,7 @@ export default function Match({ session }: { session: Session }) {
   }
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Appbar.Header>
         <Appbar.BackAction
           onPress={() => {
@@ -166,9 +166,7 @@ export default function Match({ session }: { session: Session }) {
         <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
           <Card style={styles.verticallySpaced}>
             <Avatar size={100} url={profile?.avatar_url || ""} />
-            <Text style={styles.verticallySpaced}>
-              {profile?.username || ""}
-            </Text>
+            <Text variant="titleLarge">{profile?.username || ""}</Text>
           </Card>
         </Link>
         <FlatList
@@ -176,7 +174,14 @@ export default function Match({ session }: { session: Session }) {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <Card style={styles.verticallySpaced}>
-              <Text style={styles.verticallySpaced}>{item.message}</Text>
+              <Text
+                style={
+                  (styles.verticallySpaced,
+                  item.user_id === session.user.id && { alignSelf: "flex-end" })
+                }
+              >
+                {item.message}
+              </Text>
             </Card>
           )}
         />

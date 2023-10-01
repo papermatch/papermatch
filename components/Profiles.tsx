@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, Chip } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, Link } from "../lib/routing";
@@ -35,6 +35,7 @@ export default function Profiles({ session }: { session: Session }) {
     try {
       setLoading(true);
 
+      // Get active profiles (except current user)
       let { data, error } = await supabase
         .rpc("get_active_profiles")
         .select("*");
@@ -45,6 +46,8 @@ export default function Profiles({ session }: { session: Session }) {
 
       const blockedIDs = await getBlockedIDs();
       data = data?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
+
+      data = data?.filter((profile) => profile.id !== session.user.id) || [];
 
       setProfiles(data);
     } catch (error) {
@@ -69,12 +72,10 @@ export default function Profiles({ session }: { session: Session }) {
         renderItem={({ item }) => (
           <Link to={`${ROUTES.PROFILE}/${item.id}`}>
             <Card style={styles.verticallySpaced}>
-              <View style={styles.cardContent}>
-                <Avatar size={100} url={item.avatar_url} />
-                <View style={styles.textColumn}>
-                  <Text variant="titleLarge">{item.username || ""}</Text>
-                </View>
-              </View>
+              <Avatar size={100} url={item.avatar_url} />
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                {item.username || ""}
+              </Text>
             </Card>
           </Link>
         )}

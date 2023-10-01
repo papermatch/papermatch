@@ -92,7 +92,7 @@ export default function Profile({ session }: { session: Session }) {
   }
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Appbar.Header>
         <Appbar.BackAction
           onPress={() => {
