@@ -18,9 +18,13 @@ select
             'id',
             'updated_at',
             'username',
-            'full_name',
             'avatar_url',
-            'website'
+            'birthday',
+            'gender',
+            'have_kids',
+            'want_kids',
+            'location',
+            'about'
         ]
     );
 

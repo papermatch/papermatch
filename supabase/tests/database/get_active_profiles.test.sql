@@ -12,16 +12,10 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222');
 
 -- Profiles created with initial credits when users created
 select
@@ -30,7 +24,7 @@ select
         $$values (2::bigint)$$
     );
 
--- Test User spends initial credit
+-- First User spends initial credit
 insert into
     public.credits (user_id, creditor, creditor_id, credits)
 values
@@ -41,20 +35,20 @@ values
         -1
     );
 
--- Test User has no more credits and is no longer active
+-- First User has no more credits and is no longer active
 select
     results_eq (
         'select count(*) from public.get_active_profiles()',
         $$values (1::bigint)$$
     );
 
--- Authenticate as Test User
+-- Authenticate as First User
 set
     local "request.jwt.claims" to '{"sub": "11111111-1111-1111-1111-111111111111" }';
 
 set role 'authenticated';
 
--- Test User can still see Other User
+-- First User can still see Second User
 select
     results_eq (
         'select count(*) from public.get_active_profiles()',

@@ -97,7 +97,11 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
           source={{ uri: avatarUrl }}
         />
       ) : (
-        <View />
+        <RNPAvatar.Icon
+          style={styles.verticallySpaced}
+          size={size}
+          icon="account"
+        />
       )}
       {onUpload && (
         <Button

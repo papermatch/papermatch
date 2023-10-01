@@ -9,25 +9,23 @@ import styles from "../lib/styles";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
-  const [website, setWebsite] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
-      getProfile();
+      getAvatarUrl();
     }
   }, [session]);
 
-  async function getProfile() {
+  async function getAvatarUrl() {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`username, website, avatar_url`)
+        .select(`avatar_url`)
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
@@ -35,8 +33,6 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        setUsername(data.username);
-        setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
@@ -48,24 +44,14 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string;
-    website: string;
-    avatar_url: string;
-  }) {
+  async function updateAvatarUrl({ url }: { url: string }) {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       const updates = {
         id: session?.user.id,
-        username,
-        website,
-        avatar_url,
+        avatar_url: url,
         updated_at: new Date(),
       };
 
@@ -74,6 +60,8 @@ export default function Account({ session }: { session: Session }) {
       if (error) {
         throw error;
       }
+
+      setAvatarUrl(url);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
@@ -81,16 +69,6 @@ export default function Account({ session }: { session: Session }) {
     } finally {
       setLoading(false);
     }
-  }
-
-  function viewProfile() {
-    if (session?.user?.id) {
-      navigate(`${ROUTES.PROFILE}/${session.user.id}`);
-    }
-  }
-
-  function getCredits() {
-    navigate(ROUTES.CHECKOUT);
   }
 
   return (
@@ -101,8 +79,7 @@ export default function Account({ session }: { session: Session }) {
           size={200}
           url={avatarUrl}
           onUpload={(url: string) => {
-            setAvatarUrl(url);
-            updateProfile({ username, website, avatar_url: url });
+            updateAvatarUrl({ url });
           }}
         />
       </View>
@@ -112,36 +89,17 @@ export default function Account({ session }: { session: Session }) {
         value={session?.user?.email}
         disabled
       />
-      <TextInput
-        style={styles.verticallySpaced}
-        label="Username"
-        value={username || ""}
-        onChangeText={(text) => setUsername(text)}
-      />
-      <TextInput
-        style={styles.verticallySpaced}
-        label="Website"
-        value={website || ""}
-        onChangeText={(text) => setWebsite(text)}
-      />
       <Button
         style={styles.verticallySpaced}
-        onPress={() =>
-          updateProfile({ username, website, avatar_url: avatarUrl })
-        }
+        onPress={() => navigate(`${ROUTES.EDIT}`)}
         disabled={loading}
       >
-        {loading ? "Loading ..." : "Update"}
-      </Button>
-      <Button style={styles.verticallySpaced} onPress={viewProfile}>
-        View Profile
-      </Button>
-      <Button style={styles.verticallySpaced} onPress={getCredits}>
-        Get Credits
+        Edit Profile
       </Button>
       <Button
         style={styles.verticallySpaced}
         onPress={() => supabase.auth.signOut()}
+        disabled={loading}
       >
         Sign Out
       </Button>

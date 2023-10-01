@@ -153,28 +153,40 @@ export interface Database {
       }
       profiles: {
         Row: {
+          about: string | null
           avatar_url: string | null
-          full_name: string | null
+          birthday: string | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          have_kids: boolean | null
           id: string
+          location: unknown | null
           updated_at: string | null
           username: string | null
-          website: string | null
+          want_kids: boolean | null
         }
         Insert: {
+          about?: string | null
           avatar_url?: string | null
-          full_name?: string | null
+          birthday?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          have_kids?: boolean | null
           id: string
+          location?: unknown | null
           updated_at?: string | null
           username?: string | null
-          website?: string | null
+          want_kids?: boolean | null
         }
         Update: {
+          about?: string | null
           avatar_url?: string | null
-          full_name?: string | null
+          birthday?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          have_kids?: boolean | null
           id?: string
+          location?: unknown | null
           updated_at?: string | null
           username?: string | null
-          website?: string | null
+          want_kids?: boolean | null
         }
         Relationships: [
           {
@@ -228,12 +240,16 @@ export interface Database {
       get_active_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
+          about: string | null
           avatar_url: string | null
-          full_name: string | null
+          birthday: string | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          have_kids: boolean | null
           id: string
+          location: unknown | null
           updated_at: string | null
           username: string | null
-          website: string | null
+          want_kids: boolean | null
         }[]
       }
       is_profile_blocked: {
@@ -246,6 +262,7 @@ export interface Database {
     }
     Enums: {
       creditor_type: "init" | "match" | "stripe"
+      gender_type: "none" | "male" | "female" | "nonbinary"
       interaction_type: "none" | "block" | "pass" | "like"
     }
     CompositeTypes: {

@@ -16,18 +16,12 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222');
 
--- Test User blocks Other User
+-- First User blocks Second User
 insert into
     public.interactions (user_id, target_id, interaction)
 values
@@ -44,19 +38,13 @@ select
         $$values (1::bigint)$$
     );
 
--- Authenticate as Other User
+-- Authenticate as Second User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
 set role 'authenticated';
 
-update public.profiles
-set
-    username = 'Other'
-where
-    id = '22222222-2222-2222-2222-222222222222';
-
--- Other User is blocked and can't see Test User's profile
+-- Second User is blocked and can't see First User's profile
 select
     results_eq (
         'select count(*) from public.profiles where id = ''11111111-1111-1111-1111-111111111111''',

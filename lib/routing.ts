@@ -22,6 +22,7 @@ export const ROUTES = {
   ROOT: "/",
   ACCOUNT: "/account",
   AUTH: "/auth",
+  EDIT: "/edit",
   MATCH: "/match",
   MATCHES: "/matches",
   CHECKOUT: "/checkout",

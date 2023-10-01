@@ -4,6 +4,7 @@ import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
 import Checkout from "./components/Checkout";
+import Edit from "./components/Edit";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
 import Navigation from "./components/Navigation";
@@ -122,6 +123,16 @@ export default function App() {
               element={
                 session?.user ? (
                   <Navigate to={ROUTES.ACCOUNT} replace />
+                ) : (
+                  <Navigate to={ROUTES.AUTH} replace />
+                )
+              }
+            />
+            <Route
+              path={ROUTES.EDIT}
+              element={
+                session?.user ? (
+                  <Edit key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
