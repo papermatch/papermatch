@@ -21,6 +21,7 @@ import {
 import { Dimensions, View } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import theme from "./lib/theme";
+import * as Location from "expo-location";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -67,6 +68,36 @@ export default function App() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (!session || !session?.user) {
+        return;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+
+      const updates = {
+        id: session?.user.id,
+        location: location
+          ? location.coords.longitude + ", " + location.coords.latitude
+          : null,
+        updated_at: new Date(),
+      };
+
+      let { error } = await supabase.from("profiles").upsert(updates);
+
+      if (error) {
+        console.log(error);
+      }
+    })();
+  }, [session]);
 
   if (loading || (!fontsLoaded && !fontError)) {
     return null;

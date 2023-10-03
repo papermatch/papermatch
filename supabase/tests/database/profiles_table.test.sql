@@ -21,8 +21,7 @@ select
             'avatar_url',
             'birthday',
             'gender',
-            'have_kids',
-            'want_kids',
+            'kids',
             'location',
             'about'
         ]

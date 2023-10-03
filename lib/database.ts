@@ -157,36 +157,33 @@ export interface Database {
           avatar_url: string | null
           birthday: string | null
           gender: Database["public"]["Enums"]["gender_type"] | null
-          have_kids: boolean | null
           id: string
+          kids: Database["public"]["Enums"]["kids_type"] | null
           location: unknown | null
           updated_at: string | null
           username: string | null
-          want_kids: boolean | null
         }
         Insert: {
           about?: string | null
           avatar_url?: string | null
           birthday?: string | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
-          have_kids?: boolean | null
           id: string
+          kids?: Database["public"]["Enums"]["kids_type"] | null
           location?: unknown | null
           updated_at?: string | null
           username?: string | null
-          want_kids?: boolean | null
         }
         Update: {
           about?: string | null
           avatar_url?: string | null
           birthday?: string | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
-          have_kids?: boolean | null
           id?: string
+          kids?: Database["public"]["Enums"]["kids_type"] | null
           location?: unknown | null
           updated_at?: string | null
           username?: string | null
-          want_kids?: boolean | null
         }
         Relationships: [
           {
@@ -244,12 +241,11 @@ export interface Database {
           avatar_url: string | null
           birthday: string | null
           gender: Database["public"]["Enums"]["gender_type"] | null
-          have_kids: boolean | null
           id: string
+          kids: Database["public"]["Enums"]["kids_type"] | null
           location: unknown | null
           updated_at: string | null
           username: string | null
-          want_kids: boolean | null
         }[]
       }
       is_profile_blocked: {
@@ -262,8 +258,9 @@ export interface Database {
     }
     Enums: {
       creditor_type: "init" | "match" | "stripe"
-      gender_type: "none" | "male" | "female" | "nonbinary"
+      gender_type: "male" | "female" | "nonbinary"
       interaction_type: "none" | "block" | "pass" | "like"
+      kids_type: "none" | "unsure" | "want" | "have" | "more"
     }
     CompositeTypes: {
       [_ in never]: never

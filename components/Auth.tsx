@@ -85,6 +85,7 @@ export default function Auth() {
             label="Username (your first name is fine)"
             value={username || ""}
             onChangeText={(text) => setUsername(text)}
+            maxLength={50}
           />
           <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
             <View style={[styles.verticallySpaced, { flex: 1 }]}>

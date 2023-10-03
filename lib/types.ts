@@ -10,3 +10,4 @@ export type ProfileData = Database["public"]["Tables"]["profiles"]["Row"];
 export type CreditorType = Database["public"]["Enums"]["creditor_type"];
 export type GenderType = Database["public"]["Enums"]["gender_type"];
 export type InteractionType = Database["public"]["Enums"]["interaction_type"];
+export type KidsType = Database["public"]["Enums"]["kids_type"];

@@ -123,11 +123,12 @@ export default function Credits({ session }: { session: Session }) {
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Credits" />
       </Appbar.Header>
-      <Text style={styles.verticallySpaced}>
-        You have {credits} credit{credits === 1 ? "" : "s"}. Each match costs 1
-        credit, and your profile will not be searchable if you have 0 credits.
-      </Text>
       <View style={styles.container}>
+        <Text style={styles.verticallySpaced}>
+          You have {credits} credit{credits === 1 ? "" : "s"}. Each match costs
+          1 credit, and your profile will not be searchable if you have 0
+          credits.
+        </Text>
         <TextInput
           style={styles.verticallySpaced}
           label="Credits"

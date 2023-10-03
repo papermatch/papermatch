@@ -1,4 +1,6 @@
-create type gender_type as enum('none', 'male', 'female', 'nonbinary');
+create type gender_type as enum('male', 'female', 'nonbinary');
+
+create type kids_type as enum('none', 'unsure', 'want', 'have', 'more');
 
 alter table profiles
 drop column if exists website;
@@ -13,10 +15,7 @@ alter table profiles
 add column gender gender_type;
 
 alter table profiles
-add column have_kids boolean;
-
-alter table profiles
-add column want_kids boolean;
+add column kids kids_type;
 
 alter table profiles
 add column location point;
