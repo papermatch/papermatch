@@ -7,6 +7,7 @@ import Credits from "./components/Credits";
 import Edit from "./components/Edit";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
+import Otp from "./components/Otp";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
@@ -153,6 +154,16 @@ export default function App() {
                   <Matches key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
+                )
+              }
+            />
+            <Route
+              path={ROUTES.OTP}
+              element={
+                session?.user ? (
+                  <Navigate to={ROUTES.ACCOUNT} replace />
+                ) : (
+                  <Otp />
                 )
               }
             />

@@ -1,67 +1,75 @@
 import { useState, useCallback } from "react";
-import { Alert, View } from "react-native";
-import { Modal } from "react-native-paper";
 import { supabase } from "../lib/supabase";
+import { Alert, View } from "react-native";
 import {
   Button,
   TextInput,
-  Text,
-  Switch,
+  SegmentedButtons,
   IconButton,
+  HelperText,
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
+import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import Otp from "./Otp";
 
 export default function Auth() {
-  const [signIn, setSignIn] = useState(false);
+  const [mode, setMode] = useState("signUp");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [birthday, setBirthday] = useState("");
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [otpVisible, setOtpVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onDismiss = useCallback(() => {
-    setDatePickerVisible(false);
-  }, [setDatePickerVisible]);
+    setVisible(false);
+  }, [setVisible]);
 
   const onConfirm = useCallback(
     (params: { date: Date | undefined }) => {
-      setDatePickerVisible(false);
+      setVisible(false);
       params.date && setBirthday(params.date.toISOString().split("T")[0]);
     },
-    [setDatePickerVisible, setBirthday]
+    [setVisible, setBirthday]
   );
 
   async function handleAuth() {
     setLoading(true);
-    const { error } = signIn
-      ? await supabase.auth.signInWithOtp({
-          email: email,
-          options: { shouldCreateUser: false },
-        })
-      : await supabase.auth.signInWithOtp({
-          email: email,
-          options: { data: { username: username, birthday: birthday } },
-        });
-
+    const { error } =
+      mode === "signUp"
+        ? await supabase.auth.signInWithOtp({
+            email: email,
+            options: { data: { username: username, birthday: birthday } },
+          })
+        : await supabase.auth.signInWithOtp({
+            email: email,
+            options: { shouldCreateUser: false },
+          });
     if (error) {
       Alert.alert(error.message);
     } else {
-      setOtpVisible(true);
+      navigate(ROUTES.OTP, { state: { email } });
     }
     setLoading(false);
   }
 
   return (
     <View style={styles.container}>
-      <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-        <Text style={{ flex: 1 }}>
-          Switch to {signIn ? "Sign Up" : "Sign In"}
-        </Text>
-        <Switch value={signIn} onValueChange={() => setSignIn(!signIn)} />
-      </View>
+      <SegmentedButtons
+        style={styles.verticallySpaced}
+        value={mode}
+        onValueChange={setMode}
+        buttons={[
+          {
+            value: "signUp",
+            label: "Sign Up",
+          },
+          {
+            value: "signIn",
+            label: "Sign In",
+          },
+        ]}
+      />
       <TextInput
         style={styles.verticallySpaced}
         label="Email"
@@ -70,7 +78,7 @@ export default function Auth() {
         placeholder="user@example.com"
         autoCapitalize={"none"}
       />
-      {!signIn && (
+      {mode === "signUp" && (
         <View>
           <TextInput
             style={styles.verticallySpaced}
@@ -79,23 +87,27 @@ export default function Auth() {
             onChangeText={(text) => setUsername(text)}
           />
           <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
-            <TextInput
-              style={[styles.verticallySpaced, { flex: 1 }]}
-              label="Birthday"
-              value={birthday}
-              error={!birthday}
-              disabled
-            />
+            <View style={[styles.verticallySpaced, { flex: 1 }]}>
+              <TextInput
+                label="Birthday"
+                value={birthday}
+                error={!birthday}
+                disabled
+              />
+              <HelperText type="error" visible={!birthday}>
+                Must select a birthday!
+              </HelperText>
+            </View>
             <IconButton
               style={[styles.verticallySpaced, { alignSelf: "center" }]}
-              onPress={() => setDatePickerVisible(true)}
+              onPress={() => setVisible(true)}
               disabled={loading}
               icon="calendar"
             />
             <DatePickerModal
               locale="en"
               mode="single"
-              visible={datePickerVisible}
+              visible={visible}
               onDismiss={onDismiss}
               onConfirm={onConfirm}
             />
@@ -107,11 +119,8 @@ export default function Auth() {
         disabled={loading}
         onPress={handleAuth}
       >
-        {signIn ? "Sign In" : "Sign Up"}
+        Continue
       </Button>
-      <Modal visible={otpVisible} onDismiss={() => setOtpVisible(false)}>
-        <Otp email={email} />
-      </Modal>
     </View>
   );
 }

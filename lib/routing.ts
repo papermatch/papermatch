@@ -26,6 +26,7 @@ export const ROUTES = {
   EDIT: "/edit",
   MATCH: "/match",
   MATCHES: "/matches",
+  OTP: "/otp",
   PROFILE: "/profile",
   PROFILES: "/profiles",
 };

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput } from "react-native-paper";
-import { ROUTES, useNavigate } from "../lib/routing";
+import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
-export default function Otp({ email }: { email: string }) {
+export default function Otp() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const email = location.state?.email || "";
   const navigate = useNavigate();
 
   if (!email) {
@@ -45,6 +47,13 @@ export default function Otp({ email }: { email: string }) {
         onPress={verify}
       >
         Verify
+      </Button>
+      <Button
+        style={styles.verticallySpaced}
+        disabled={loading}
+        onPress={() => navigate(-1)}
+      >
+        Cancel
       </Button>
     </View>
   );
