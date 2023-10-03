@@ -168,12 +168,14 @@ export default function Edit({ session }: { session: Session }) {
           value={username || ""}
           onChangeText={(text) => setUsername(text)}
           maxLength={50}
+          left={<TextInput.Icon icon="account" />}
         />
         <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
           <TextInput
             style={{ flex: 1 }}
             label="Gender"
             value={gender ? gender : ""}
+            left={<TextInput.Icon icon="gender-transgender" />}
             disabled
           />
           <Menu
@@ -186,7 +188,7 @@ export default function Edit({ session }: { session: Session }) {
               />
             }
           >
-            <Menu.Item onPress={() => setGender(null)} title="" />
+            <Menu.Item onPress={() => setGender(null)} title="Reset" />
             <Menu.Item onPress={() => setGender("male")} title="Male" />
             <Menu.Item onPress={() => setGender("female")} title="Female" />
             <Menu.Item
@@ -200,6 +202,7 @@ export default function Edit({ session }: { session: Session }) {
             style={{ flex: 1 }}
             label="Kids"
             value={kids ? kids : ""}
+            left={<TextInput.Icon icon="baby-carriage" />}
             disabled
           />
           <Menu
@@ -212,7 +215,7 @@ export default function Edit({ session }: { session: Session }) {
               />
             }
           >
-            <Menu.Item onPress={() => setKids(null)} title="" />
+            <Menu.Item onPress={() => setKids(null)} title="Reset" />
             <Menu.Item
               onPress={() => setKids("none")}
               title="Don't want kids"
@@ -243,6 +246,7 @@ export default function Edit({ session }: { session: Session }) {
                   location?.coords?.longitude
                 : ""
             }
+            left={<TextInput.Icon icon="globe-model" />}
             disabled
           />
           <IconButton
@@ -261,6 +265,7 @@ export default function Edit({ session }: { session: Session }) {
           multiline={true}
           numberOfLines={8}
           maxLength={1500}
+          left={<TextInput.Icon icon="text-account" />}
         />
         <Button
           style={styles.verticallySpaced}
