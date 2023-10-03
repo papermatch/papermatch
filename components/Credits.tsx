@@ -1,17 +1,20 @@
 import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import { Platform, Alert, View } from "react-native";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, TextInput, Appbar, Text } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
+import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
-export default function Checkout({ session }: { session: Session }) {
+export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
     Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
+  const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,6 +23,37 @@ export default function Checkout({ session }: { session: Session }) {
       window.location.href = checkoutUrl;
     }
   }, [checkoutUrl]);
+
+  useEffect(() => {
+    if (session) {
+      getCredits();
+    }
+  }, [session]);
+
+  async function getCredits() {
+    try {
+      setLoading(true);
+      if (!session?.user) throw new Error("No user on the session!");
+
+      let { data, error, status } = await supabase
+        .from("credits")
+        .select("credits")
+        .eq("user_id", session?.user.id);
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setCredits(data.reduce((acc, curr) => acc + curr.credits, 0));
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const fetchCheckoutUrl = async () => {
     try {
@@ -85,29 +119,38 @@ export default function Checkout({ session }: { session: Session }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineLarge">Checkout</Text>
-      <TextInput
-        style={styles.verticallySpaced}
-        label="Credits"
-        keyboardType="numeric"
-        value={quantity}
-        onChangeText={setQuantity}
-        placeholder="Enter Quantity"
-      />
-      <Button
-        style={styles.verticallySpaced}
-        onPress={handleSubmit}
-        disabled={loading}
-      >
-        Continue Checkout
-      </Button>
-      {Platform.OS !== "web" && checkoutUrl ? (
-        <WebView
-          source={{ uri: checkoutUrl }}
-          onNavigationStateChange={handleNavigationStateChange}
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Credits" />
+      </Appbar.Header>
+      <Text style={styles.verticallySpaced}>
+        You have {credits} credit{credits === 1 ? "" : "s"}. Each match costs 1
+        credit, and your profile will not be searchable if you have 0 credits.
+      </Text>
+      <View style={styles.container}>
+        <TextInput
+          style={styles.verticallySpaced}
+          label="Credits"
+          keyboardType="numeric"
+          value={quantity}
+          onChangeText={setQuantity}
+          placeholder="Enter Quantity"
         />
-      ) : null}
+        <Button
+          style={styles.verticallySpaced}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          Checkout
+        </Button>
+        {Platform.OS !== "web" && checkoutUrl ? (
+          <WebView
+            source={{ uri: checkoutUrl }}
+            onNavigationStateChange={handleNavigationStateChange}
+          />
+        ) : null}
+      </View>
+      <Navigation key={session.user.id} session={session} />
     </View>
   );
 }

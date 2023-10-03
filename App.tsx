@@ -3,12 +3,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
-import Checkout from "./components/Checkout";
+import Credits from "./components/Credits";
 import Edit from "./components/Edit";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
-import Navigation from "./components/Navigation";
-import Otp from "./components/Otp";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
@@ -109,17 +107,17 @@ export default function App() {
               }
             />
             <Route
-              path={ROUTES.CHECKOUT}
+              path={ROUTES.CREDITS}
               element={
                 session?.user ? (
-                  <Checkout key={session.user.id} session={session} />
+                  <Credits key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
               }
             />
             <Route
-              path={`${ROUTES.CHECKOUT}/:result`}
+              path={`${ROUTES.CREDITS}/:result`}
               element={
                 session?.user ? (
                   <Navigate to={ROUTES.ACCOUNT} replace />
@@ -159,16 +157,6 @@ export default function App() {
               }
             />
             <Route
-              path={ROUTES.OTP}
-              element={
-                session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
-                ) : (
-                  <Otp />
-                )
-              }
-            />
-            <Route
               path={`${ROUTES.PROFILE}/:id`}
               element={
                 session?.user ? (
@@ -189,9 +177,6 @@ export default function App() {
               }
             />
           </Routes>
-          {session?.user ? (
-            <Navigation key={session.user.id} session={session} />
-          ) : null}
         </Router>
       </View>
     </PaperProvider>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
+import Navigation from "./Navigation";
 import { ROUTES, Link } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
@@ -64,22 +65,27 @@ export default function Profiles({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineLarge">Profiles</Text>
-      <FlatList
-        data={profiles}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Link to={`${ROUTES.PROFILE}/${item.id}`}>
-            <Card style={styles.verticallySpaced}>
-              <Avatar size={100} url={item.avatar_url} />
-              <Text variant="titleLarge" style={styles.verticallySpaced}>
-                {item.username || ""}
-              </Text>
-            </Card>
-          </Link>
-        )}
-      />
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Profiles" />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <FlatList
+          data={profiles}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Link to={`${ROUTES.PROFILE}/${item.id}`}>
+              <Card style={styles.verticallySpaced}>
+                <Avatar size={100} url={item.avatar_url} />
+                <Text variant="titleLarge" style={styles.verticallySpaced}>
+                  {item.username || ""}
+                </Text>
+              </Card>
+            </Link>
+          )}
+        />
+      </View>
+      <Navigation key={session.user.id} session={session} />
     </View>
   );
 }

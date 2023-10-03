@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
+import Navigation from "./Navigation";
 import { ROUTES, Link } from "../lib/routing";
 import { MatchData, ProfileData } from "../lib/types";
 import styles from "../lib/styles";
@@ -85,22 +86,27 @@ export default function Matches({ session }: { session: Session }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineLarge">Matches</Text>
-      <FlatList
-        data={matchProfiles}
-        keyExtractor={(item) => item.match.id.toString()}
-        renderItem={({ item }) => (
-          <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-            <Card style={styles.verticallySpaced}>
-              <Avatar size={100} url={item.profile.avatar_url} />
-              <Text variant="titleLarge" style={styles.verticallySpaced}>
-                {item.profile.username || ""}
-              </Text>
-            </Card>
-          </Link>
-        )}
-      />
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Matches" />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <FlatList
+          data={matchProfiles}
+          keyExtractor={(item) => item.match.id.toString()}
+          renderItem={({ item }) => (
+            <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
+              <Card style={styles.verticallySpaced}>
+                <Avatar size={100} url={item.profile.avatar_url} />
+                <Text variant="titleLarge" style={styles.verticallySpaced}>
+                  {item.profile.username || ""}
+                </Text>
+              </Card>
+            </Link>
+          )}
+        />
+      </View>
+      <Navigation key={session.user.id} session={session} />
     </View>
   );
 }

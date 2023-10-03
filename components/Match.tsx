@@ -154,7 +154,7 @@ export default function Match({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header>
+      <Appbar.Header mode="center-aligned">
         <Appbar.BackAction
           onPress={() => {
             navigate(-1);
