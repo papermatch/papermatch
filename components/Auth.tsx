@@ -7,6 +7,7 @@ import {
   SegmentedButtons,
   IconButton,
   HelperText,
+  ActivityIndicator,
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -51,6 +52,14 @@ export default function Auth() {
       navigate(ROUTES.OTP, { state: { email } });
     }
     setLoading(false);
+  }
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size="large" />
+      </View>
+    );
   }
 
   return (

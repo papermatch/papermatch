@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, TextInput, Button, Appbar } from "react-native-paper";
+import {
+  Card,
+  Text,
+  TextInput,
+  IconButton,
+  Appbar,
+  ActivityIndicator,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
-import { ROUTES, Link } from "../lib/routing";
-import { useParams, useNavigate } from "../lib/routing";
+import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 
@@ -160,41 +166,57 @@ export default function Match({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username || ""} />
+        <Appbar.Content title={"Match: " + profile?.username || ""} />
       </Appbar.Header>
-      <View style={styles.container}>
-        <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-          <Card style={styles.verticallySpaced}>
-            <Avatar size={100} url={profile?.avatar_url || ""} />
-            <Text variant="titleLarge">{profile?.username || ""}</Text>
-          </Card>
-        </Link>
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Card style={styles.verticallySpaced}>
-              <Text
-                style={
-                  (styles.verticallySpaced,
-                  item.user_id === session.user.id && { alignSelf: "flex-end" })
-                }
-              >
-                {item.message}
-              </Text>
-            </Card>
-          )}
-        />
-        <TextInput
-          style={styles.verticallySpaced}
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Type a message"
-        />
-        <Button style={styles.verticallySpaced} onPress={handleMessage}>
-          Send
-        </Button>
-      </View>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={messages}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Card style={styles.verticallySpaced}>
+                <View
+                  style={[
+                    {
+                      flexDirection:
+                        item.user_id == session.user.id ? "row-reverse" : "row",
+                      padding: 8,
+                    },
+                  ]}
+                >
+                  {item.user_id != session.user.id && (
+                    <View style={{ alignSelf: "flex-start" }}>
+                      <Avatar size={50} url={profile?.avatar_url || null} />
+                    </View>
+                  )}
+                  <Text style={{ marginHorizontal: 12 }}>{item.message}</Text>
+                </View>
+              </Card>
+            )}
+          />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Type a message"
+              multiline={true}
+              numberOfLines={2}
+            />
+            <IconButton
+              style={{ alignSelf: "center" }}
+              icon="send"
+              onPress={handleMessage}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

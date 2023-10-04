@@ -1,5 +1,7 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
+import { Alert } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
@@ -75,32 +77,41 @@ export default function App() {
         return;
       }
 
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          throw new Error("Permission to access location was denied");
+        }
 
-      const location = await Location.getCurrentPositionAsync({});
+        const location = await Location.getCurrentPositionAsync({});
 
-      const updates = {
-        id: session?.user.id,
-        location: location
-          ? location.coords.longitude + ", " + location.coords.latitude
-          : null,
-        updated_at: new Date(),
-      };
+        const updates = {
+          id: session?.user.id,
+          location: location
+            ? location.coords.longitude + ", " + location.coords.latitude
+            : null,
+          updated_at: new Date(),
+        };
 
-      let { error } = await supabase.from("profiles").upsert(updates);
+        let { error } = await supabase.from("profiles").upsert(updates);
 
-      if (error) {
-        console.log(error);
+        if (error) {
+          throw error;
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          Alert.alert(error.message);
+        }
       }
     })();
   }, [session]);
 
   if (loading || (!fontsLoaded && !fontError)) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size="large" />
+      </View>
+    );
   }
 
   return (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView } from "react-native";
+import { View, Alert, ScrollView, ActivityIndicator } from "react-native";
 import { Button, TextInput, Appbar } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -77,37 +77,45 @@ export default function Account({ session }: { session: Session }) {
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Account" />
       </Appbar.Header>
-      <ScrollView style={styles.container}>
-        <View style={styles.centerAligned}>
-          <Avatar
-            size={200}
-            url={avatarUrl}
-            onUpload={(url: string) => {
-              updateAvatarUrl({ url });
-            }}
-          />
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
         </View>
-        <TextInput
-          style={styles.verticallySpaced}
-          label="Email"
-          value={session?.user?.email}
-          disabled
-        />
-        <Button
-          style={styles.verticallySpaced}
-          onPress={() => navigate(`${ROUTES.EDIT}`)}
-          disabled={loading}
-        >
-          Edit Profile
-        </Button>
-        <Button
-          style={styles.verticallySpaced}
-          onPress={() => supabase.auth.signOut()}
-          disabled={loading}
-        >
-          Sign Out
-        </Button>
-      </ScrollView>
+      ) : (
+        <ScrollView style={styles.container}>
+          <View style={styles.centerAligned}>
+            <Avatar
+              size={200}
+              url={avatarUrl}
+              onUpload={(url: string) => {
+                updateAvatarUrl({ url });
+              }}
+            />
+          </View>
+          <TextInput
+            style={styles.verticallySpaced}
+            label="Email"
+            value={session?.user?.email}
+            disabled
+          />
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => navigate(`${ROUTES.EDIT}`)}
+            disabled={loading}
+          >
+            Edit Profile
+          </Button>
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => supabase.auth.signOut()}
+            disabled={loading}
+          >
+            Sign Out
+          </Button>
+        </ScrollView>
+      )}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

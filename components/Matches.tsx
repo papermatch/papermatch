@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, Appbar } from "react-native-paper";
+import { Card, Text, Appbar, ActivityIndicator } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
-import { ROUTES, Link } from "../lib/routing";
+import { ROUTES, useNavigate } from "../lib/routing";
 import { MatchData, ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 
@@ -17,6 +17,7 @@ type MatchProfileData = {
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [matchProfiles, setMatchProfiles] = useState<MatchProfileData[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
@@ -90,22 +91,47 @@ export default function Matches({ session }: { session: Session }) {
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Matches" />
       </Appbar.Header>
-      <View style={styles.container}>
-        <FlatList
-          data={matchProfiles}
-          keyExtractor={(item) => item.match.id.toString()}
-          renderItem={({ item }) => (
-            <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-              <Card style={styles.verticallySpaced}>
-                <Avatar size={100} url={item.profile.avatar_url} />
-                <Text variant="titleLarge" style={styles.verticallySpaced}>
-                  {item.profile.username || ""}
-                </Text>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={matchProfiles}
+            keyExtractor={(item) => item.match.id.toString()}
+            renderItem={({ item }) => (
+              <Card
+                style={styles.verticallySpaced}
+                onPress={() => navigate(`${ROUTES.MATCH}/${item.match.id}`)}
+              >
+                <View style={{ flexDirection: "row", padding: 16 }}>
+                  <View style={{ alignSelf: "center" }}>
+                    <Avatar size={75} url={item.profile.avatar_url} />
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "column",
+                      marginLeft: 16,
+                    }}
+                  >
+                    <Text variant="titleLarge" style={styles.verticallySpaced}>
+                      {item.profile.username || ""}
+                    </Text>
+                    <Text style={styles.verticallySpaced}>
+                      Test test test test test test test test test test test
+                      test test test test test
+                    </Text>
+                  </View>
+                </View>
               </Card>
-            </Link>
-          )}
-        />
-      </View>
+            )}
+          />
+        </View>
+      )}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

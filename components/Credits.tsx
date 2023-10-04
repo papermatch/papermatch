@@ -2,7 +2,13 @@ import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Platform, Alert, View } from "react-native";
-import { Button, TextInput, Appbar, Text } from "react-native-paper";
+import {
+  Button,
+  TextInput,
+  Appbar,
+  Text,
+  ActivityIndicator,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import Navigation from "./Navigation";
@@ -123,34 +129,42 @@ export default function Credits({ session }: { session: Session }) {
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Credits" />
       </Appbar.Header>
-      <View style={styles.container}>
-        <Text style={styles.verticallySpaced}>
-          You have {credits} credit{credits === 1 ? "" : "s"}. Each match costs
-          1 credit, and your profile will not be searchable if you have 0
-          credits.
-        </Text>
-        <TextInput
-          style={styles.verticallySpaced}
-          label="Credits"
-          keyboardType="numeric"
-          value={quantity}
-          onChangeText={setQuantity}
-          placeholder="Enter Quantity"
-        />
-        <Button
-          style={styles.verticallySpaced}
-          onPress={handleSubmit}
-          disabled={loading}
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          Checkout
-        </Button>
-        {Platform.OS !== "web" && checkoutUrl ? (
-          <WebView
-            source={{ uri: checkoutUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <Text style={styles.verticallySpaced}>
+            You have {credits} credit{credits === 1 ? "" : "s"}. Each match
+            costs 1 credit, and your profile will not be searchable if you have
+            0 credits.
+          </Text>
+          <TextInput
+            style={styles.verticallySpaced}
+            label="Credits"
+            keyboardType="numeric"
+            value={quantity}
+            onChangeText={setQuantity}
+            placeholder="Enter Quantity"
           />
-        ) : null}
-      </View>
+          <Button
+            style={styles.verticallySpaced}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            Checkout
+          </Button>
+          {Platform.OS !== "web" && checkoutUrl ? (
+            <WebView
+              source={{ uri: checkoutUrl }}
+              onNavigationStateChange={handleNavigationStateChange}
+            />
+          ) : null}
+        </View>
+      )}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

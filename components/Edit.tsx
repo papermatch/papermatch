@@ -8,6 +8,7 @@ import {
   Snackbar,
   Menu,
   IconButton,
+  ActivityIndicator,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -161,129 +162,137 @@ export default function Edit({ session }: { session: Session }) {
         />
         <Appbar.Content title="Edit" />
       </Appbar.Header>
-      <View style={styles.container}>
-        <TextInput
-          style={styles.verticallySpaced}
-          label="Username"
-          value={username || ""}
-          onChangeText={(text) => setUsername(text)}
-          maxLength={50}
-          left={<TextInput.Icon icon="account" />}
-        />
-        <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-          <TextInput
-            style={{ flex: 1 }}
-            label="Gender"
-            value={gender ? gender : ""}
-            left={<TextInput.Icon icon="gender-transgender" />}
-            disabled
-          />
-          <Menu
-            visible={genderMenuVisible}
-            onDismiss={() => setGenderMenuVisible(false)}
-            anchor={
-              <IconButton
-                onPress={() => setGenderMenuVisible(true)}
-                icon="menu-down"
-              />
-            }
-          >
-            <Menu.Item onPress={() => setGender(null)} title="Reset" />
-            <Menu.Item onPress={() => setGender("male")} title="Male" />
-            <Menu.Item onPress={() => setGender("female")} title="Female" />
-            <Menu.Item
-              onPress={() => setGender("nonbinary")}
-              title="Nonbinary"
-            />
-          </Menu>
-        </View>
-        <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-          <TextInput
-            style={{ flex: 1 }}
-            label="Kids"
-            value={kids ? kids : ""}
-            left={<TextInput.Icon icon="baby-carriage" />}
-            disabled
-          />
-          <Menu
-            visible={kidsMenuVisible}
-            onDismiss={() => setKidsMenuVisible(false)}
-            anchor={
-              <IconButton
-                onPress={() => setKidsMenuVisible(true)}
-                icon="menu-down"
-              />
-            }
-          >
-            <Menu.Item onPress={() => setKids(null)} title="Reset" />
-            <Menu.Item
-              onPress={() => setKids("none")}
-              title="Don't want kids"
-            />
-            <Menu.Item
-              onPress={() => setKids("unsure")}
-              title="Not sure about kids"
-            />
-            <Menu.Item onPress={() => setKids("want")} title="Want kids" />
-            <Menu.Item
-              onPress={() => setKids("have")}
-              title="Have kids and don't want more"
-            />
-            <Menu.Item
-              onPress={() => setKids("more")}
-              title="Have kids and want more"
-            />
-          </Menu>
-        </View>
-        <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-          <TextInput
-            style={{ flex: 1 }}
-            label="Location"
-            value={
-              location
-                ? location?.coords?.latitude +
-                  ", " +
-                  location?.coords?.longitude
-                : ""
-            }
-            left={<TextInput.Icon icon="globe-model" />}
-            disabled
-          />
-          <IconButton
-            style={[styles.verticallySpaced, { alignSelf: "center" }]}
-            onPress={() => {
-              getLocation();
-            }}
-            icon="crosshairs-gps"
-          />
-        </View>
-        <TextInput
-          style={[styles.verticallySpaced]}
-          label="About"
-          value={about ? about : ""}
-          onChangeText={(text) => setAbout(text)}
-          multiline={true}
-          numberOfLines={8}
-          maxLength={1500}
-          left={<TextInput.Icon icon="text-account" />}
-        />
-        <Button
-          style={styles.verticallySpaced}
-          onPress={() =>
-            updateProfile({ username, gender, kids, location, about })
-          }
-          disabled={loading}
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          {loading ? "Loading ..." : "Update"}
-        </Button>
-        <Button
-          style={styles.verticallySpaced}
-          onPress={() => navigate(`${ROUTES.PROFILE}/${session.user.id}`)}
-          disabled={loading}
-        >
-          View Profile
-        </Button>
-      </View>
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <TextInput
+            style={styles.verticallySpaced}
+            label="Username"
+            value={username || ""}
+            onChangeText={(text) => setUsername(text)}
+            maxLength={50}
+            left={<TextInput.Icon icon="account" />}
+          />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              label="Gender"
+              value={gender ? gender : ""}
+              left={<TextInput.Icon icon="gender-transgender" />}
+              disabled
+            />
+            <Menu
+              visible={genderMenuVisible}
+              onDismiss={() => setGenderMenuVisible(false)}
+              anchor={
+                <IconButton
+                  onPress={() => setGenderMenuVisible(true)}
+                  icon="menu-down"
+                />
+              }
+            >
+              <Menu.Item onPress={() => setGender(null)} title="Reset" />
+              <Menu.Item onPress={() => setGender("male")} title="Male" />
+              <Menu.Item onPress={() => setGender("female")} title="Female" />
+              <Menu.Item
+                onPress={() => setGender("nonbinary")}
+                title="Nonbinary"
+              />
+            </Menu>
+          </View>
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              label="Kids"
+              value={kids ? kids : ""}
+              left={<TextInput.Icon icon="baby-carriage" />}
+              disabled
+            />
+            <Menu
+              visible={kidsMenuVisible}
+              onDismiss={() => setKidsMenuVisible(false)}
+              anchor={
+                <IconButton
+                  onPress={() => setKidsMenuVisible(true)}
+                  icon="menu-down"
+                />
+              }
+            >
+              <Menu.Item onPress={() => setKids(null)} title="Reset" />
+              <Menu.Item
+                onPress={() => setKids("none")}
+                title="Don't want kids"
+              />
+              <Menu.Item
+                onPress={() => setKids("unsure")}
+                title="Not sure about kids"
+              />
+              <Menu.Item onPress={() => setKids("want")} title="Want kids" />
+              <Menu.Item
+                onPress={() => setKids("have")}
+                title="Have kids and don't want more"
+              />
+              <Menu.Item
+                onPress={() => setKids("more")}
+                title="Have kids and want more"
+              />
+            </Menu>
+          </View>
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              label="Location"
+              value={
+                location
+                  ? location?.coords?.latitude +
+                    ", " +
+                    location?.coords?.longitude
+                  : ""
+              }
+              left={<TextInput.Icon icon="globe-model" />}
+              disabled
+            />
+            <IconButton
+              style={[styles.verticallySpaced, { alignSelf: "center" }]}
+              onPress={() => {
+                getLocation();
+              }}
+              icon="crosshairs-gps"
+            />
+          </View>
+          <TextInput
+            style={[styles.verticallySpaced]}
+            label="About"
+            value={about ? about : ""}
+            onChangeText={(text) => setAbout(text)}
+            multiline={true}
+            numberOfLines={8}
+            maxLength={1500}
+            left={<TextInput.Icon icon="text-account" />}
+          />
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() =>
+              updateProfile({ username, gender, kids, location, about })
+            }
+            disabled={loading}
+          >
+            {loading ? "Loading ..." : "Update"}
+          </Button>
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => navigate(`${ROUTES.PROFILE}/${session.user.id}`)}
+            disabled={loading}
+          >
+            View Profile
+          </Button>
+        </View>
+      )}
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}

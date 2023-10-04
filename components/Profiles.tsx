@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, Appbar } from "react-native-paper";
+import {
+  Card,
+  Text,
+  Appbar,
+  ActivityIndicator,
+  Chip,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
-import { ROUTES, Link } from "../lib/routing";
+import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
+import { calculateAge } from "../lib/utils";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
@@ -69,22 +77,83 @@ export default function Profiles({ session }: { session: Session }) {
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Profiles" />
       </Appbar.Header>
-      <View style={styles.container}>
-        <FlatList
-          data={profiles}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Link to={`${ROUTES.PROFILE}/${item.id}`}>
-              <Card style={styles.verticallySpaced}>
-                <Avatar size={100} url={item.avatar_url} />
-                <Text variant="titleLarge" style={styles.verticallySpaced}>
-                  {item.username || ""}
-                </Text>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={profiles}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Card
+                onPress={() => {
+                  navigate(`${ROUTES.PROFILE}/${item.id}`);
+                }}
+                style={[styles.verticallySpaced]}
+              >
+                <View
+                  style={[
+                    {
+                      flexDirection: "row",
+                      padding: 16,
+                    },
+                  ]}
+                >
+                  <View style={{ alignSelf: "center" }}>
+                    <Avatar size={100} url={item.avatar_url} />
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "column",
+                      marginLeft: 16,
+                    }}
+                  >
+                    <Text variant="titleLarge">{item.username}</Text>
+                    <View
+                      style={[
+                        styles.verticallySpaced,
+                        {
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                        },
+                      ]}
+                    >
+                      <Chip
+                        style={{ margin: 4 }}
+                        icon="cake-variant"
+                        disabled={loading}
+                      >
+                        {item.birthday
+                          ? calculateAge(Date.parse(item.birthday))
+                          : ""}
+                      </Chip>
+                      <Chip
+                        style={{ margin: 4 }}
+                        icon="gender-transgender"
+                        disabled={loading}
+                      >
+                        {item.gender}
+                      </Chip>
+                      <Chip
+                        style={{ margin: 4 }}
+                        icon="baby-carriage"
+                        disabled={loading}
+                      >
+                        {item.kids}
+                      </Chip>
+                    </View>
+                  </View>
+                </View>
               </Card>
-            </Link>
-          )}
-        />
-      </View>
+            )}
+          />
+        </View>
+      )}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

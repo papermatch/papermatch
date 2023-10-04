@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, TextInput } from "react-native-paper";
+import { Button, TextInput, ActivityIndicator } from "react-native-paper";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
@@ -29,7 +29,14 @@ export default function Otp() {
     }
     setLoading(false);
   }
-  ``;
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

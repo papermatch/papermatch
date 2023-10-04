@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
-import { Appbar, FAB, Menu, Chip, Divider, Text } from "react-native-paper";
+import { View, Alert, ScrollView } from "react-native";
+import {
+  Appbar,
+  FAB,
+  Menu,
+  Chip,
+  Divider,
+  Text,
+  ActivityIndicator,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
+import { calculateAge } from "../lib/utils";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -26,12 +35,6 @@ export default function Profile({ session }: { session: Session }) {
     setLoading(true);
     await Promise.all([getProfile(), getInteraction()]);
     setLoading(false);
-  }
-
-  function calculateAge(birthday: number) {
-    const ageDiffMs = Date.now() - birthday;
-    const ageDate = new Date(ageDiffMs);
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
   async function getProfile() {
@@ -106,7 +109,7 @@ export default function Profile({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username || ""} />
+        <Appbar.Content title={"Profile: " + profile?.username || ""} />
         <Menu
           visible={menuVisible}
           onDismiss={() => setMenuVisible(false)}
@@ -134,66 +137,78 @@ export default function Profile({ session }: { session: Session }) {
           )}
         </Menu>
       </Appbar.Header>
-      <View style={styles.container}>
-        <View style={styles.centerAligned}>
-          <Avatar size={200} url={profile?.avatar_url || null} />
-        </View>
+      {loading ? (
         <View
-          style={[
-            styles.verticallySpaced,
-            { flexDirection: "row", justifyContent: "center" },
-          ]}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Chip style={{ margin: 8 }} icon="cake" disabled={loading}>
-            {profile?.birthday
-              ? calculateAge(Date.parse(profile?.birthday))
-              : ""}
-          </Chip>
-          <Chip
-            style={{ margin: 8 }}
-            icon="gender-transgender"
-            disabled={loading}
-          >
-            {profile?.gender}
-          </Chip>
-          <Chip style={{ margin: 8 }} icon="baby-carriage" disabled={loading}>
-            {profile?.kids}
-          </Chip>
+          <ActivityIndicator animating={true} size="large" />
         </View>
-        <Divider style={styles.verticallySpaced} />
-        <Text style={styles.verticallySpaced} variant="titleLarge">
-          About
-        </Text>
-        <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
-          {profile?.about}
-        </Text>
-        {session?.user.id != id && (
-          <View>
-            <FAB
-              icon="thumb-up"
-              style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
-              color={interaction == "like" ? "green" : "grey"}
-              onPress={() =>
-                interaction == "like"
-                  ? handleInteraction("none")
-                  : handleInteraction("like")
-              }
-              disabled={loading}
-            />
-            <FAB
-              icon="thumb-down"
-              style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
-              color={interaction == "pass" ? "red" : "grey"}
-              onPress={() =>
-                interaction == "pass"
-                  ? handleInteraction("none")
-                  : handleInteraction("pass")
-              }
-              disabled={loading}
-            />
+      ) : (
+        <ScrollView style={styles.container}>
+          <View style={styles.centerAligned}>
+            <Avatar size={200} url={profile?.avatar_url || null} />
           </View>
-        )}
-      </View>
+          <View
+            style={[
+              styles.verticallySpaced,
+              {
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              },
+            ]}
+          >
+            <Chip style={{ margin: 8 }} icon="cake-variant" disabled={loading}>
+              {profile?.birthday
+                ? calculateAge(Date.parse(profile?.birthday))
+                : ""}
+            </Chip>
+            <Chip
+              style={{ margin: 8 }}
+              icon="gender-transgender"
+              disabled={loading}
+            >
+              {profile?.gender}
+            </Chip>
+            <Chip style={{ margin: 8 }} icon="baby-carriage" disabled={loading}>
+              {profile?.kids}
+            </Chip>
+          </View>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            About
+          </Text>
+          <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
+            {profile?.about}
+          </Text>
+        </ScrollView>
+      )}
+      {session?.user.id != id && (
+        <View>
+          <FAB
+            icon="thumb-up"
+            style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
+            color={interaction == "like" ? "green" : "grey"}
+            onPress={() =>
+              interaction == "like"
+                ? handleInteraction("none")
+                : handleInteraction("like")
+            }
+            disabled={loading}
+          />
+          <FAB
+            icon="thumb-down"
+            style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+            color={interaction == "pass" ? "red" : "grey"}
+            onPress={() =>
+              interaction == "pass"
+                ? handleInteraction("none")
+                : handleInteraction("pass")
+            }
+            disabled={loading}
+          />
+        </View>
+      )}
     </View>
   );
 }

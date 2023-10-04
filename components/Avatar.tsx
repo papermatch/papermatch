@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert } from "react-native";
-import { Avatar as RNPAvatar, Button } from "react-native-paper";
+import {
+  Avatar as RNPAvatar,
+  Button,
+  ActivityIndicator,
+} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -86,6 +90,14 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
     } finally {
       setUploading(false);
     }
+  }
+
+  if (uploading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size={size} />
+      </View>
+    );
   }
 
   return (
