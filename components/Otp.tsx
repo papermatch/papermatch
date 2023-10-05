@@ -1,33 +1,54 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, ActivityIndicator } from "react-native-paper";
+import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
-export default function Otp() {
+export default function Otp({ session = undefined }: { session?: Session }) {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const location = useLocation();
   const email = location.state?.email || "";
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (session) {
+      setAuthenticated(true);
+    }
+  }, [session]);
+
   if (!email) {
-    navigate(ROUTES.AUTH, { replace: true });
+    navigate(-1);
   }
 
   async function verify() {
-    setLoading(true);
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: email,
-      token: otp,
-      type: "magiclink",
-    });
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: email,
+        token: otp,
+        type: authenticated ? "email_change" : "email",
+      });
 
-    if (error) {
-      Alert.alert(error.message);
+      if (error) {
+        throw error;
+      }
+
+      if (data.session) {
+        navigate(ROUTES.ACCOUNT);
+      } else {
+        navigate(ROUTES.AUTH);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   if (loading) {

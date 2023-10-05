@@ -101,8 +101,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${origin}/checkout/success`,
-      cancel_url: `${origin}/checkout/cancel`,
+      success_url: `${origin}/credits`,
+      cancel_url: `${origin}/credits`,
       automatic_tax: { enabled: true },
     });
     sessionUrl = session.url;

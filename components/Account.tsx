@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, ScrollView, ActivityIndicator } from "react-native";
-import { Button, TextInput, Appbar } from "react-native-paper";
+import { Button, TextInput, Appbar, IconButton } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -11,11 +11,13 @@ import styles from "../lib/styles";
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [email, setEmail] = useState<string | undefined>();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
       getAvatarUrl();
+      setEmail(session.user.email);
     }
   }, [session]);
 
@@ -56,13 +58,38 @@ export default function Account({ session }: { session: Session }) {
         updated_at: new Date(),
       };
 
-      let { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase.from("profiles").upsert(updates);
 
       if (error) {
         throw error;
       }
 
       setAvatarUrl(url);
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateEmail({ email }: { email: string | undefined }) {
+    if (!email) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.updateUser({
+        email: email,
+      });
+
+      if (error) {
+        throw error;
+      } else {
+        navigate(ROUTES.OTP, { state: { email } });
+      }
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
@@ -94,12 +121,22 @@ export default function Account({ session }: { session: Session }) {
               }}
             />
           </View>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Email"
-            value={session?.user?.email}
-            disabled
-          />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              label="Update Email"
+              onChangeText={setEmail}
+              value={email}
+              placeholder="user@example.com"
+              autoCapitalize={"none"}
+            />
+            <IconButton
+              style={styles.verticallySpaced}
+              icon="send"
+              onPress={() => updateEmail({ email })}
+              disabled={loading}
+            />
+          </View>
           <Button
             style={styles.verticallySpaced}
             onPress={() => navigate(`${ROUTES.EDIT}`)}

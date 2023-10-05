@@ -49,25 +49,12 @@ export default function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      session && setSession(session);
+      setSession(session);
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      switch (event) {
-        case "SIGNED_IN":
-          setSession((prevSession) => {
-            if (!prevSession) {
-              return session;
-            } else {
-              return prevSession;
-            }
-          });
-          break;
-        default:
-          setSession(session);
-          break;
-      }
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
     });
   }, []);
 
@@ -203,7 +190,7 @@ export default function App() {
               path={ROUTES.OTP}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Otp key={session.user.id} session={session} />
                 ) : (
                   <Otp />
                 )

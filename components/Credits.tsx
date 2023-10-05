@@ -94,14 +94,14 @@ export default function Credits({ session }: { session: Session }) {
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    if (navState.url === `${currentOrigin}/checkout/success`) {
+    if (navState.url === `${currentOrigin}/credits`) {
       Alert.alert(
         "Payment Successful",
         "Your payment was successful.",
         [{ text: "OK" }],
         { cancelable: false }
       );
-    } else if (navState.url === `${currentOrigin}/checkout/cancel`) {
+    } else if (navState.url === `${currentOrigin}/credits`) {
       Alert.alert(
         "Payment Cancelled",
         "Your payment was cancelled.",

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
+import { View, Alert, TouchableOpacity } from "react-native";
 import {
   Avatar as RNPAvatar,
   Button,
@@ -11,13 +11,17 @@ import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
 import styles from "../lib/styles";
 
-interface Props {
-  size: number;
+export default function Avatar({
+  url,
+  size = 150,
+  onUpload,
+  onPress,
+}: {
   url: string | null;
-  onUpload?: (filePath: string) => void;
-}
-
-export default function Avatar({ url, size = 150, onUpload }: Props) {
+  size: number;
+  onUpload?: (newUrl: string) => void;
+  onPress?: () => void;
+}) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
 
@@ -101,7 +105,7 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
   }
 
   return (
-    <View>
+    <TouchableOpacity onPress={onPress ?? uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <RNPAvatar.Image
           style={styles.verticallySpaced}
@@ -115,15 +119,6 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
           icon="account"
         />
       )}
-      {onUpload && (
-        <Button
-          style={styles.verticallySpaced}
-          onPress={uploadAvatar}
-          disabled={uploading}
-        >
-          {uploading ? "Uploading ..." : "Upload"}
-        </Button>
-      )}
-    </View>
+    </TouchableOpacity>
   );
 }

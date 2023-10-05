@@ -109,7 +109,13 @@ export default function Matches({ session }: { session: Session }) {
               >
                 <View style={{ flexDirection: "row", padding: 16 }}>
                   <View style={{ alignSelf: "center" }}>
-                    <Avatar size={75} url={item.profile.avatar_url} />
+                    <Avatar
+                      size={75}
+                      url={item.profile.avatar_url}
+                      onPress={() => {
+                        navigate(`${ROUTES.MATCH}/${item.match.id}`);
+                      }}
+                    />
                   </View>
                   <View
                     style={{

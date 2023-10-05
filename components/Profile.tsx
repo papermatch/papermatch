@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView } from "react-native";
+import { View, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
 import {
   Appbar,
   FAB,
@@ -9,6 +9,8 @@ import {
   Divider,
   Text,
   ActivityIndicator,
+  Portal,
+  Modal,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -22,6 +24,7 @@ export default function Profile({ session }: { session: Session }) {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [interaction, setInteraction] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -109,7 +112,7 @@ export default function Profile({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={"Profile: " + profile?.username || ""} />
+        <Appbar.Content title={profile?.username ?? "Profile"} />
         <Menu
           visible={menuVisible}
           onDismiss={() => setMenuVisible(false)}
@@ -146,7 +149,13 @@ export default function Profile({ session }: { session: Session }) {
       ) : (
         <ScrollView style={styles.container}>
           <View style={styles.centerAligned}>
-            <Avatar size={200} url={profile?.avatar_url || null} />
+            <Avatar
+              size={200}
+              url={profile?.avatar_url || null}
+              onPress={() => {
+                setImageUrl(profile?.avatar_url || null);
+              }}
+            />
           </View>
           <View
             style={[
@@ -209,6 +218,30 @@ export default function Profile({ session }: { session: Session }) {
           />
         </View>
       )}
+      <Portal>
+        <Modal
+          visible={!!imageUrl}
+          onDismiss={() => setImageUrl(null)}
+          contentContainerStyle={{ flex: 1 }}
+        >
+          {!!imageUrl && (
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              onPress={() => setImageUrl(null)}
+            >
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ flex: 1 }}
+                resizeMode="contain"
+                onLoad={() => console.log(`Image ${imageUrl} loaded!`)}
+                onError={(error) =>
+                  console.log(`Image ${imageUrl} error:`, error)
+                }
+              />
+            </TouchableOpacity>
+          )}
+        </Modal>
+      </Portal>
     </View>
   );
 }

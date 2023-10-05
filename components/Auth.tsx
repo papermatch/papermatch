@@ -35,23 +35,30 @@ export default function Auth() {
   );
 
   async function handleAuth() {
-    setLoading(true);
-    const { error } =
-      mode === "signUp"
-        ? await supabase.auth.signInWithOtp({
-            email: email,
-            options: { data: { username: username, birthday: birthday } },
-          })
-        : await supabase.auth.signInWithOtp({
-            email: email,
-            options: { shouldCreateUser: false },
-          });
-    if (error) {
-      Alert.alert(error.message);
-    } else {
-      navigate(ROUTES.OTP, { state: { email } });
+    try {
+      setLoading(true);
+      const { error } =
+        mode === "signUp"
+          ? await supabase.auth.signInWithOtp({
+              email: email,
+              options: { data: { username: username, birthday: birthday } },
+            })
+          : await supabase.auth.signInWithOtp({
+              email: email,
+              options: { shouldCreateUser: false },
+            });
+      if (error) {
+        throw error;
+      } else {
+        navigate(ROUTES.OTP, { state: { email } });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   if (loading) {

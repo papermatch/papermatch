@@ -104,7 +104,13 @@ export default function Profiles({ session }: { session: Session }) {
                   ]}
                 >
                   <View style={{ alignSelf: "center" }}>
-                    <Avatar size={100} url={item.avatar_url} />
+                    <Avatar
+                      size={100}
+                      url={item.avatar_url}
+                      onPress={() => {
+                        navigate(`${ROUTES.PROFILE}/${item.id}`);
+                      }}
+                    />
                   </View>
                   <View
                     style={{

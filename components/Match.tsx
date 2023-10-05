@@ -8,6 +8,7 @@ import {
   IconButton,
   Appbar,
   ActivityIndicator,
+  useTheme,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -23,6 +24,7 @@ export default function Match({ session }: { session: Session }) {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const theme = useTheme();
 
   useEffect(() => {
     if (id && session) {
@@ -43,8 +45,8 @@ export default function Match({ session }: { session: Session }) {
           switch (payload.eventType) {
             case "INSERT":
               setMessages((prevMessages) => [
-                ...prevMessages,
                 payload.new as MessageData,
+                ...prevMessages,
               ]);
               break;
           }
@@ -95,7 +97,7 @@ export default function Match({ session }: { session: Session }) {
         .from("messages")
         .select("*")
         .eq("match_id", id)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -166,7 +168,7 @@ export default function Match({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={"Match: " + profile?.username || ""} />
+        <Appbar.Content title={profile?.username || "Match"} />
       </Appbar.Header>
       {loading ? (
         <View
@@ -179,6 +181,7 @@ export default function Match({ session }: { session: Session }) {
           <FlatList
             data={messages}
             keyExtractor={(item) => item.id.toString()}
+            inverted={true}
             renderItem={({ item }) => (
               <Card style={styles.verticallySpaced}>
                 <View
@@ -186,13 +189,23 @@ export default function Match({ session }: { session: Session }) {
                     {
                       flexDirection:
                         item.user_id == session.user.id ? "row-reverse" : "row",
+                      backgroundColor:
+                        item.user_id == session.user.id
+                          ? theme.colors.elevation.level5
+                          : theme.colors.elevation.level1,
                       padding: 8,
                     },
                   ]}
                 >
                   {item.user_id != session.user.id && (
                     <View style={{ alignSelf: "flex-start" }}>
-                      <Avatar size={50} url={profile?.avatar_url || null} />
+                      <Avatar
+                        size={50}
+                        url={profile?.avatar_url || null}
+                        onPress={() =>
+                          navigate(`${ROUTES.PROFILE}/${profile?.id}`)
+                        }
+                      />
                     </View>
                   )}
                   <Text style={{ marginHorizontal: 12 }}>{item.message}</Text>
