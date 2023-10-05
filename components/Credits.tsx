@@ -21,7 +21,7 @@ export default function Credits({ session }: { session: Session }) {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [credits, setCredits] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {

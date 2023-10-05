@@ -35,3 +35,10 @@ begin
     return new;
 end;
 $$ language plpgsql security definer;
+
+create function public.delete_current_user () returns void as $$
+begin
+    delete from auth.users where id = auth.uid();
+    return; 
+end;
+$$ language plpgsql security definer;

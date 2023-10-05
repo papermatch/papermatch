@@ -1,25 +1,45 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, ScrollView, ActivityIndicator } from "react-native";
-import { Button, TextInput, Appbar, IconButton } from "react-native-paper";
+import {
+  Button,
+  TextInput,
+  Appbar,
+  IconButton,
+  Dialog,
+  Portal,
+  Text,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
+import * as Location from "expo-location";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [email, setEmail] = useState<string | undefined>();
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
-      getAvatarUrl();
+      getData();
       setEmail(session.user.email);
     }
   }, [session]);
+
+  async function getData() {
+    setLoading(true);
+    await Promise.all([getAvatarUrl(), updateLocation()]);
+    setLoading(false);
+  }
+  ``;
 
   async function getAvatarUrl() {
     try {
@@ -44,6 +64,35 @@ export default function Account({ session }: { session: Session }) {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function updateLocation() {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        throw new Error("Permission to access location was denied");
+      }
+
+      setLocation(await Location.getCurrentPositionAsync({}));
+
+      const updates = {
+        id: session?.user.id,
+        location: location
+          ? location.coords.longitude + ", " + location.coords.latitude
+          : null,
+        updated_at: new Date(),
+      };
+
+      let { error } = await supabase.from("profiles").upsert(updates);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
     }
   }
 
@@ -99,6 +148,24 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  async function deleteUser() {
+    try {
+      setLoading(true);
+      const { error } = await supabase.rpc("delete_current_user");
+      if (error) {
+        throw error;
+      }
+
+      supabase.auth.signOut();
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
@@ -132,7 +199,7 @@ export default function Account({ session }: { session: Session }) {
             />
             <IconButton
               style={styles.verticallySpaced}
-              icon="send"
+              icon="email-edit"
               onPress={() => updateEmail({ email })}
               disabled={loading}
             />
@@ -151,9 +218,49 @@ export default function Account({ session }: { session: Session }) {
           >
             Sign Out
           </Button>
+          <Button
+            style={styles.verticallySpaced}
+            onPress={() => setDeleteDialogVisible(true)}
+            disabled={loading}
+          >
+            Delete Account
+          </Button>
         </ScrollView>
       )}
       <Navigation key={session.user.id} session={session} />
+      <Portal>
+        <Dialog visible={!loading && !location} dismissable={false}>
+          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Please click "Ok" below to enable location access in your device
+              settings.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={updateLocation}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+        <Dialog
+          visible={deleteDialogVisible}
+          onDismiss={() => setDeleteDialogVisible(false)}
+        >
+          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Are you sure you want to delete your account? This will
+              permanently remove all your matches and remaining credits! Click
+              "Ok" below to confirm.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeleteDialogVisible(false)}>
+              Cancel
+            </Button>
+            <Button onPress={() => deleteUser()}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 }

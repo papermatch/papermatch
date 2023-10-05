@@ -14,10 +14,9 @@ import { Session } from "@supabase/supabase-js";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 import { GenderType, KidsType } from "../lib/types";
-import * as Location from "expo-location";
 
 export default function Edit({ session }: { session: Session }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
   const [genderMenuVisible, setGenderMenuVisible] = useState(false);
@@ -25,9 +24,6 @@ export default function Edit({ session }: { session: Session }) {
   const [kidsMenuVisible, setKidsMenuVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  );
   const [about, setAbout] = useState("");
   const navigate = useNavigate();
 
@@ -36,33 +32,6 @@ export default function Edit({ session }: { session: Session }) {
       getProfile();
     }
   }, [session]);
-
-  function parseLocation(str: string | null): Location.LocationObject | null {
-    if (!str) {
-      return null;
-    }
-
-    const regex = /\((-?\d+\.\d+),(-?\d+\.\d+)\)/;
-    const match = str.match(regex);
-
-    if (match) {
-      return {
-        coords: {
-          longitude: parseFloat(match[1]),
-          latitude: parseFloat(match[2]),
-          altitude: null,
-          accuracy: null,
-          altitudeAccuracy: null,
-          heading: null,
-          speed: null,
-        },
-        timestamp: Date.now(),
-        mocked: true,
-      };
-    } else {
-      return null;
-    }
-  }
 
   async function getProfile() {
     try {
@@ -82,7 +51,6 @@ export default function Edit({ session }: { session: Session }) {
         setUsername(data.username);
         setGender(data.gender);
         setKids(data.kids);
-        setLocation(parseLocation(data.location));
         setAbout(data.about);
       }
     } catch (error) {
@@ -94,29 +62,15 @@ export default function Edit({ session }: { session: Session }) {
     }
   }
 
-  async function getLocation() {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setSnackbarMessage("Permission to access location was denied");
-      setSnackbarVisible(true);
-      return;
-    }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  }
-
   async function updateProfile({
     username,
     gender,
     kids,
-    location,
     about,
   }: {
     username: string;
     gender: GenderType | null;
     kids: KidsType | null;
-    location: Location.LocationObject | null;
     about: string;
   }) {
     try {
@@ -128,9 +82,6 @@ export default function Edit({ session }: { session: Session }) {
         username: username,
         gender: gender,
         kids: kids,
-        location: location
-          ? location.coords.longitude + ", " + location.coords.latitude
-          : null,
         about: about,
         updated_at: new Date(),
       };
@@ -243,28 +194,6 @@ export default function Edit({ session }: { session: Session }) {
               />
             </Menu>
           </View>
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <TextInput
-              style={{ flex: 1 }}
-              label="Location"
-              value={
-                location
-                  ? location?.coords?.latitude +
-                    ", " +
-                    location?.coords?.longitude
-                  : ""
-              }
-              left={<TextInput.Icon icon="globe-model" />}
-              disabled
-            />
-            <IconButton
-              style={[styles.verticallySpaced, { alignSelf: "center" }]}
-              onPress={() => {
-                getLocation();
-              }}
-              icon="crosshairs-gps"
-            />
-          </View>
           <TextInput
             style={[styles.verticallySpaced]}
             label="About"
@@ -277,9 +206,7 @@ export default function Edit({ session }: { session: Session }) {
           />
           <Button
             style={styles.verticallySpaced}
-            onPress={() =>
-              updateProfile({ username, gender, kids, location, about })
-            }
+            onPress={() => updateProfile({ username, gender, kids, about })}
             disabled={loading}
           >
             {loading ? "Loading ..." : "Update"}

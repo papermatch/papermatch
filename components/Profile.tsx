@@ -195,24 +195,24 @@ export default function Profile({ session }: { session: Session }) {
       {session?.user.id != id && (
         <View>
           <FAB
-            icon="thumb-up"
-            style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
-            color={interaction == "like" ? "green" : "grey"}
-            onPress={() =>
-              interaction == "like"
-                ? handleInteraction("none")
-                : handleInteraction("like")
-            }
-            disabled={loading}
-          />
-          <FAB
             icon="thumb-down"
-            style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+            style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
             color={interaction == "pass" ? "red" : "grey"}
             onPress={() =>
               interaction == "pass"
                 ? handleInteraction("none")
                 : handleInteraction("pass")
+            }
+            disabled={loading}
+          />
+          <FAB
+            icon="thumb-up"
+            style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+            color={interaction == "like" ? "green" : "grey"}
+            onPress={() =>
+              interaction == "like"
+                ? handleInteraction("none")
+                : handleInteraction("like")
             }
             disabled={loading}
           />
