@@ -9,6 +9,7 @@ import {
   Menu,
   IconButton,
   ActivityIndicator,
+  HelperText,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -18,6 +19,7 @@ import { GenderType, KidsType } from "../lib/types";
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
   const [genderMenuVisible, setGenderMenuVisible] = useState(false);
   const [kids, setKids] = useState<KidsType | null>(null);
@@ -73,6 +75,10 @@ export default function Edit({ session }: { session: Session }) {
     kids: KidsType | null;
     about: string;
   }) {
+    if (!validateUsername(username)) {
+      return;
+    }
+
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
@@ -103,6 +109,15 @@ export default function Edit({ session }: { session: Session }) {
     }
   }
 
+  const validateUsername = (username: string) => {
+    if (username.trim() === "") {
+      setUsernameError("Username cannot be empty");
+      return false;
+    }
+    setUsernameError("");
+    return true;
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
@@ -123,19 +138,25 @@ export default function Edit({ session }: { session: Session }) {
         <View style={styles.container}>
           <TextInput
             style={styles.verticallySpaced}
-            label="Username"
+            label="Username (your first name is fine)"
             value={username || ""}
-            onChangeText={(text) => setUsername(text)}
+            onChangeText={(text) => {
+              setUsername(text);
+              validateUsername(text);
+            }}
             maxLength={50}
-            left={<TextInput.Icon icon="account" />}
+            error={!!usernameError}
           />
+          <HelperText type="error" visible={!!usernameError}>
+            {usernameError}
+          </HelperText>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <TextInput
               style={{ flex: 1 }}
               label="Gender"
               value={gender ? gender : ""}
               left={<TextInput.Icon icon="gender-transgender" />}
-              disabled
+              disabled={true}
             />
             <Menu
               visible={genderMenuVisible}
@@ -162,7 +183,7 @@ export default function Edit({ session }: { session: Session }) {
               label="Kids"
               value={kids ? kids : ""}
               left={<TextInput.Icon icon="baby-carriage" />}
-              disabled
+              disabled={true}
             />
             <Menu
               visible={kidsMenuVisible}

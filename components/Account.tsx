@@ -9,6 +9,7 @@ import {
   Dialog,
   Portal,
   Text,
+  HelperText,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -21,6 +22,7 @@ export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [email, setEmail] = useState<string | undefined>();
+  const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
@@ -124,7 +126,7 @@ export default function Account({ session }: { session: Session }) {
   }
 
   async function updateEmail({ email }: { email: string | undefined }) {
-    if (!email) {
+    if (!validateEmail(email || "")) {
       return;
     }
 
@@ -147,6 +149,19 @@ export default function Account({ session }: { session: Session }) {
       setLoading(false);
     }
   }
+
+  const validateEmail = (email: string) => {
+    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (!regex.test(email)) {
+      setEmailError("Invalid email address");
+      return false;
+    } else if (email === session.user.email) {
+      setEmailError("Email address must be differentr");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
 
   async function deleteUser() {
     try {
@@ -189,14 +204,21 @@ export default function Account({ session }: { session: Session }) {
             />
           </View>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <TextInput
-              style={{ flex: 1 }}
-              label="Update Email"
-              onChangeText={setEmail}
-              value={email}
-              placeholder="user@example.com"
-              autoCapitalize={"none"}
-            />
+            <View style={{ flex: 1, flexDirection: "column" }}>
+              <TextInput
+                label="Update Email"
+                onChangeText={(text) => {
+                  setEmail(text);
+                  validateEmail(text);
+                }}
+                value={email}
+                placeholder="user@example.com"
+                autoCapitalize={"none"}
+              />
+              <HelperText type="error" visible={!!emailError}>
+                {emailError}
+              </HelperText>
+            </View>
             <IconButton
               style={styles.verticallySpaced}
               icon="email-edit"

@@ -8,6 +8,7 @@ import {
   Appbar,
   Text,
   ActivityIndicator,
+  HelperText,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
@@ -20,6 +21,7 @@ export default function Credits({ session }: { session: Session }) {
     Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
+  const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -62,8 +64,15 @@ export default function Credits({ session }: { session: Session }) {
   }
 
   const fetchCheckoutUrl = async () => {
+    if (!validateQuantity(quantity)) {
+      return;
+    }
+
     try {
-      if (!session?.user) throw new Error("No user on the session!");
+      setLoading(true);
+      if (!session?.user) {
+        throw new Error("No user on the session!");
+      }
 
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/stripe-checkout`,
@@ -90,10 +99,13 @@ export default function Credits({ session }: { session: Session }) {
       if (error instanceof Error) {
         Alert.alert("An error occurred", error.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
+    // TODO(drw): Fix the urls here and in the edge function (currently the same)
     if (navState.url === `${currentOrigin}/credits`) {
       Alert.alert(
         "Payment Successful",
@@ -115,13 +127,15 @@ export default function Credits({ session }: { session: Session }) {
     }
   };
 
-  const handleSubmit = () => {
-    if (isNaN(Number(quantity)) || Number(quantity) <= 0) {
-      Alert.alert("Invalid quantity", "Please enter a valid quantity.");
-      return;
+  const validateQuantity = (quantity: string) => {
+    const regex = /^[0-9]+$/;
+    if (!regex.test(quantity)) {
+      setQuantityError("Quantity must be a number");
+      return false;
+    } else {
+      setQuantityError("");
+      return true;
     }
-    setLoading(true);
-    fetchCheckoutUrl();
   };
 
   return (
@@ -147,12 +161,19 @@ export default function Credits({ session }: { session: Session }) {
             label="Credits"
             keyboardType="numeric"
             value={quantity}
-            onChangeText={setQuantity}
+            onChangeText={(text) => {
+              setQuantity(text);
+              validateQuantity(text);
+            }}
             placeholder="Enter Quantity"
+            error={!!quantityError}
           />
+          <HelperText type="error" visible={!!quantityError}>
+            {quantityError}
+          </HelperText>
           <Button
             style={styles.verticallySpaced}
-            onPress={handleSubmit}
+            onPress={fetchCheckoutUrl}
             disabled={loading}
           >
             Checkout

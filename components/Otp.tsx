@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { Alert, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, TextInput, ActivityIndicator } from "react-native-paper";
+import {
+  Button,
+  TextInput,
+  ActivityIndicator,
+  HelperText,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
   const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const location = useLocation();
@@ -25,6 +31,10 @@ export default function Otp({ session = undefined }: { session?: Session }) {
   }
 
   async function verify() {
+    if (!validateOtp(otp)) {
+      return;
+    }
+
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.verifyOtp({
@@ -51,6 +61,17 @@ export default function Otp({ session = undefined }: { session?: Session }) {
     }
   }
 
+  const validateOtp = (otp: string) => {
+    const regex = /^[0-9]{6}$/;
+    if (!regex.test(otp)) {
+      setOtpError("OTP must be 6 digits");
+      return false;
+    } else {
+      setOtpError("");
+      return true;
+    }
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -64,11 +85,18 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       <TextInput
         style={styles.verticallySpaced}
         label="OTP"
-        onChangeText={setOtp}
+        onChangeText={(text) => {
+          setOtp(text);
+          validateOtp(text);
+        }}
         value={otp}
         keyboardType="numeric"
         placeholder="Enter your OTP"
+        error={!!otpError}
       />
+      <HelperText type="error" visible={!!otpError}>
+        {otpError}
+      </HelperText>
       <Button
         style={styles.verticallySpaced}
         disabled={loading}
