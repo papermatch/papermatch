@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (16);
+    plan (22);
 
 select
     has_function (
@@ -44,17 +44,30 @@ values
         '{"username": "Fourth"}'
     );
 
+-- First User lives in Chicago
+update public.profiles
+set
+    lnglat = point(87.6298, 41.8781)
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second User lives in New York
 update public.profiles
 set
     gender = 'male'::gender_type,
-    kids = 'none'::kids_type
+    kids = 'none'::kids_type,
+    lnglat = point(74.0060, 40.7128),
+    about = 'I like long walks on the beach.'
 where
     id = '22222222-2222-2222-2222-222222222222';
 
+-- Third User lives in San Francisco
 update public.profiles
 set
     gender = 'female'::gender_type,
-    kids = 'more'::kids_type
+    kids = 'more'::kids_type,
+    lnglat = point(122.4194, 37.7749),
+    about = 'I like long hikes in the mountains.'
 where
     id = '33333333-3333-3333-3333-333333333333';
 
@@ -199,6 +212,62 @@ select
         $$values (false::boolean)$$
     );
 
+update public.settings
+set
+    kids = null,
+    radius = 1000
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because they are within radius
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (true::boolean)$$
+    );
+
+-- Third user is now incompatible because they are outside radius
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (false::boolean)$$
+    );
+
+-- Fourth user is still incompatible because their lnglat is null
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (false::boolean)$$
+    );
+
+update public.settings
+set
+    radius = null,
+    keywords = array['beach']
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because they mention 'beach'
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (true::boolean)$$
+    );
+
+-- Third user is now incompatible because they don't mention 'beach'
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (false::boolean)$$
+    );
+
+-- Fourth user is still incompatible because their about is null
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (false::boolean)$$
+    );
+
 -- Cleanup
 reset role;
 
@@ -217,5 +286,13 @@ where
 delete from auth.users
 where
     id = '22222222-2222-2222-2222-222222222222';
+
+delete from auth.users
+where
+    id = '33333333-3333-3333-3333-333333333333';
+
+delete from auth.users
+where
+    id = '44444444-4444-4444-4444-444444444444';
 
 rollback;

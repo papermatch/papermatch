@@ -22,7 +22,7 @@ alter table profiles
 add column kids kids_type;
 
 alter table profiles
-add column location point;
+add column lnglat point;
 
 alter table profiles
 add column about text;
@@ -121,8 +121,8 @@ begin
         end if;
     end if;
 
-    if s1.radius is not null and p1.location is not null then
-        if p2.location is null or p1.location <@> p2.location > s1.radius then
+    if s1.radius is not null and p1.lnglat is not null then
+        if p2.lnglat is null or p1.lnglat <@> p2.lnglat > s1.radius then
             return false;
         end if;
     end if;

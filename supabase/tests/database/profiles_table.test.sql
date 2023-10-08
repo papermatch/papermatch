@@ -22,7 +22,7 @@ select
             'birthday',
             'gender',
             'kids',
-            'location',
+            'lnglat',
             'about'
         ]
     );

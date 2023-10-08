@@ -172,6 +172,7 @@ export default function Credits({ session }: { session: Session }) {
             {quantityError}
           </HelperText>
           <Button
+            mode="contained"
             style={styles.verticallySpaced}
             onPress={fetchCheckoutUrl}
             disabled={loading}

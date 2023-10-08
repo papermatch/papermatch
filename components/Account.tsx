@@ -10,6 +10,7 @@ import {
   Portal,
   Text,
   HelperText,
+  Divider,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -21,7 +22,7 @@ import * as Location from "expo-location";
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [email, setEmail] = useState<string | undefined>();
+  const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -32,7 +33,7 @@ export default function Account({ session }: { session: Session }) {
   useEffect(() => {
     if (session) {
       getData();
-      setEmail(session.user.email);
+      setEmail(session.user.email || "");
     }
   }, [session]);
 
@@ -41,7 +42,6 @@ export default function Account({ session }: { session: Session }) {
     await Promise.all([getAvatarUrl(), updateLocation()]);
     setLoading(false);
   }
-  ``;
 
   async function getAvatarUrl() {
     try {
@@ -79,14 +79,16 @@ export default function Account({ session }: { session: Session }) {
       setLocation(await Location.getCurrentPositionAsync({}));
 
       const updates = {
-        id: session?.user.id,
-        location: location
+        lnglat: location
           ? location.coords.longitude + ", " + location.coords.latitude
           : null,
         updated_at: new Date(),
       };
 
-      let { error } = await supabase.from("profiles").upsert(updates);
+      let { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", session.user.id);
 
       if (error) {
         throw error;
@@ -104,12 +106,14 @@ export default function Account({ session }: { session: Session }) {
       if (!session?.user) throw new Error("No user on the session!");
 
       const updates = {
-        id: session?.user.id,
         avatar_url: url,
         updated_at: new Date(),
       };
 
-      const { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", session.user.id);
 
       if (error) {
         throw error;
@@ -125,8 +129,8 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function updateEmail({ email }: { email: string | undefined }) {
-    if (!validateEmail(email || "")) {
+  async function updateEmail({ email }: { email: string }) {
+    if (!validateEmail(email)) {
       return;
     }
 
@@ -156,7 +160,7 @@ export default function Account({ session }: { session: Session }) {
       setEmailError("Invalid email address");
       return false;
     } else if (email === session.user.email) {
-      setEmailError("Email address must be differentr");
+      setEmailError("Email address must be different");
       return false;
     }
     setEmailError("");
@@ -194,7 +198,7 @@ export default function Account({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
-          <View style={styles.centerAligned}>
+          <View style={[styles.centerAligned]}>
             <Avatar
               size={200}
               url={avatarUrl}
@@ -214,19 +218,21 @@ export default function Account({ session }: { session: Session }) {
                 value={email}
                 placeholder="user@example.com"
                 autoCapitalize={"none"}
+                right={
+                  <TextInput.Icon
+                    icon="send"
+                    onPress={() => updateEmail({ email })}
+                  />
+                }
+                disabled={loading}
               />
               <HelperText type="error" visible={!!emailError}>
                 {emailError}
               </HelperText>
             </View>
-            <IconButton
-              style={styles.verticallySpaced}
-              icon="email-edit"
-              onPress={() => updateEmail({ email })}
-              disabled={loading}
-            />
           </View>
           <Button
+            mode="outlined"
             style={styles.verticallySpaced}
             onPress={() => navigate(`${ROUTES.EDIT}`)}
             disabled={loading}
@@ -234,6 +240,16 @@ export default function Account({ session }: { session: Session }) {
             Edit Profile
           </Button>
           <Button
+            mode="outlined"
+            style={styles.verticallySpaced}
+            onPress={() => navigate(`${ROUTES.SETTINGS}`)}
+            disabled={loading}
+          >
+            Search Settings
+          </Button>
+          <Divider style={styles.verticallySpaced} />
+          <Button
+            mode="contained"
             style={styles.verticallySpaced}
             onPress={() => supabase.auth.signOut()}
             disabled={loading}
@@ -241,6 +257,7 @@ export default function Account({ session }: { session: Session }) {
             Sign Out
           </Button>
           <Button
+            mode="contained-tonal"
             style={styles.verticallySpaced}
             onPress={() => setDeleteDialogVisible(true)}
             disabled={loading}
@@ -260,26 +277,29 @@ export default function Account({ session }: { session: Session }) {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={updateLocation}>Ok</Button>
+            <Button mode="text" onPress={updateLocation}>
+              Ok
+            </Button>
           </Dialog.Actions>
         </Dialog>
         <Dialog
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
         >
-          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Title>Warning</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
-              Are you sure you want to delete your account? This will
-              permanently remove all your matches and remaining credits! Click
-              "Ok" below to confirm.
+              Deleting your account will permanently remove all of your matches
+              and remaining credits! Click "Ok" below to confirm.
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>
+            <Button mode="text" onPress={() => setDeleteDialogVisible(false)}>
               Cancel
             </Button>
-            <Button onPress={() => deleteUser()}>Ok</Button>
+            <Button mode="text" onPress={() => deleteUser()}>
+              Ok
+            </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

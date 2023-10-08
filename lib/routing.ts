@@ -29,6 +29,7 @@ export const ROUTES = {
   OTP: "/otp",
   PROFILE: "/profile",
   PROFILES: "/profiles",
+  SETTINGS: "/settings",
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;

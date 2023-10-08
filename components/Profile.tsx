@@ -23,7 +23,7 @@ export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [interaction, setInteraction] = useState(null);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -114,12 +114,12 @@ export default function Profile({ session }: { session: Session }) {
         />
         <Appbar.Content title={profile?.username ?? "Profile"} />
         <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
           anchor={
             <Appbar.Action
               icon="dots-vertical"
-              onPress={() => setMenuVisible(!menuVisible)}
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
             />
           }
         >

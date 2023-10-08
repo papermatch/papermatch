@@ -202,6 +202,7 @@ export default function Auth() {
         </View>
       )}
       <Button
+        mode="contained"
         style={styles.verticallySpaced}
         disabled={loading}
         onPress={handleAuth}

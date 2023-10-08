@@ -98,6 +98,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
         {otpError}
       </HelperText>
       <Button
+        mode="contained"
         style={styles.verticallySpaced}
         disabled={loading}
         onPress={verify}
@@ -105,6 +106,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
         Verify
       </Button>
       <Button
+        mode="outlined"
         style={styles.verticallySpaced}
         disabled={loading}
         onPress={() => navigate(-1)}
