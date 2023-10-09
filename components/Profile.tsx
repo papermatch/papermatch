@@ -18,6 +18,7 @@ import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { calculateAge } from "../lib/utils";
+import { GenderData, KidsData } from "../lib/types";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -179,19 +180,27 @@ export default function Profile({ session }: { session: Session }) {
             {profile?.gender && (
               <Chip
                 style={{ margin: 8 }}
-                icon="gender-transgender"
+                icon={
+                  GenderData.find((item) => item.value === profile.gender)
+                    ?.icon || "gender-transgender"
+                }
                 disabled={loading}
               >
-                {profile.gender}
+                {GenderData.find((item) => item.value === profile.gender)
+                  ?.label || ""}
               </Chip>
             )}
             {profile?.kids && (
               <Chip
                 style={{ margin: 8 }}
-                icon="baby-carriage"
+                icon={
+                  KidsData.find((item) => item.value === profile.kids)?.icon ||
+                  "baby-carriage"
+                }
                 disabled={loading}
               >
-                {profile.kids}
+                {KidsData.find((item) => item.value === profile.kids)?.label ||
+                  ""}
               </Chip>
             )}
           </View>

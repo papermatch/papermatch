@@ -23,7 +23,6 @@ export default function Edit({ session }: { session: Session }) {
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
   const [kids, setKids] = useState<KidsType | null>(null);
-  const [kidsMenuVisible, setKidsMenuVisible] = useState(false);
   const [about, setAbout] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");

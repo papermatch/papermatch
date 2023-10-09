@@ -16,6 +16,7 @@ import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { calculateAge } from "../lib/utils";
+import { GenderData, KidsData } from "../lib/types";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -103,11 +104,11 @@ export default function Profiles({ session }: { session: Session }) {
           {profiles.length ? (
             <FlatList
               data={profiles}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
+              keyExtractor={(profile) => profile.id.toString()}
+              renderItem={({ item: profile }) => (
                 <Card
                   onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${item.id}`);
+                    navigate(`${ROUTES.PROFILE}/${profile.id}`);
                   }}
                   style={[styles.verticallySpaced]}
                 >
@@ -122,9 +123,9 @@ export default function Profiles({ session }: { session: Session }) {
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={100}
-                        url={item.avatar_url}
+                        url={profile.avatar_url}
                         onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${item.id}`);
+                          navigate(`${ROUTES.PROFILE}/${profile.id}`);
                         }}
                       />
                     </View>
@@ -135,7 +136,7 @@ export default function Profiles({ session }: { session: Session }) {
                         marginLeft: 16,
                       }}
                     >
-                      <Text variant="titleLarge">{item.username}</Text>
+                      <Text variant="titleLarge">{profile.username}</Text>
                       <View
                         style={[
                           styles.verticallySpaced,
@@ -145,31 +146,43 @@ export default function Profiles({ session }: { session: Session }) {
                           },
                         ]}
                       >
-                        {item.birthday && (
+                        {profile.birthday && (
                           <Chip
                             style={{ margin: 4 }}
                             icon="cake-variant"
                             disabled={loading}
                           >
-                            {calculateAge(Date.parse(item.birthday))}
+                            {calculateAge(Date.parse(profile.birthday))}
                           </Chip>
                         )}
-                        {item.gender && (
+                        {profile.gender && (
                           <Chip
                             style={{ margin: 4 }}
-                            icon="gender-transgender"
+                            icon={
+                              GenderData.find(
+                                (item) => item.value === profile.gender
+                              )?.icon || "gender-transgender"
+                            }
                             disabled={loading}
                           >
-                            {item.gender}
+                            {GenderData.find(
+                              (item) => item.value === profile.gender
+                            )?.label || ""}
                           </Chip>
                         )}
-                        {item.kids && (
+                        {profile.kids && (
                           <Chip
                             style={{ margin: 4 }}
-                            icon="baby-carriage"
+                            icon={
+                              KidsData.find(
+                                (item) => item.value === profile.kids
+                              )?.icon || "baby-carriage"
+                            }
                             disabled={loading}
                           >
-                            {item.kids}
+                            {KidsData.find(
+                              (item) => item.value === profile.kids
+                            )?.label || ""}
                           </Chip>
                         )}
                       </View>
