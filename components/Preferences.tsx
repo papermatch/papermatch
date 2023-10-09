@@ -138,7 +138,8 @@ export default function Preferences({ session }: { session: Session }) {
     const newKeywords = keyword
       .toLowerCase()
       .replace(/[^a-zA-Z0-9 ]/g, "")
-      .split(" ");
+      .split(" ")
+      .filter((k) => k !== "");
     setKeywords([...new Set([...keywords, ...newKeywords])]);
     setKeyword("");
   };
@@ -324,7 +325,14 @@ export default function Preferences({ session }: { session: Session }) {
             mode="contained"
             style={styles.verticallySpaced}
             onPress={() =>
-              updatePreferences({ minAge, maxAge, gender, kids, radius, keywords })
+              updatePreferences({
+                minAge,
+                maxAge,
+                gender,
+                kids,
+                radius,
+                keywords,
+              })
             }
             disabled={loading}
           >

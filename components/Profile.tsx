@@ -167,21 +167,33 @@ export default function Profile({ session }: { session: Session }) {
               },
             ]}
           >
-            <Chip style={{ margin: 8 }} icon="cake-variant" disabled={loading}>
-              {profile?.birthday
-                ? calculateAge(Date.parse(profile?.birthday))
-                : ""}
-            </Chip>
-            <Chip
-              style={{ margin: 8 }}
-              icon="gender-transgender"
-              disabled={loading}
-            >
-              {profile?.gender}
-            </Chip>
-            <Chip style={{ margin: 8 }} icon="baby-carriage" disabled={loading}>
-              {profile?.kids}
-            </Chip>
+            {profile?.birthday && (
+              <Chip
+                style={{ margin: 8 }}
+                icon="cake-variant"
+                disabled={loading}
+              >
+                {calculateAge(Date.parse(profile?.birthday))}
+              </Chip>
+            )}
+            {profile?.gender && (
+              <Chip
+                style={{ margin: 8 }}
+                icon="gender-transgender"
+                disabled={loading}
+              >
+                {profile.gender}
+              </Chip>
+            )}
+            {profile?.kids && (
+              <Chip
+                style={{ margin: 8 }}
+                icon="baby-carriage"
+                disabled={loading}
+              >
+                {profile.kids}
+              </Chip>
+            )}
           </View>
           <Divider style={styles.verticallySpaced} />
           <Text style={styles.verticallySpaced} variant="titleLarge">

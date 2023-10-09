@@ -7,6 +7,7 @@ import {
   Appbar,
   ActivityIndicator,
   Chip,
+  Menu,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -18,6 +19,7 @@ import { calculateAge } from "../lib/utils";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const navigate = useNavigate();
 
@@ -68,14 +70,27 @@ export default function Profiles({ session }: { session: Session }) {
     }
   }
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
         <Appbar.Content title="Profiles" />
+        <Menu
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="dots-vertical"
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              navigate(ROUTES.PREFERENCES);
+            }}
+            title="Preferences"
+          />
+        </Menu>
       </Appbar.Header>
       {loading ? (
         <View
@@ -85,79 +100,89 @@ export default function Profiles({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={styles.container}>
-          <FlatList
-            data={profiles}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Card
-                onPress={() => {
-                  navigate(`${ROUTES.PROFILE}/${item.id}`);
-                }}
-                style={[styles.verticallySpaced]}
-              >
-                <View
-                  style={[
-                    {
-                      flexDirection: "row",
-                      padding: 16,
-                    },
-                  ]}
+          {profiles.length ? (
+            <FlatList
+              data={profiles}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <Card
+                  onPress={() => {
+                    navigate(`${ROUTES.PROFILE}/${item.id}`);
+                  }}
+                  style={[styles.verticallySpaced]}
                 >
-                  <View style={{ alignSelf: "center" }}>
-                    <Avatar
-                      size={100}
-                      url={item.avatar_url}
-                      onPress={() => {
-                        navigate(`${ROUTES.PROFILE}/${item.id}`);
-                      }}
-                    />
-                  </View>
                   <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      marginLeft: 16,
-                    }}
+                    style={[
+                      {
+                        flexDirection: "row",
+                        padding: 16,
+                      },
+                    ]}
                   >
-                    <Text variant="titleLarge">{item.username}</Text>
+                    <View style={{ alignSelf: "center" }}>
+                      <Avatar
+                        size={100}
+                        url={item.avatar_url}
+                        onPress={() => {
+                          navigate(`${ROUTES.PROFILE}/${item.id}`);
+                        }}
+                      />
+                    </View>
                     <View
-                      style={[
-                        styles.verticallySpaced,
-                        {
-                          flexDirection: "row",
-                          flexWrap: "wrap",
-                        },
-                      ]}
+                      style={{
+                        flex: 1,
+                        flexDirection: "column",
+                        marginLeft: 16,
+                      }}
                     >
-                      <Chip
-                        style={{ margin: 4 }}
-                        icon="cake-variant"
-                        disabled={loading}
+                      <Text variant="titleLarge">{item.username}</Text>
+                      <View
+                        style={[
+                          styles.verticallySpaced,
+                          {
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                          },
+                        ]}
                       >
-                        {item.birthday
-                          ? calculateAge(Date.parse(item.birthday))
-                          : ""}
-                      </Chip>
-                      <Chip
-                        style={{ margin: 4 }}
-                        icon="gender-transgender"
-                        disabled={loading}
-                      >
-                        {item.gender}
-                      </Chip>
-                      <Chip
-                        style={{ margin: 4 }}
-                        icon="baby-carriage"
-                        disabled={loading}
-                      >
-                        {item.kids}
-                      </Chip>
+                        {item.birthday && (
+                          <Chip
+                            style={{ margin: 4 }}
+                            icon="cake-variant"
+                            disabled={loading}
+                          >
+                            {calculateAge(Date.parse(item.birthday))}
+                          </Chip>
+                        )}
+                        {item.gender && (
+                          <Chip
+                            style={{ margin: 4 }}
+                            icon="gender-transgender"
+                            disabled={loading}
+                          >
+                            {item.gender}
+                          </Chip>
+                        )}
+                        {item.kids && (
+                          <Chip
+                            style={{ margin: 4 }}
+                            icon="baby-carriage"
+                            disabled={loading}
+                          >
+                            {item.kids}
+                          </Chip>
+                        )}
+                      </View>
                     </View>
                   </View>
-                </View>
-              </Card>
-            )}
-          />
+                </Card>
+              )}
+            />
+          ) : (
+            <Text style={styles.verticallySpaced}>
+              No compatible profiles found, try adjusting your preferences.
+            </Text>
+          )}
         </View>
       )}
       <Navigation key={session.user.id} session={session} />

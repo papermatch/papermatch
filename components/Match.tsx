@@ -5,10 +5,10 @@ import {
   Card,
   Text,
   TextInput,
-  IconButton,
   Appbar,
   ActivityIndicator,
   useTheme,
+  Menu,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -18,6 +18,7 @@ import styles from "../lib/styles";
 
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [match, setMatch] = useState<MatchData | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -156,10 +157,6 @@ export default function Match({ session }: { session: Session }) {
     }
   }
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
@@ -169,6 +166,23 @@ export default function Match({ session }: { session: Session }) {
           }}
         />
         <Appbar.Content title={profile?.username || "Match"} />
+        <Menu
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="dots-vertical"
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              navigate(`${ROUTES.PROFILE}/${profile?.id}`);
+            }}
+            title="Profile"
+          />
+        </Menu>
       </Appbar.Header>
       {loading ? (
         <View
@@ -218,14 +232,17 @@ export default function Match({ session }: { session: Session }) {
               style={{ flex: 1 }}
               value={message}
               onChangeText={setMessage}
+              onSubmitEditing={handleMessage}
               placeholder="Type a message"
               multiline={true}
-              numberOfLines={2}
-            />
-            <IconButton
-              style={{ alignSelf: "center" }}
-              icon="send"
-              onPress={handleMessage}
+              numberOfLines={4}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleMessage}
+                  disabled={message.trim() === ""}
+                />
+              }
             />
           </View>
         </View>

@@ -184,7 +184,7 @@ export default function Edit({ session }: { session: Session }) {
                         onPress={() => {
                           setGenderMenuVisible(!genderMenuVisible);
                         }}
-                        icon="menu-down"
+                        icon={genderMenuVisible ? "menu-up" : "menu-down"}
                       />
                     }
                     right={
@@ -241,7 +241,7 @@ export default function Edit({ session }: { session: Session }) {
                         onPress={() => {
                           setKidsMenuVisible(!kidsMenuVisible);
                         }}
-                        icon="menu-down"
+                        icon={kidsMenuVisible ? "menu-up" : "menu-down"}
                       />
                     }
                     right={

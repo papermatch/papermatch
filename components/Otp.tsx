@@ -6,6 +6,7 @@ import {
   TextInput,
   ActivityIndicator,
   HelperText,
+  Appbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
@@ -72,47 +73,49 @@ export default function Otp({ session = undefined }: { session?: Session }) {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator animating={true} size="large" />
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.verticallySpaced}
-        label="OTP"
-        onChangeText={(text) => {
-          setOtp(text);
-          validateOtp(text);
-        }}
-        value={otp}
-        keyboardType="numeric"
-        placeholder="Enter your OTP"
-        error={!!otpError}
-      />
-      <HelperText type="error" visible={!!otpError}>
-        {otpError}
-      </HelperText>
-      <Button
-        mode="contained"
-        style={styles.verticallySpaced}
-        disabled={loading}
-        onPress={verify}
-      >
-        Verify
-      </Button>
-      <Button
-        mode="outlined"
-        style={styles.verticallySpaced}
-        disabled={loading}
-        onPress={() => navigate(-1)}
-      >
-        Cancel
-      </Button>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.BackAction
+          onPress={() => {
+            navigate(-1);
+          }}
+        />
+        <Appbar.Content title="One-time password" />
+      </Appbar.Header>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <TextInput
+            style={styles.verticallySpaced}
+            label="OTP"
+            onChangeText={(text) => {
+              setOtp(text);
+              validateOtp(text);
+            }}
+            value={otp}
+            keyboardType="numeric"
+            placeholder="Enter your OTP"
+            error={!!otpError}
+          />
+          <HelperText type="error" visible={!!otpError}>
+            {otpError}
+          </HelperText>
+          <Button
+            mode="contained"
+            style={styles.verticallySpaced}
+            disabled={loading}
+            onPress={verify}
+          >
+            Verify
+          </Button>
+        </View>
+      )}
     </View>
   );
 }

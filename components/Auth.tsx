@@ -5,9 +5,9 @@ import {
   Button,
   TextInput,
   SegmentedButtons,
-  IconButton,
   HelperText,
   ActivityIndicator,
+  Appbar,
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -36,8 +36,7 @@ export default function Auth() {
       ].includes(false)
     ) {
       return;
-    }
-    else {
+    } else {
       if (!validateEmail(email)) {
         return;
       }
@@ -117,98 +116,104 @@ export default function Auth() {
     [setDatePickerVisible, setBirthday, validateBirthday]
   );
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator animating={true} size="large" />
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <SegmentedButtons
-        style={styles.verticallySpaced}
-        value={mode}
-        onValueChange={setMode}
-        buttons={[
-          {
-            value: "signUp",
-            label: "Sign Up",
-          },
-          {
-            value: "signIn",
-            label: "Sign In",
-          },
-        ]}
-      />
-      <TextInput
-        style={styles.verticallySpaced}
-        label="Email"
-        onChangeText={(text) => {
-          setEmail(text);
-          validateEmail(text);
-        }}
-        value={email}
-        placeholder="user@example.com"
-        autoCapitalize={"none"}
-        error={!!emailError}
-      />
-      <HelperText type="error" visible={!!emailError}>
-        {emailError}
-      </HelperText>
-      {mode === "signUp" && (
-        <View>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Paper" />
+      </Appbar.Header>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <SegmentedButtons
+            style={styles.verticallySpaced}
+            value={mode}
+            onValueChange={setMode}
+            buttons={[
+              {
+                value: "signUp",
+                label: "Sign Up",
+              },
+              {
+                value: "signIn",
+                label: "Sign In",
+              },
+            ]}
+          />
           <TextInput
             style={styles.verticallySpaced}
-            label="Username (your first name is fine)"
-            value={username || ""}
+            label="Email"
             onChangeText={(text) => {
-              setUsername(text);
-              validateUsername(text);
+              setEmail(text);
+              validateEmail(text);
             }}
-            maxLength={50}
-            error={!!usernameError}
+            value={email}
+            placeholder="user@example.com"
+            autoCapitalize={"none"}
+            error={!!emailError}
           />
-          <HelperText type="error" visible={!!usernameError}>
-            {usernameError}
+          <HelperText type="error" visible={!!emailError}>
+            {emailError}
           </HelperText>
-          <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
-            <View style={[styles.verticallySpaced, { flex: 1 }]}>
+          {mode === "signUp" && (
+            <View>
               <TextInput
-                label="Birthday"
-                value={birthday}
-                error={!!birthdayError}
-                disabled={true}
+                style={styles.verticallySpaced}
+                label="Username (your first name is fine)"
+                value={username || ""}
+                onChangeText={(text) => {
+                  setUsername(text);
+                  validateUsername(text);
+                }}
+                maxLength={50}
+                error={!!usernameError}
               />
-              <HelperText type="error" visible={!!birthdayError}>
-                {birthdayError}
+              <HelperText type="error" visible={!!usernameError}>
+                {usernameError}
               </HelperText>
+              <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
+                <View style={[styles.verticallySpaced, { flex: 1 }]}>
+                  <TextInput
+                    label="Birthday"
+                    value={birthday}
+                    error={!!birthdayError}
+                    disabled={true}
+                    right={
+                      <TextInput.Icon
+                        icon="calendar"
+                        onPress={() => setDatePickerVisible(true)}
+                      />
+                    }
+                  />
+                  <HelperText type="error" visible={!!birthdayError}>
+                    {birthdayError}
+                  </HelperText>
+                </View>
+                <DatePickerModal
+                  label="Select your birthday"
+                  locale="en"
+                  mode="single"
+                  visible={datePickerVisible}
+                  onDismiss={onDatePickerDismiss}
+                  onConfirm={onDatePickerConfirm}
+                />
+              </View>
             </View>
-            <IconButton
-              style={[styles.verticallySpaced, { alignSelf: "center" }]}
-              onPress={() => setDatePickerVisible(true)}
-              disabled={loading}
-              icon="calendar"
-            />
-            <DatePickerModal
-              locale="en"
-              mode="single"
-              visible={datePickerVisible}
-              onDismiss={onDatePickerDismiss}
-              onConfirm={onDatePickerConfirm}
-            />
-          </View>
+          )}
+          <Button
+            mode="contained"
+            style={styles.verticallySpaced}
+            disabled={loading}
+            onPress={handleAuth}
+          >
+            Continue
+          </Button>
         </View>
       )}
-      <Button
-        mode="contained"
-        style={styles.verticallySpaced}
-        disabled={loading}
-        onPress={handleAuth}
-      >
-        Continue
-      </Button>
     </View>
   );
 }

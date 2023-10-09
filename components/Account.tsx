@@ -5,7 +5,6 @@ import {
   Button,
   TextInput,
   Appbar,
-  IconButton,
   Dialog,
   Portal,
   Text,
@@ -245,7 +244,7 @@ export default function Account({ session }: { session: Session }) {
             onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
             disabled={loading}
           >
-            Edit Preferences
+            Dating Preferences
           </Button>
           <Divider style={styles.verticallySpaced} />
           <Button
