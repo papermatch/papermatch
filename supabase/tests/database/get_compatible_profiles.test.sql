@@ -54,7 +54,7 @@ set
 where
     id = '11111111-1111-1111-1111-111111111111';
 
-update public.settings
+update public.preferences
 set
     min_age = 25,
     max_age = 35,
@@ -100,7 +100,7 @@ set
 where
     id = '44444444-4444-4444-4444-444444444444';
 
-update public.settings
+update public.preferences
 set
     gender = array['female'::gender_type]
 where
@@ -112,7 +112,7 @@ set
 
 set role 'authenticated';
 
--- First User is only compatible with Second User because of Fourth User's settings
+-- First User is only compatible with Second User because of Fourth User's preferences
 select
     results_eq (
         'select id from public.get_compatible_profiles()',

@@ -6,10 +6,10 @@ select
 select
     policies_are (
         'public',
-        'settings',
+        'preferences',
         array[
-            'Users can see own settings.',
-            'Users can update own settings.'
+            'Users can see own preferences.',
+            'Users can update own preferences.'
         ]
     );
 
@@ -26,22 +26,22 @@ set
 
 set role 'authenticated';
 
--- Second User can see their own settings
+-- Second User can see their own preferences
 select
     results_eq (
-        'select count(*) from public.settings where id = ''22222222-2222-2222-2222-222222222222''',
+        'select count(*) from public.preferences where id = ''22222222-2222-2222-2222-222222222222''',
         $$values (1::bigint)$$
     );
 
--- Second User can't see First User's settings
+-- Second User can't see First User's preferences
 select
     results_eq (
-        'select count(*) from public.settings where id = ''11111111-1111-1111-1111-111111111111''',
+        'select count(*) from public.preferences where id = ''11111111-1111-1111-1111-111111111111''',
         $$values (0::bigint)$$
     );
 
--- Second User can update their own settings
-update public.settings
+-- Second User can update their own preferences
+update public.preferences
 set
     min_age = 18
 where
@@ -49,12 +49,12 @@ where
 
 select
     results_eq (
-        'select min_age from public.settings where id = ''22222222-2222-2222-2222-222222222222''',
+        'select min_age from public.preferences where id = ''22222222-2222-2222-2222-222222222222''',
         $$values (18::int)$$
     );
 
--- Second User can't update First User's settings
-update public.settings
+-- Second User can't update First User's preferences
+update public.preferences
 set
     min_age = 18
 where
@@ -64,7 +64,7 @@ reset role;
 
 select
     results_eq (
-        'select min_age from public.settings where id = ''11111111-1111-1111-1111-111111111111''',
+        'select min_age from public.preferences where id = ''11111111-1111-1111-1111-111111111111''',
         $$values (null::int)$$
     );
 

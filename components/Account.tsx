@@ -242,10 +242,10 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="outlined"
             style={styles.verticallySpaced}
-            onPress={() => navigate(`${ROUTES.SETTINGS}`)}
+            onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
             disabled={loading}
           >
-            Search Settings
+            Edit Preferences
           </Button>
           <Divider style={styles.verticallySpaced} />
           <Button

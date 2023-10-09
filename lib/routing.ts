@@ -27,9 +27,9 @@ export const ROUTES = {
   MATCH: "/match",
   MATCHES: "/matches",
   OTP: "/otp",
+  PREFERENCES: "/preferences",
   PROFILE: "/profile",
   PROFILES: "/profiles",
-  SETTINGS: "/settings",
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;

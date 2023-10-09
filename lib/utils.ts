@@ -1,4 +1,4 @@
-import { Dispatch } from "react";
+  import { Dispatch, SetStateAction } from "react";
 
 export function calculateAge(birthday: number) {
   const ageDiffMs = Date.now() - birthday;
@@ -6,9 +6,7 @@ export function calculateAge(birthday: number) {
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
-export function toggleArrayValue<T>(
-  setter: Dispatch<React.SetStateAction<T[]>>
-) {
+export function toggleArrayValue<T>(setter: Dispatch<SetStateAction<T[]>>) {
   return (value: T) => {
     setter((prev) => {
       const next = [...prev];

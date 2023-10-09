@@ -6,14 +6,14 @@ select
 select
     has_table (
         'public',
-        'settings',
-        'settings table should exist'
+        'preferences',
+        'preferences table should exist'
     );
 
 select
     columns_are (
         'public',
-        'settings',
+        'preferences',
         array[
             'id',
             'min_age',
@@ -29,7 +29,7 @@ select
 select
     col_is_pk (
         'public',
-        'settings',
+        'preferences',
         'id',
         'id should be a primary key'
     );
@@ -37,13 +37,17 @@ select
 select
     col_is_fk (
         'public',
-        'settings',
+        'preferences',
         'id',
         'id should be a foreign key referencing auth.users(id)'
     );
 
 select
-    indexes_are ('public', 'settings', array['settings_pkey']);
+    indexes_are (
+        'public',
+        'preferences',
+        array['preferences_pkey']
+    );
 
 select
     *

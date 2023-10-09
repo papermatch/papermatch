@@ -37,7 +37,7 @@ $$ language plpgsql security definer;
 create type sort_type as enum('none', 'distance', 'recent');
 
 create table
-    public.settings (
+    public.preferences (
         id uuid references auth.users (id) on delete cascade not null,
         min_age int,
         max_age int,
@@ -49,16 +49,16 @@ create table
         primary key (id)
     );
 
-alter table public.settings enable row level security;
+alter table public.preferences enable row level security;
 
-create policy "Users can see own settings." on public.settings for
+create policy "Users can see own preferences." on public.preferences for
 select
     using (auth.uid () = id);
 
-create policy "Users can update own settings." on public.settings for
+create policy "Users can update own preferences." on public.preferences for
 update using (auth.uid () = id);
 
-alter table public.settings force row level security;
+alter table public.preferences force row level security;
 
 create or
 replace function public.handle_new_user () returns trigger as $$
@@ -69,7 +69,7 @@ begin
     insert into public.credits (user_id, creditor, credits, created_at)
     VALUES (new.id, 'init', 1, now());
     
-    insert into public.settings (id)
+    insert into public.preferences (id)
     values (new.id);
 
     return new;
@@ -85,11 +85,11 @@ $$ language plpgsql security definer;
 
 create function public.is_profile_compatible (user1_id uuid, user2_id uuid) returns boolean as $$
 declare
-    s1 public.settings%rowtype;
+    s1 public.preferences%rowtype;
     p1 public.profiles%rowtype;
     p2 public.profiles%rowtype;
 begin
-    select into s1 * from public.settings where id = user1_id;
+    select into s1 * from public.preferences where id = user1_id;
     select into p1 * from public.profiles where id = user1_id;
     select into p2 * from public.profiles where id = user2_id;
 

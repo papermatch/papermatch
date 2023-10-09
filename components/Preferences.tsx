@@ -20,7 +20,7 @@ import styles from "../lib/styles";
 import { GenderType, KidsType } from "../lib/types";
 import { toggleArrayValue } from "../lib/utils";
 
-export default function Settings({ session }: { session: Session }) {
+export default function Preferences({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [minAge, setMinAge] = useState("");
   const [minAgeError, setMinAgeError] = useState("");
@@ -40,17 +40,17 @@ export default function Settings({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getSettings();
+      getPreferences();
     }
   }, [session]);
 
-  async function getSettings() {
+  async function getPreferences() {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       let { data, error, status } = await supabase
-        .from("settings")
+        .from("preferences")
         .select("*")
         .eq("id", session?.user.id)
         .single();
@@ -75,7 +75,7 @@ export default function Settings({ session }: { session: Session }) {
     }
   }
 
-  async function updateSettings({
+  async function updatePreferences({
     minAge,
     maxAge,
     gender,
@@ -115,7 +115,7 @@ export default function Settings({ session }: { session: Session }) {
       };
 
       const { error } = await supabase
-        .from("settings")
+        .from("preferences")
         .update(updates)
         .eq("id", session.user.id);
 
@@ -123,7 +123,7 @@ export default function Settings({ session }: { session: Session }) {
         throw error;
       }
 
-      setSnackbarMessage("Settings updated!");
+      setSnackbarMessage("Preferences updated!");
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
@@ -182,7 +182,7 @@ export default function Settings({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title="Settings" />
+        <Appbar.Content title="Preferences" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -324,7 +324,7 @@ export default function Settings({ session }: { session: Session }) {
             mode="contained"
             style={styles.verticallySpaced}
             onPress={() =>
-              updateSettings({ minAge, maxAge, gender, kids, radius, keywords })
+              updatePreferences({ minAge, maxAge, gender, kids, radius, keywords })
             }
             disabled={loading}
           >

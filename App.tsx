@@ -10,9 +10,9 @@ import Edit from "./components/Edit";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
 import Otp from "./components/Otp";
+import Preferences from "./components/Preferences";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
-import Settings from "./components/Settings";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate } from "./lib/routing";
@@ -162,6 +162,16 @@ export default function App() {
               }
             />
             <Route
+              path={ROUTES.PREFERENCES}
+              element={
+                session?.user ? (
+                  <Preferences key={session.user.id} session={session} />
+                ) : (
+                  <Navigate to={ROUTES.AUTH} replace />
+                )
+              }
+            />
+            <Route
               path={`${ROUTES.PROFILE}/:id`}
               element={
                 session?.user ? (
@@ -176,16 +186,6 @@ export default function App() {
               element={
                 session?.user ? (
                   <Profiles key={session.user.id} session={session} />
-                ) : (
-                  <Navigate to={ROUTES.AUTH} replace />
-                )
-              }
-            />
-            <Route
-              path={ROUTES.SETTINGS}
-              element={
-                session?.user ? (
-                  <Settings key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )

@@ -96,7 +96,7 @@ select
         $$values (true::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     min_age = 35
 where
@@ -123,7 +123,7 @@ select
         $$values (false::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     min_age = null,
     max_age = 35
@@ -151,7 +151,7 @@ select
         $$values (false::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     max_age = null,
     gender = array['male'::gender_type, 'nonbinary'::gender_type]
@@ -179,7 +179,7 @@ select
         $$values (false::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     gender = null,
     kids = array[
@@ -212,7 +212,7 @@ select
         $$values (false::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     kids = null,
     radius = 1000
@@ -240,7 +240,7 @@ select
         $$values (false::boolean)$$
     );
 
-update public.settings
+update public.preferences
 set
     radius = null,
     keywords = array['beach']
