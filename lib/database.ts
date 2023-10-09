@@ -151,15 +151,73 @@ export interface Database {
           }
         ]
       }
+      preferences: {
+        Row: {
+          diet: Database["public"]["Enums"]["diet_type"][] | null
+          gender: Database["public"]["Enums"]["gender_type"][] | null
+          id: string
+          intention: Database["public"]["Enums"]["intention_type"][] | null
+          keywords: string[] | null
+          kids: Database["public"]["Enums"]["kids_type"][] | null
+          max_age: number | null
+          min_age: number | null
+          radius: number | null
+          relationship:
+            | Database["public"]["Enums"]["relationship_type"][]
+            | null
+          updated_at: string
+        }
+        Insert: {
+          diet?: Database["public"]["Enums"]["diet_type"][] | null
+          gender?: Database["public"]["Enums"]["gender_type"][] | null
+          id: string
+          intention?: Database["public"]["Enums"]["intention_type"][] | null
+          keywords?: string[] | null
+          kids?: Database["public"]["Enums"]["kids_type"][] | null
+          max_age?: number | null
+          min_age?: number | null
+          radius?: number | null
+          relationship?:
+            | Database["public"]["Enums"]["relationship_type"][]
+            | null
+          updated_at?: string
+        }
+        Update: {
+          diet?: Database["public"]["Enums"]["diet_type"][] | null
+          gender?: Database["public"]["Enums"]["gender_type"][] | null
+          id?: string
+          intention?: Database["public"]["Enums"]["intention_type"][] | null
+          keywords?: string[] | null
+          kids?: Database["public"]["Enums"]["kids_type"][] | null
+          max_age?: number | null
+          min_age?: number | null
+          radius?: number | null
+          relationship?:
+            | Database["public"]["Enums"]["relationship_type"][]
+            | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preferences_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           about: string | null
           avatar_url: string | null
           birthday: string | null
+          diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
+          intention: Database["public"]["Enums"]["intention_type"] | null
           kids: Database["public"]["Enums"]["kids_type"] | null
-          location: unknown | null
+          lnglat: unknown | null
+          relationship: Database["public"]["Enums"]["relationship_type"] | null
           updated_at: string | null
           username: string | null
         }
@@ -167,10 +225,13 @@ export interface Database {
           about?: string | null
           avatar_url?: string | null
           birthday?: string | null
+          diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id: string
+          intention?: Database["public"]["Enums"]["intention_type"] | null
           kids?: Database["public"]["Enums"]["kids_type"] | null
-          location?: unknown | null
+          lnglat?: unknown | null
+          relationship?: Database["public"]["Enums"]["relationship_type"] | null
           updated_at?: string | null
           username?: string | null
         }
@@ -178,10 +239,13 @@ export interface Database {
           about?: string | null
           avatar_url?: string | null
           birthday?: string | null
+          diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id?: string
+          intention?: Database["public"]["Enums"]["intention_type"] | null
           kids?: Database["public"]["Enums"]["kids_type"] | null
-          location?: unknown | null
+          lnglat?: unknown | null
+          relationship?: Database["public"]["Enums"]["relationship_type"] | null
           updated_at?: string | null
           username?: string | null
         }
@@ -211,11 +275,74 @@ export interface Database {
       }
     }
     Functions: {
+      cube:
+        | {
+            Args: {
+              "": number[]
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              "": number
+            }
+            Returns: unknown
+          }
+      cube_dim: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      cube_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_is_point: {
+        Args: {
+          "": unknown
+        }
+        Returns: boolean
+      }
+      cube_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_recv: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      cube_size: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      current_date_override: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       delete_avatar: {
         Args: {
           avatar_url: string
         }
         Returns: Record<string, unknown>
+      }
+      delete_current_user: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       delete_storage_object: {
         Args: {
@@ -223,6 +350,16 @@ export interface Database {
           object: string
         }
         Returns: Record<string, unknown>
+      }
+      earth: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      gc_to_sec: {
+        Args: {
+          "": number
+        }
+        Returns: number
       }
       get_active_matches: {
         Args: Record<PropertyKey, never>
@@ -240,10 +377,30 @@ export interface Database {
           about: string | null
           avatar_url: string | null
           birthday: string | null
+          diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
+          intention: Database["public"]["Enums"]["intention_type"] | null
           kids: Database["public"]["Enums"]["kids_type"] | null
-          location: unknown | null
+          lnglat: unknown | null
+          relationship: Database["public"]["Enums"]["relationship_type"] | null
+          updated_at: string | null
+          username: string | null
+        }[]
+      }
+      get_compatible_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          about: string | null
+          avatar_url: string | null
+          birthday: string | null
+          diet: Database["public"]["Enums"]["diet_type"] | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          intention: Database["public"]["Enums"]["intention_type"] | null
+          kids: Database["public"]["Enums"]["kids_type"] | null
+          lnglat: unknown | null
+          relationship: Database["public"]["Enums"]["relationship_type"] | null
           updated_at: string | null
           username: string | null
         }[]
@@ -255,12 +412,56 @@ export interface Database {
         }
         Returns: boolean
       }
+      is_profile_compatible: {
+        Args: {
+          user1_id: string
+          user2_id: string
+        }
+        Returns: boolean
+      }
+      latitude: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      longitude: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      sec_to_gc: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
     }
     Enums: {
       creditor_type: "init" | "match" | "stripe"
+      diet_type:
+        | "omnivore"
+        | "pescatarian"
+        | "flexitarian"
+        | "vegetarian"
+        | "vegan"
+        | "kosher"
+        | "halal"
+        | "gluten"
+        | "other"
       gender_type: "male" | "female" | "nonbinary"
+      intention_type:
+        | "unsure"
+        | "casual"
+        | "dating"
+        | "serious"
+        | "marriage"
+        | "friends"
       interaction_type: "none" | "block" | "pass" | "like"
       kids_type: "none" | "unsure" | "want" | "have" | "more"
+      relationship_type: "unsure" | "monog" | "enm"
+      sort_type: "none" | "distance" | "recent"
     }
     CompositeTypes: {
       [_ in never]: never

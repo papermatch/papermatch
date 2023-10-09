@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (22);
+    plan (31);
 
 select
     has_function (
@@ -56,6 +56,9 @@ update public.profiles
 set
     gender = 'male'::gender_type,
     kids = 'none'::kids_type,
+    intention = 'serious'::intention_type,
+    relationship = 'monog'::relationship_type,
+    diet = 'omnivore'::diet_type,
     lnglat = point(74.0060, 40.7128),
     about = 'I like long walks on the beach.'
 where
@@ -66,6 +69,9 @@ update public.profiles
 set
     gender = 'female'::gender_type,
     kids = 'more'::kids_type,
+    intention = 'casual'::intention_type,
+    relationship = 'enm'::relationship_type,
+    diet = 'vegan'::diet_type,
     lnglat = point(122.4194, 37.7749),
     about = 'I like long hikes in the mountains.'
 where
@@ -215,6 +221,108 @@ select
 update public.preferences
 set
     kids = null,
+    intention = array[
+        'unsure'::intention_type,
+        'dating'::intention_type,
+        'serious'::intention_type,
+        'marriage'::intention_type,
+        'friends'::intention_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their intention matches
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (true::boolean)$$
+    );
+
+-- Third user is now incompatible because their intention does not match
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (false::boolean)$$
+    );
+
+-- Fourth user is still incompatible because their intention is null
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (false::boolean)$$
+    );
+
+update public.preferences
+set
+    intention = null,
+    relationship = array[
+        'unsure'::relationship_type,
+        'monog'::relationship_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their relationship matches
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (true::boolean)$$
+    );
+
+-- Third user is now incompatible because their relationship does not match
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (false::boolean)$$
+    );
+
+-- Fourth user is still incompatible because their relationship is null
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (false::boolean)$$
+    );
+
+update public.preferences
+set
+    relationship = null,
+    diet = array[
+        'omnivore'::diet_type,
+        'pescatarian'::diet_type,
+        'flexitarian'::diet_type,
+        'vegetarian'::diet_type,
+        'kosher'::diet_type,
+        'halal'::diet_type,
+        'gluten'::diet_type,
+        'other'::diet_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their diet matches
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (true::boolean)$$
+    );
+
+-- Third user is now incompatible because their diet does not match
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (false::boolean)$$
+    );
+
+-- Fourth user is still incompatible because their diet is null
+select
+    results_eq (
+        'select public.is_profile_compatible(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (false::boolean)$$
+    );
+
+update public.preferences
+set
+    diet = null,
     radius = 1000
 where
     id = '11111111-1111-1111-1111-111111111111';

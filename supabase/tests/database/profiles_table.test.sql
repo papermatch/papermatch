@@ -22,6 +22,9 @@ select
             'birthday',
             'gender',
             'kids',
+            'intention',
+            'relationship',
+            'diet',
             'lnglat',
             'about'
         ]

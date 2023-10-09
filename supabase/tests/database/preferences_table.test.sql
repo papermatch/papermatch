@@ -20,6 +20,9 @@ select
             'max_age',
             'gender',
             'kids',
+            'intention',
+            'relationship',
+            'diet',
             'radius',
             'keywords',
             'updated_at'

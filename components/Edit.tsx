@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, TouchableOpacity } from "react-native";
+import { View, Alert } from "react-native";
 import {
   Button,
   TextInput,
   Appbar,
   Snackbar,
   Menu,
-  IconButton,
   ActivityIndicator,
   HelperText,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
+import { Dropdown } from "./Dropdown";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import { GenderType, KidsType } from "../lib/types";
+import { GenderData, GenderType, KidsType, KidsData } from "../lib/types";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,6 @@ export default function Edit({ session }: { session: Session }) {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
-  const [genderMenuVisible, setGenderMenuVisible] = useState(false);
   const [kids, setKids] = useState<KidsType | null>(null);
   const [kidsMenuVisible, setKidsMenuVisible] = useState(false);
   const [about, setAbout] = useState("");
@@ -171,134 +170,20 @@ export default function Edit({ session }: { session: Session }) {
             {usernameError}
           </HelperText>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <View style={{ flex: 1 }}>
-              <Menu
-                visible={genderMenuVisible}
-                onDismiss={() => setGenderMenuVisible(false)}
-                anchor={
-                  <TextInput
-                    label="Gender"
-                    value={gender ? gender : ""}
-                    left={
-                      <TextInput.Icon
-                        onPress={() => {
-                          setGenderMenuVisible(!genderMenuVisible);
-                        }}
-                        icon={genderMenuVisible ? "menu-up" : "menu-down"}
-                      />
-                    }
-                    right={
-                      gender && (
-                        <TextInput.Icon
-                          icon="close-circle"
-                          onPress={() => setGender(null)}
-                        />
-                      )
-                    }
-                    disabled={true}
-                  />
-                }
-                anchorPosition="bottom"
-              >
-                <Menu.Item
-                  leadingIcon="gender-male"
-                  onPress={() => {
-                    setGender("male");
-                    setGenderMenuVisible(false);
-                  }}
-                  title="Male"
-                />
-                <Menu.Item
-                  leadingIcon="gender-female"
-                  onPress={() => {
-                    setGender("female");
-                    setGenderMenuVisible(false);
-                  }}
-                  title="Female"
-                />
-                <Menu.Item
-                  leadingIcon="gender-non-binary"
-                  onPress={() => {
-                    setGender("nonbinary");
-                    setGenderMenuVisible(false);
-                  }}
-                  title="Nonbinary"
-                />
-              </Menu>
-            </View>
+            <Dropdown
+              label="Gender"
+              data={GenderData}
+              value={gender}
+              onChange={setGender}
+            />
           </View>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <View style={{ flex: 1 }}>
-              <Menu
-                visible={kidsMenuVisible}
-                onDismiss={() => setKidsMenuVisible(false)}
-                anchor={
-                  <TextInput
-                    label="Kids"
-                    value={kids ? kids : ""}
-                    left={
-                      <TextInput.Icon
-                        onPress={() => {
-                          setKidsMenuVisible(!kidsMenuVisible);
-                        }}
-                        icon={kidsMenuVisible ? "menu-up" : "menu-down"}
-                      />
-                    }
-                    right={
-                      kids && (
-                        <TextInput.Icon
-                          icon="close-circle"
-                          onPress={() => setKids(null)}
-                        />
-                      )
-                    }
-                    disabled={true}
-                  />
-                }
-                anchorPosition="bottom"
-              >
-                <Menu.Item
-                  leadingIcon="egg-off"
-                  onPress={() => {
-                    setKids("none");
-                    setKidsMenuVisible(false);
-                  }}
-                  title="Don't want kids"
-                />
-                <Menu.Item
-                  leadingIcon="head-question"
-                  onPress={() => {
-                    setKids("unsure");
-                    setKidsMenuVisible(false);
-                  }}
-                  title="Not sure about kids"
-                />
-                <Menu.Item
-                  leadingIcon="baby"
-                  onPress={() => {
-                    setKids("want");
-                    setKidsMenuVisible(false);
-                  }}
-                  title="Want kids"
-                />
-                <Menu.Item
-                  leadingIcon="baby-carriage-off"
-                  onPress={() => {
-                    setKids("have");
-                    setKidsMenuVisible(false);
-                  }}
-                  title="Have kids and don't want more"
-                />
-                <Menu.Item
-                  leadingIcon="baby-carriage"
-                  onPress={() => {
-                    setKids("more");
-                    setKidsMenuVisible(false);
-                  }}
-                  title="Have kids and want more"
-                />
-              </Menu>
-            </View>
+            <Dropdown
+              label="Kids"
+              data={KidsData}
+              value={kids}
+              onChange={setKids}
+            />
           </View>
           <TextInput
             style={[styles.verticallySpaced]}

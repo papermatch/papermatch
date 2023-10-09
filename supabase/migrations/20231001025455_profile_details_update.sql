@@ -6,6 +6,29 @@ create type gender_type as enum('male', 'female', 'nonbinary');
 
 create type kids_type as enum('none', 'unsure', 'want', 'have', 'more');
 
+create type intention_type as enum(
+    'unsure',
+    'casual',
+    'dating',
+    'serious',
+    'marriage',
+    'friends'
+);
+
+create type relationship_type as enum('unsure', 'monog', 'enm');
+
+create type diet_type as enum(
+    'omnivore',
+    'pescatarian',
+    'flexitarian',
+    'vegetarian',
+    'vegan',
+    'kosher',
+    'halal',
+    'gluten',
+    'other'
+);
+
 alter table profiles
 drop column if exists website;
 
@@ -20,6 +43,15 @@ add column gender gender_type;
 
 alter table profiles
 add column kids kids_type;
+
+alter table profiles
+add column intention intention_type;
+
+alter table profiles
+add column relationship relationship_type;
+
+alter table profiles
+add column diet diet_type;
 
 alter table profiles
 add column lnglat point;
@@ -43,6 +75,9 @@ create table
         max_age int,
         gender public.gender_type[],
         kids public.kids_type[],
+        intention public.intention_type[],
+        relationship public.relationship_type[],
+        diet public.diet_type[],
         radius float,
         keywords text[],
         updated_at timestamptz not null default now(),
@@ -117,6 +152,24 @@ begin
 
     if s1.kids is not null then
         if p2.kids is null or array_position(s1.kids, p2.kids) is null then
+            return false;
+        end if;
+    end if;
+
+    if s1.intention is not null then
+        if p2.intention is null or array_position(s1.intention, p2.intention) is null then
+            return false;
+        end if;
+    end if;
+
+    if s1.relationship is not null then
+        if p2.relationship is null or array_position(s1.relationship, p2.relationship) is null then
+            return false;
+        end if;
+    end if;
+
+    if s1.diet is not null then
+        if p2.diet is null or array_position(s1.diet, p2.diet) is null then
             return false;
         end if;
     end if;
