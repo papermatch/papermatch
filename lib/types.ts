@@ -1,5 +1,5 @@
+import { Key } from "react";
 import { Database } from "./database";
-import { DropdownData } from "../components/Dropdown";
 
 export type CreditData = Database["public"]["Tables"]["credits"]["Row"];
 export type InteractionData =
@@ -16,7 +16,13 @@ export type InteractionType = Database["public"]["Enums"]["interaction_type"];
 export type KidsType = Database["public"]["Enums"]["kids_type"];
 export type RelationshipType = Database["public"]["Enums"]["relationship_type"];
 
-export const GenderData: DropdownData<GenderType>[] = [
+export type AttributeData<T extends Key> = {
+  value: T;
+  label: string;
+  icon: string;
+};
+
+export const GenderData: AttributeData<GenderType>[] = [
   {
     value: "male",
     label: "Male",
@@ -34,7 +40,7 @@ export const GenderData: DropdownData<GenderType>[] = [
   },
 ];
 
-export const KidsData: DropdownData<KidsType>[] = [
+export const KidsData: AttributeData<KidsType>[] = [
   {
     value: "none",
     label: "Don't want kids",

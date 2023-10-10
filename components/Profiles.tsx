@@ -17,6 +17,7 @@ import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { calculateAge } from "../lib/utils";
 import { GenderData, KidsData } from "../lib/types";
+import { Attributes } from "./Attributes";
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -137,55 +138,14 @@ export default function Profiles({ session }: { session: Session }) {
                       }}
                     >
                       <Text variant="titleLarge">{profile.username}</Text>
-                      <View
-                        style={[
-                          styles.verticallySpaced,
-                          {
-                            flexDirection: "row",
-                            flexWrap: "wrap",
-                          },
-                        ]}
-                      >
-                        {profile.birthday && (
-                          <Chip
-                            style={{ margin: 4 }}
-                            icon="cake-variant"
-                            disabled={loading}
-                          >
-                            {calculateAge(Date.parse(profile.birthday))}
-                          </Chip>
-                        )}
-                        {profile.gender && (
-                          <Chip
-                            style={{ margin: 4 }}
-                            icon={
-                              GenderData.find(
-                                (item) => item.value === profile.gender
-                              )?.icon || "gender-transgender"
-                            }
-                            disabled={loading}
-                          >
-                            {GenderData.find(
-                              (item) => item.value === profile.gender
-                            )?.label || ""}
-                          </Chip>
-                        )}
-                        {profile.kids && (
-                          <Chip
-                            style={{ margin: 4 }}
-                            icon={
-                              KidsData.find(
-                                (item) => item.value === profile.kids
-                              )?.icon || "baby-carriage"
-                            }
-                            disabled={loading}
-                          >
-                            {KidsData.find(
-                              (item) => item.value === profile.kids
-                            )?.label || ""}
-                          </Chip>
-                        )}
-                      </View>
+                      <Attributes
+                        style={{
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                        }}
+                        profile={profile}
+                        loading={loading}
+                      />
                     </View>
                   </View>
                 </Card>

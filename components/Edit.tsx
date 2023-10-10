@@ -170,6 +170,7 @@ export default function Edit({ session }: { session: Session }) {
           </HelperText>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <Dropdown
+              style={{ flex: 1 }}
               label="Gender"
               data={GenderData}
               value={gender}
@@ -178,6 +179,7 @@ export default function Edit({ session }: { session: Session }) {
           </View>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <Dropdown
+              style={{ flex: 1 }}
               label="Kids"
               data={KidsData}
               value={kids}

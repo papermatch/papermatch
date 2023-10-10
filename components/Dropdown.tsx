@@ -1,18 +1,15 @@
 import { useState, Key } from "react";
-import { View } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import { TextInput, Menu } from "react-native-paper";
-
-export type DropdownData<T extends Key> = {
-  value: T;
-  label: string;
-  icon: string;
-};
+import { AttributeData } from "../lib/types";
 
 type DropdownProps<T extends Key> = {
   label: string;
-  data: DropdownData<T>[];
+  data: AttributeData<T>[];
   value: T | null;
-  onChange: (newValue: T | null) => void;
+  onChange: (nextValue: T | null) => void;
+  style?: StyleProp<ViewStyle>;
+  loading?: boolean;
 };
 
 export const Dropdown = <T extends Key>({
@@ -20,11 +17,13 @@ export const Dropdown = <T extends Key>({
   data,
   value,
   onChange,
+  style,
+  loading,
 }: DropdownProps<T>) => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={style}>
       <Menu
         visible={menuVisible}
         onDismiss={() => setMenuVisible(false)}
@@ -62,6 +61,7 @@ export const Dropdown = <T extends Key>({
               setMenuVisible(false);
             }}
             title={item.label}
+            disabled={loading}
           />
         ))}
       </Menu>

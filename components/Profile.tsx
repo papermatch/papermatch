@@ -17,8 +17,7 @@ import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
-import { calculateAge } from "../lib/utils";
-import { GenderData, KidsData } from "../lib/types";
+import { Attributes } from "./Attributes";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -149,71 +148,40 @@ export default function Profile({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
-          <View style={styles.centerAligned}>
-            <Avatar
-              size={200}
-              url={profile?.avatar_url || null}
-              onPress={() => {
-                setImageUrl(profile?.avatar_url || null);
-              }}
-            />
-          </View>
-          <View
-            style={[
-              styles.verticallySpaced,
-              {
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-              },
-            ]}
-          >
-            {profile?.birthday && (
-              <Chip
-                style={{ margin: 8 }}
-                icon="cake-variant"
-                disabled={loading}
-              >
-                {calculateAge(Date.parse(profile?.birthday))}
-              </Chip>
-            )}
-            {profile?.gender && (
-              <Chip
-                style={{ margin: 8 }}
-                icon={
-                  GenderData.find((item) => item.value === profile.gender)
-                    ?.icon || "gender-transgender"
-                }
-                disabled={loading}
-              >
-                {GenderData.find((item) => item.value === profile.gender)
-                  ?.label || ""}
-              </Chip>
-            )}
-            {profile?.kids && (
-              <Chip
-                style={{ margin: 8 }}
-                icon={
-                  KidsData.find((item) => item.value === profile.kids)?.icon ||
-                  "baby-carriage"
-                }
-                disabled={loading}
-              >
-                {KidsData.find((item) => item.value === profile.kids)?.label ||
-                  ""}
-              </Chip>
-            )}
-          </View>
-          <Divider style={styles.verticallySpaced} />
-          <Text style={styles.verticallySpaced} variant="titleLarge">
-            About
-          </Text>
-          <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
-            {profile?.about}
-          </Text>
+          {profile ? (
+            <View>
+              <View style={styles.centerAligned}>
+                <Avatar
+                  size={200}
+                  url={profile?.avatar_url || null}
+                  onPress={() => {
+                    setImageUrl(profile?.avatar_url || null);
+                  }}
+                />
+              </View>
+              <Attributes
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+                profile={profile}
+                loading={loading}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                About
+              </Text>
+              <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
+                {profile?.about}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.verticallySpaced}>Profile not found</Text>
+          )}
         </ScrollView>
       )}
-      {session?.user.id != id && (
+      {session?.user.id != id && profile && (
         <View>
           <FAB
             icon="thumb-down"
