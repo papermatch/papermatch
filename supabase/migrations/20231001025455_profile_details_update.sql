@@ -9,7 +9,6 @@ create type kids_type as enum('none', 'unsure', 'want', 'have', 'more');
 create type intention_type as enum(
     'unsure',
     'casual',
-    'dating',
     'serious',
     'marriage',
     'friends'
@@ -20,7 +19,6 @@ create type relationship_type as enum('unsure', 'monog', 'enm');
 create type diet_type as enum(
     'omnivore',
     'pescatarian',
-    'flexitarian',
     'vegetarian',
     'vegan',
     'kosher',
@@ -118,91 +116,113 @@ begin
 end;
 $$ language plpgsql security definer;
 
-create function public.is_profile_compatible (user1_id uuid, user2_id uuid) returns boolean as $$
+create function public.get_compatibility_score (user1_id uuid, user2_id uuid) returns float as $$
 declare
-    s1 public.preferences%rowtype;
     p1 public.profiles%rowtype;
     p2 public.profiles%rowtype;
+    q1 public.preferences%rowtype;
+    n int := 0;
+    d int := 0;
 begin
-    select into s1 * from public.preferences where id = user1_id;
     select into p1 * from public.profiles where id = user1_id;
     select into p2 * from public.profiles where id = user2_id;
+    select into q1 * from public.preferences where id = user1_id;
 
-    if s1.min_age is not null then
-        if p2.birthday is null or extract(
+    if q1.min_age is not null then
+        d := d + 1;
+        if p2.birthday is not null and extract(
             year from age(current_date_override(), p2.birthday)
-        ) < s1.min_age then
-            return false;
+        ) >= q1.min_age then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.max_age is not null then
-        if p2.birthday is null or extract(
+    if q1.max_age is not null then
+        d := d + 1;
+        if p2.birthday is not null and extract(
             year from age(current_date_override(), p2.birthday)
-        ) > s1.max_age then
-            return false;
+        ) <= q1.max_age then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.gender is not null then
-        if p2.gender is null or array_position(s1.gender, p2.gender) is null then
-            return false;
+    if q1.gender is not null then
+        d := d + 1;
+        if p2.gender is not null and q1.gender && array[p2.gender] then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.kids is not null then
-        if p2.kids is null or array_position(s1.kids, p2.kids) is null then
-            return false;
+    if q1.kids is not null then
+        d := d + 1;
+        if p2.kids is not null and q1.kids && array[p2.kids] then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.intention is not null then
-        if p2.intention is null or array_position(s1.intention, p2.intention) is null then
-            return false;
+    if q1.intention is not null then
+        d := d + 1;
+        if p2.intention is not null and q1.intention && array[p2.intention] then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.relationship is not null then
-        if p2.relationship is null or array_position(s1.relationship, p2.relationship) is null then
-            return false;
+    if q1.relationship is not null then
+        d := d + 1;
+        if p2.relationship is not null and q1.relationship && array[p2.relationship] then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.diet is not null then
-        if p2.diet is null or array_position(s1.diet, p2.diet) is null then
-            return false;
+    if q1.diet is not null then
+        d := d + 1;
+        if p2.diet is not null and q1.diet && array[p2.diet] then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.radius is not null and p1.lnglat is not null then
-        if p2.lnglat is null or p1.lnglat <@> p2.lnglat > s1.radius then
-            return false;
+    if q1.radius is not null and p1.lnglat is not null then
+        d := d + 1;
+        if p2.lnglat is not null and p1.lnglat <@> p2.lnglat <= q1.radius then
+            n := n + 1;
         end if;
     end if;
 
-    if s1.keywords is not null then
-        if p2.about is null or not exists (
+    if q1.keywords is not null then
+        d := d + 1;
+        if p2.about is not null and exists (
             select 1 
-            from unnest(s1.keywords) as keyword
+            from unnest(q1.keywords) as keyword
             where p2.about ilike '%' || keyword || '%'
         ) then
-            return false;
+            n := n + 1;
         end if;
     end if;
 
-    return true;
+    if d = 0 then
+        return null;
+    else
+        return 9::float * n::float / d::float + 1::float;
+    end if;
 end;
 $$ language plpgsql security definer;
 
-create function public.get_compatible_profiles () returns setof profiles as $$
+create function public.get_compatible_profiles () returns table (profile public.profiles, score float) as $$
 begin
     return query
-        select p.*
+    with q as (
+        select 
+            p, public.get_compatibility_score(auth.uid(), p.id) as s
         from 
             public.get_active_profiles() as p
-        where
-            public.is_profile_compatible (auth.uid(), p.id)
-        and
-            public.is_profile_compatible (p.id, auth.uid());
+        where 
+            p.id != auth.uid()
+    )
+    select 
+        p, s
+    from 
+        q
+    order by 
+        s desc;
 end;
 $$ language plpgsql security definer;

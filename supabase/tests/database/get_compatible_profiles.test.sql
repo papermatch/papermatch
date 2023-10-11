@@ -29,7 +29,7 @@ insert into
 values
     (
         '11111111-1111-1111-1111-111111111111',
-        '{"username": "First", "birthday": "1990-01-01"}'
+        '{"username": "First"}'
     ),
     (
         '22222222-2222-2222-2222-222222222222',
@@ -41,16 +41,13 @@ values
     ),
     (
         '44444444-4444-4444-4444-444444444444',
-        '{"username": "Fourth", "birthday": "1990-01-01"}'
+        '{"username": "Fourth"}'
     );
 
 -- First User lives in Chicago
 update public.profiles
 set
-    gender = 'nonbinary'::gender_type,
-    kids = 'unsure'::kids_type,
-    lnglat = point(87.6298, 41.8781),
-    about = 'I like long swims in the ocean.'
+    lnglat = point(87.6298, 41.8781)
 where
     id = '11111111-1111-1111-1111-111111111111';
 
@@ -65,6 +62,25 @@ set
         'want'::kids_type,
         'have'::kids_type
     ],
+    intention = array[
+        'unsure'::intention_type,
+        'serious'::intention_type,
+        'marriage'::intention_type,
+        'friends'::intention_type
+    ],
+    relationship = array[
+        'unsure'::relationship_type,
+        'monog'::relationship_type
+    ],
+    diet = array[
+        'omnivore'::diet_type,
+        'pescatarian'::diet_type,
+        'vegetarian'::diet_type,
+        'kosher'::diet_type,
+        'halal'::diet_type,
+        'gluten'::diet_type,
+        'other'::diet_type
+    ],
     radius = 1000,
     keywords = array['beach']
 where
@@ -75,6 +91,9 @@ update public.profiles
 set
     gender = 'male'::gender_type,
     kids = 'none'::kids_type,
+    intention = 'serious'::intention_type,
+    relationship = 'monog'::relationship_type,
+    diet = 'omnivore'::diet_type,
     lnglat = point(74.0060, 40.7128),
     about = 'I like long walks on the beach.'
 where
@@ -85,26 +104,13 @@ update public.profiles
 set
     gender = 'female'::gender_type,
     kids = 'more'::kids_type,
+    intention = 'casual'::intention_type,
+    relationship = 'enm'::relationship_type,
+    diet = 'vegan'::diet_type,
     lnglat = point(122.4194, 37.7749),
     about = 'I like long hikes in the mountains.'
 where
     id = '33333333-3333-3333-3333-333333333333';
-
--- Fourth User lives in Chicago
-update public.profiles
-set
-    gender = 'male'::gender_type,
-    kids = 'have'::kids_type,
-    lnglat = point(87.6298, 41.8781),
-    about = 'I like long walks on the beach.'
-where
-    id = '44444444-4444-4444-4444-444444444444';
-
-update public.preferences
-set
-    gender = array['female'::gender_type]
-where
-    id = '44444444-4444-4444-4444-444444444444';
 
 -- Authenticate as First User
 set
@@ -112,11 +118,13 @@ set
 
 set role 'authenticated';
 
--- First User is only compatible with Second User because of Fourth User's preferences
+-- First User is only compatible with Second User (Third User only satisfies min_age)
 select
     results_eq (
-        'select id from public.get_compatible_profiles()',
-        $$values ('22222222-2222-2222-2222-222222222222'::uuid)$$
+        'select (profile).id, score from public.get_compatible_profiles()',
+        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float),
+                 ('33333333-3333-3333-3333-333333333333'::uuid, 2::float),
+                 ('44444444-4444-4444-4444-444444444444'::uuid, 1::float)$$
     );
 
 -- Cleanup

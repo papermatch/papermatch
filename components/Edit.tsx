@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
+import { View, Alert, ScrollView } from "react-native";
 import {
   Button,
   TextInput,
@@ -14,7 +14,18 @@ import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import { GenderData, GenderType, KidsType, KidsData } from "../lib/types";
+import {
+  DietType,
+  DietData,
+  GenderType,
+  GenderData,
+  IntentionType,
+  IntentionData,
+  KidsType,
+  KidsData,
+  RelationshipType,
+  RelationshipData,
+} from "../lib/types";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -22,7 +33,12 @@ export default function Edit({ session }: { session: Session }) {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
+  const [intention, setIntention] = useState<IntentionType | null>(null);
+  const [relationship, setRelationship] = useState<RelationshipType | null>(
+    null
+  );
   const [kids, setKids] = useState<KidsType | null>(null);
+  const [diet, setDiet] = useState<DietType | null>(null);
   const [about, setAbout] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -51,7 +67,10 @@ export default function Edit({ session }: { session: Session }) {
       if (data) {
         setUsername(data.username);
         setGender(data.gender);
+        setIntention(data.intention);
+        setRelationship(data.relationship);
         setKids(data.kids);
+        setDiet(data.diet);
         setAbout(data.about);
       }
     } catch (error) {
@@ -66,12 +85,18 @@ export default function Edit({ session }: { session: Session }) {
   async function updateProfile({
     username,
     gender,
+    intention,
+    relationship,
     kids,
+    diet,
     about,
   }: {
     username: string;
     gender: GenderType | null;
+    intention: IntentionType | null;
+    relationship: RelationshipType | null;
     kids: KidsType | null;
+    diet: DietType | null;
     about: string;
   }) {
     if (!validateUsername(username)) {
@@ -85,7 +110,10 @@ export default function Edit({ session }: { session: Session }) {
       const updates = {
         username: username,
         gender: gender,
+        intention: intention,
+        relationship: relationship,
         kids: kids,
+        diet: diet,
         about: about,
         updated_at: new Date(),
       };
@@ -153,7 +181,7 @@ export default function Edit({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <TextInput
             style={styles.verticallySpaced}
             label="Username (your first name is fine)"
@@ -168,24 +196,41 @@ export default function Edit({ session }: { session: Session }) {
           <HelperText type="error" visible={!!usernameError}>
             {usernameError}
           </HelperText>
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <Dropdown
-              style={{ flex: 1 }}
-              label="Gender"
-              data={GenderData}
-              value={gender}
-              onChange={setGender}
-            />
-          </View>
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <Dropdown
-              style={{ flex: 1 }}
-              label="Kids"
-              data={KidsData}
-              value={kids}
-              onChange={setKids}
-            />
-          </View>
+          <Dropdown
+            style={[styles.verticallySpaced, { flex: 1 }]}
+            label="Gender"
+            data={GenderData}
+            value={gender}
+            onChange={setGender}
+          />
+          <Dropdown
+            style={[styles.verticallySpaced, { flex: 1 }]}
+            label="Family plan"
+            data={KidsData}
+            value={kids}
+            onChange={setKids}
+          />
+          <Dropdown
+            style={[styles.verticallySpaced, { flex: 1 }]}
+            label="Dating intention"
+            data={IntentionData}
+            value={intention}
+            onChange={setIntention}
+          />
+          <Dropdown
+            style={[styles.verticallySpaced, { flex: 1 }]}
+            label="Relationship style"
+            data={RelationshipData}
+            value={relationship}
+            onChange={setRelationship}
+          />
+          <Dropdown
+            style={[styles.verticallySpaced, { flex: 1 }]}
+            label="Diet"
+            data={DietData}
+            value={diet}
+            onChange={setDiet}
+          />
           <TextInput
             style={[styles.verticallySpaced]}
             label="About"
@@ -198,12 +243,22 @@ export default function Edit({ session }: { session: Session }) {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
-            onPress={() => updateProfile({ username, gender, kids, about })}
+            onPress={() =>
+              updateProfile({
+                username,
+                gender,
+                intention,
+                relationship,
+                kids,
+                diet,
+                about,
+              })
+            }
             disabled={loading}
           >
             {loading ? "Loading ..." : "Update"}
           </Button>
-        </View>
+        </ScrollView>
       )}
       <Snackbar
         visible={snackbarVisible}

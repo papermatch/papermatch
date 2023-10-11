@@ -10,14 +10,23 @@ import {
   ActivityIndicator,
   HelperText,
   Divider,
-  Text,
-  Checkbox,
   Chip,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import { GenderType, GenderData, KidsType, KidsData } from "../lib/types";
+import {
+  DietType,
+  DietData,
+  GenderType,
+  GenderData,
+  IntentionType,
+  IntentionData,
+  KidsType,
+  KidsData,
+  RelationshipType,
+  RelationshipData,
+} from "../lib/types";
 import { Checkboxes } from "./Checkboxes";
 
 export default function Preferences({ session }: { session: Session }) {
@@ -27,7 +36,10 @@ export default function Preferences({ session }: { session: Session }) {
   const [maxAge, setMaxAge] = useState("");
   const [maxAgeError, setMaxAgeError] = useState("");
   const [gender, setGender] = useState<GenderType[]>([]);
+  const [intention, setIntention] = useState<IntentionType[]>([]);
+  const [relationship, setRelationship] = useState<RelationshipType[]>([]);
   const [kids, setKids] = useState<KidsType[]>([]);
+  const [diet, setDiet] = useState<DietType[]>([]);
   const [radius, setRadius] = useState("");
   const [radiusError, setRadiusError] = useState("");
   const [keyword, setKeyword] = useState<string>("");
@@ -60,7 +72,10 @@ export default function Preferences({ session }: { session: Session }) {
         setMinAge(data.min_age?.toString() ?? "");
         setMaxAge(data.max_age?.toString() ?? "");
         setGender(data.gender ?? []);
+        setIntention(data.intention ?? []);
+        setRelationship(data.relationship ?? []);
         setKids(data.kids ?? []);
+        setDiet(data.diet ?? []);
         setRadius(data.radius?.toString() ?? "");
         setKeywords(data.keywords ?? []);
       }
@@ -77,14 +92,20 @@ export default function Preferences({ session }: { session: Session }) {
     minAge,
     maxAge,
     gender,
+    intention,
+    relationship,
     kids,
+    diet,
     radius,
     keywords,
   }: {
     minAge: string;
     maxAge: string;
     gender: GenderType[];
+    intention: IntentionType[];
+    relationship: RelationshipType[];
     kids: KidsType[];
+    diet: DietType[];
     radius: string;
     keywords: string[];
   }) {
@@ -106,7 +127,10 @@ export default function Preferences({ session }: { session: Session }) {
         min_age: parseInt(minAge),
         max_age: parseInt(maxAge),
         gender: gender.length ? gender : null,
+        intention: intention.length ? intention : null,
+        relationship: relationship.length ? relationship : null,
         kids: kids.length ? kids : null,
+        diet: diet.length ? diet : null,
         radius: parseFloat(radius),
         keywords: keywords.length ? keywords : null,
         updated_at: new Date(),
@@ -228,10 +252,31 @@ export default function Preferences({ session }: { session: Session }) {
           />
           <Divider style={styles.verticallySpaced} />
           <Checkboxes
-            label="Kids"
+            label="Family plan"
             data={KidsData}
             value={kids}
             onChange={setKids}
+          />
+          <Divider style={styles.verticallySpaced} />
+          <Checkboxes
+            label="Dating intention"
+            data={IntentionData}
+            value={intention}
+            onChange={setIntention}
+          />
+          <Divider style={styles.verticallySpaced} />
+          <Checkboxes
+            label="Relationship style"
+            data={RelationshipData}
+            value={relationship}
+            onChange={setRelationship}
+          />
+          <Divider style={styles.verticallySpaced} />
+          <Checkboxes
+            label="Diet"
+            data={DietData}
+            value={diet}
+            onChange={setDiet}
           />
           <Divider style={styles.verticallySpaced} />
           <TextInput
@@ -287,7 +332,10 @@ export default function Preferences({ session }: { session: Session }) {
                 minAge,
                 maxAge,
                 gender,
+                intention,
+                relationship,
                 kids,
+                diet,
                 radius,
                 keywords,
               })

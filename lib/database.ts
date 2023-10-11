@@ -443,7 +443,6 @@ export interface Database {
       diet_type:
         | "omnivore"
         | "pescatarian"
-        | "flexitarian"
         | "vegetarian"
         | "vegan"
         | "kosher"
@@ -451,13 +450,7 @@ export interface Database {
         | "gluten"
         | "other"
       gender_type: "male" | "female" | "nonbinary"
-      intention_type:
-        | "unsure"
-        | "casual"
-        | "dating"
-        | "serious"
-        | "marriage"
-        | "friends"
+      intention_type: "unsure" | "casual" | "serious" | "marriage" | "friends"
       interaction_type: "none" | "block" | "pass" | "like"
       kids_type: "none" | "unsure" | "want" | "have" | "more"
       relationship_type: "unsure" | "monog" | "enm"

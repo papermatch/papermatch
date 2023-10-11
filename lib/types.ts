@@ -22,6 +22,49 @@ export type AttributeData<T extends Key> = {
   icon: string;
 };
 
+export const DietData: AttributeData<DietType>[] = [
+  {
+    value: "omnivore",
+    label: "Omnivore",
+    icon: "food-steak",
+  },
+  {
+    value: "pescatarian",
+    label: "Pescatarian",
+    icon: "fish",
+  },
+  {
+    value: "vegetarian",
+    label: "Vegetarian",
+    icon: "carrot",
+  },
+  {
+    value: "vegan",
+    label: "Vegan",
+    icon: "alpha-v",
+  },
+  {
+    value: "kosher",
+    label: "Kosher",
+    icon: "food-kosher",
+  },
+  {
+    value: "halal",
+    label: "Halal",
+    icon: "food-halal",
+  },
+  {
+    value: "gluten",
+    label: "Gluten-free",
+    icon: "food-croissant",
+  },
+  {
+    value: "other",
+    label: "Other diet",
+    icon: "food",
+  },
+];
+
 export const GenderData: AttributeData<GenderType>[] = [
   {
     value: "male",
@@ -37,6 +80,34 @@ export const GenderData: AttributeData<GenderType>[] = [
     value: "nonbinary",
     label: "Nonbinary",
     icon: "gender-non-binary",
+  },
+];
+
+export const IntentionData: AttributeData<IntentionType>[] = [
+  {
+    value: "unsure",
+    label: "Figuring out my intention",
+    icon: "head-question",
+  },
+  {
+    value: "casual",
+    label: "Casual dating",
+    icon: "heart-half",
+  },
+  {
+    value: "serious",
+    label: "Serious dating",
+    icon: "heart",
+  },
+  {
+    value: "marriage",
+    label: "Marriage",
+    icon: "ring",
+  },
+  {
+    value: "friends",
+    label: "Friendship",
+    icon: "account-group",
   },
 ];
 
@@ -65,5 +136,23 @@ export const KidsData: AttributeData<KidsType>[] = [
     value: "more",
     label: "Have kids and want more",
     icon: "baby-carriage",
+  },
+];
+
+export const RelationshipData: AttributeData<RelationshipType>[] = [
+  {
+    value: "unsure",
+    label: "Figuring out my relationship style",
+    icon: "head-question",
+  },
+  {
+    value: "monog",
+    label: "Monogamous",
+    icon: "heart",
+  },
+  {
+    value: "enm",
+    label: "Ethically non-monogamous",
+    icon: "heart-multiple",
   },
 ];
