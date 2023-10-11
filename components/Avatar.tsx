@@ -1,19 +1,27 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
-import { Avatar as RNPAvatar, Button } from "react-native-paper";
+import { View, Alert, TouchableOpacity } from "react-native";
+import {
+  Avatar as RNPAvatar,
+  Button,
+  ActivityIndicator,
+} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
 import styles from "../lib/styles";
 
-interface Props {
-  size: number;
+export default function Avatar({
+  url,
+  size = 150,
+  onUpload,
+  onPress,
+}: {
   url: string | null;
-  onUpload?: (filePath: string) => void;
-}
-
-export default function Avatar({ url, size = 150, onUpload }: Props) {
+  size: number;
+  onUpload?: (newUrl: string) => void;
+  onPress?: () => void;
+}) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
 
@@ -88,8 +96,16 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
     }
   }
 
+  if (uploading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size={size} />
+      </View>
+    );
+  }
+
   return (
-    <View>
+    <TouchableOpacity onPress={onPress ?? uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <RNPAvatar.Image
           style={styles.verticallySpaced}
@@ -97,17 +113,12 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
           source={{ uri: avatarUrl }}
         />
       ) : (
-        <View />
-      )}
-      {onUpload && (
-        <Button
+        <RNPAvatar.Icon
           style={styles.verticallySpaced}
-          onPress={uploadAvatar}
-          disabled={uploading}
-        >
-          {uploading ? "Uploading ..." : "Upload"}
-        </Button>
+          size={size}
+          icon="account"
+        />
       )}
-    </View>
+    </TouchableOpacity>
   );
 }

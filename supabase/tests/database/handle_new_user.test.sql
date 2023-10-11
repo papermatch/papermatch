@@ -24,14 +24,14 @@ insert into
 values
     (
         '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
+        '{"username": "First", "birthday": "2001-01-01"}'
     );
 
 -- Check that profile created
 select
     results_eq (
-        'select id, full_name, avatar_url from public.profiles where id = ''11111111-1111-1111-1111-111111111111''',
-        $$values ('11111111-1111-1111-1111-111111111111'::uuid, 'Test User', '')$$
+        'select id, username, birthday from public.profiles where id = ''11111111-1111-1111-1111-111111111111''',
+        $$values ('11111111-1111-1111-1111-111111111111'::uuid, 'First'::text, '2001-01-01'::date)$$
     );
 
 -- Check for initial credit

@@ -20,22 +20,13 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    ),
-    (
-        '33333333-3333-3333-3333-333333333333',
-        '{"full_name": "Third User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222'),
+    ('33333333-3333-3333-3333-333333333333');
 
--- Test User and Other User like each other, results in an active match
+-- First User and Second User like each other, results in an active match
 insert into
     interactions (user_id, target_id, interaction)
 values
@@ -56,7 +47,7 @@ select
         $$values (1::bigint)$$
     );
 
--- Test User and Third User like each other, does not result in match because Test User has no remaining credits
+-- First User and Third User like each other, does not result in match because First User has no remaining credits
 insert into
     interactions (user_id, target_id, interaction)
 values
@@ -77,7 +68,7 @@ select
         $$values (0::bigint)$$
     );
 
--- Test User adds credits, pending match with Third User is automatically created
+-- First User adds credits, pending match with Third User is automatically created
 insert into
     credits (user_id, creditor, creditor_id, credits)
 values

@@ -1,17 +1,29 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert } from "react-native";
-import { Button, Appbar } from "react-native-paper";
+import { View, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  Appbar,
+  FAB,
+  Menu,
+  Divider,
+  Text,
+  ActivityIndicator,
+  Portal,
+  Modal,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
-import { useParams, useNavigate } from "../lib/routing";
+import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
+import { Attributes } from "./Attributes";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [interaction, setInteraction] = useState(null);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -93,70 +105,131 @@ export default function Profile({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header>
+      <Appbar.Header mode="center-aligned">
         <Appbar.BackAction
           onPress={() => {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username || ""} />
+        <Appbar.Content title={profile?.username ?? "Profile"} />
+        <Menu
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="dots-vertical"
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
+            />
+          }
+        >
+          {session?.user.id == id ? (
+            <Menu.Item
+              onPress={() => {
+                navigate(ROUTES.EDIT);
+              }}
+              title="Edit"
+            />
+          ) : (
+            <Menu.Item
+              onPress={() => {
+                handleInteraction("block");
+              }}
+              title="Block"
+            />
+          )}
+        </Menu>
       </Appbar.Header>
-      <View style={styles.container}>
-        <View style={styles.centerAligned}>
-          <Avatar size={200} url={profile?.avatar_url || null} />
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
         </View>
-        {interaction !== "like" ? (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("like")}
+      ) : (
+        <ScrollView style={styles.container}>
+          {profile ? (
+            <View>
+              <View style={styles.centerAligned}>
+                <Avatar
+                  size={200}
+                  url={profile?.avatar_url || null}
+                  onPress={() => {
+                    setImageUrl(profile?.avatar_url || null);
+                  }}
+                />
+              </View>
+              <Attributes
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+                profile={profile}
+                loading={loading}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                About
+              </Text>
+              <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
+                {profile?.about}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.verticallySpaced}>Profile not found</Text>
+          )}
+        </ScrollView>
+      )}
+      {session?.user.id != id && profile && (
+        <View>
+          <FAB
+            icon="thumb-down"
+            style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
+            color={interaction == "pass" ? "red" : "grey"}
+            onPress={() =>
+              interaction == "pass"
+                ? handleInteraction("none")
+                : handleInteraction("pass")
+            }
             disabled={loading}
-          >
-            Like
-          </Button>
-        ) : (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("none")}
+          />
+          <FAB
+            icon="thumb-up"
+            style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+            color={interaction == "like" ? "green" : "grey"}
+            onPress={() =>
+              interaction == "like"
+                ? handleInteraction("none")
+                : handleInteraction("like")
+            }
             disabled={loading}
-          >
-            Unlike
-          </Button>
-        )}
-        {interaction !== "pass" ? (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("pass")}
-            disabled={loading}
-          >
-            Pass
-          </Button>
-        ) : (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("none")}
-            disabled={loading}
-          >
-            Unpass
-          </Button>
-        )}
-        {interaction !== "block" ? (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("block")}
-            disabled={loading}
-          >
-            Block
-          </Button>
-        ) : (
-          <Button
-            style={styles.verticallySpaced}
-            onPress={() => handleInteraction("none")}
-            disabled={loading}
-          >
-            Unblock
-          </Button>
-        )}
-      </View>
+          />
+        </View>
+      )}
+      <Portal>
+        <Modal
+          visible={!!imageUrl}
+          onDismiss={() => setImageUrl(null)}
+          contentContainerStyle={{ flex: 1 }}
+        >
+          {!!imageUrl && (
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              onPress={() => setImageUrl(null)}
+            >
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ flex: 1 }}
+                resizeMode="contain"
+                onLoad={() => console.log(`Image ${imageUrl} loaded!`)}
+                onError={(error) =>
+                  console.log(`Image ${imageUrl} error:`, error)
+                }
+              />
+            </TouchableOpacity>
+          )}
+        </Modal>
+      </Portal>
     </View>
   );
 }

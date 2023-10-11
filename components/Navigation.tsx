@@ -8,6 +8,7 @@ import styles from "../lib/styles";
 
 export default function Navigation({ session }: { session: Session }) {
   const [active, setActive] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +20,7 @@ export default function Navigation({ session }: { session: Session }) {
 
   async function getActive() {
     try {
+      setLoading(true);
       let { data, error } = await supabase
         .from("active")
         .select("*")
@@ -34,6 +36,8 @@ export default function Navigation({ session }: { session: Session }) {
       if (error instanceof Error) {
         Alert.alert(error.message);
       }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -61,15 +65,15 @@ export default function Navigation({ session }: { session: Session }) {
       />
       <View>
         <Badge
-          visible={!active}
+          visible={!loading && !active}
           size={10}
           style={{ position: "absolute", top: 10, right: 10 }}
         />
         <Appbar.Action
-          icon={location.pathname === ROUTES.CHECKOUT ? "cart" : "cart-outline"}
+          icon={location.pathname === ROUTES.CREDITS ? "hand-coin" : "hand-coin-outline"}
           size={30}
           onPress={() => {
-            navigate(ROUTES.CHECKOUT);
+            navigate(ROUTES.CREDITS);
           }}
           animated={false}
         />

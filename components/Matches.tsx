@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, Appbar, ActivityIndicator } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
-import { ROUTES, Link } from "../lib/routing";
-import { MatchData, ProfileData } from "../lib/types";
+import Navigation from "./Navigation";
+import { ROUTES, useNavigate } from "../lib/routing";
+import { MatchData, ProfileData, MessageData } from "../lib/types";
 import styles from "../lib/styles";
 
-type MatchProfileData = {
+type MatchesData = {
   match: MatchData;
   profile: ProfileData;
+  message: MessageData | null;
 };
 
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [matchProfiles, setMatchProfiles] = useState<MatchProfileData[]>([]);
+  const [data, setData] = useState<MatchesData[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
@@ -43,17 +46,26 @@ export default function Matches({ session }: { session: Session }) {
             return match.user1_id;
           }
         }) || [];
-
       const profiles = await getProfiles(profileIDs);
 
-      setMatchProfiles(
-        data?.reduce((acc: MatchProfileData[], match) => {
+      const matchIDs = data?.map((match) => match.id);
+      const messages = await getMessages(matchIDs || []);
+
+      setData(
+        data?.reduce((acc: MatchesData[], match) => {
           const profile = profiles.find(
             (profile) =>
               profile.id === match.user1_id || profile.id === match.user2_id
           );
+          const message = messages.find(
+            (message) => message?.match_id === match.id
+          );
           if (profile) {
-            acc.push({ match, profile });
+            acc.push({
+              match: match,
+              profile: profile,
+              message: message || null,
+            });
           }
           return acc;
         }, []) || []
@@ -80,27 +92,79 @@ export default function Matches({ session }: { session: Session }) {
     return data || [];
   }
 
-  if (loading) {
-    return null;
+  async function getMessages(ids: string[]): Promise<MessageData[]> {
+    let { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .in("match_id", ids)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return ids.map((id) => data?.find((message) => message.match_id === id));
   }
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineLarge">Matches</Text>
-      <FlatList
-        data={matchProfiles}
-        keyExtractor={(item) => item.match.id.toString()}
-        renderItem={({ item }) => (
-          <Link to={`${ROUTES.MATCH}/${item.match.id}`}>
-            <Card style={styles.verticallySpaced}>
-              <Avatar size={100} url={item.profile.avatar_url} />
-              <Text variant="titleLarge" style={styles.verticallySpaced}>
-                {item.profile.username || ""}
-              </Text>
-            </Card>
-          </Link>
-        )}
-      />
+    <View style={{ flex: 1 }}>
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="Matches" />
+      </Appbar.Header>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          {data.length ? (
+            <FlatList
+              data={data}
+              keyExtractor={(item) => item.match.id.toString()}
+              renderItem={({ item }) => (
+                <Card
+                  style={styles.verticallySpaced}
+                  onPress={() => navigate(`${ROUTES.MATCH}/${item.match.id}`)}
+                >
+                  <View style={{ flexDirection: "row", padding: 16 }}>
+                    <View style={{ alignSelf: "center" }}>
+                      <Avatar
+                        size={75}
+                        url={item.profile.avatar_url}
+                        onPress={() => {
+                          navigate(`${ROUTES.MATCH}/${item.match.id}`);
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "column",
+                        marginLeft: 16,
+                      }}
+                    >
+                      <Text
+                        variant="titleLarge"
+                        style={styles.verticallySpaced}
+                      >
+                        {item.profile.username}
+                      </Text>
+                      <Text style={styles.verticallySpaced}>
+                        {item.message?.message || ""}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
+              )}
+            />
+          ) : (
+            <Text style={styles.verticallySpaced}>No matches yet.</Text>
+          )}
+        </View>
+      )}
+      <Navigation key={session.user.id} session={session} />
     </View>
   );
 }

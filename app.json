@@ -35,6 +35,12 @@
         {
           "photosPermission": "The app accesses your photos to let you upload them to your profile."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
+        }
       ]
     ],
     "sdkVersion": "49.0.0",

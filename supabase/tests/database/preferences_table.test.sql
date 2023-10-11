@@ -6,34 +6,33 @@ select
 select
     has_table (
         'public',
-        'profiles',
-        'profiles table should exist'
+        'preferences',
+        'preferences table should exist'
     );
 
 select
     columns_are (
         'public',
-        'profiles',
+        'preferences',
         array[
             'id',
-            'updated_at',
-            'username',
-            'avatar_url',
-            'birthday',
+            'min_age',
+            'max_age',
             'gender',
             'kids',
             'intention',
             'relationship',
             'diet',
-            'lnglat',
-            'about'
+            'radius',
+            'keywords',
+            'updated_at'
         ]
     );
 
 select
     col_is_pk (
         'public',
-        'profiles',
+        'preferences',
         'id',
         'id should be a primary key'
     );
@@ -41,7 +40,7 @@ select
 select
     col_is_fk (
         'public',
-        'profiles',
+        'preferences',
         'id',
         'id should be a foreign key referencing auth.users(id)'
     );
@@ -49,8 +48,8 @@ select
 select
     indexes_are (
         'public',
-        'profiles',
-        array['profiles_pkey', 'profiles_username_key']
+        'preferences',
+        array['preferences_pkey']
     );
 
 select

@@ -1,13 +1,15 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
+import { ActivityIndicator } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
-import Checkout from "./components/Checkout";
+import Credits from "./components/Credits";
+import Edit from "./components/Edit";
 import Match from "./components/Match";
 import Matches from "./components/Matches";
-import Navigation from "./components/Navigation";
 import Otp from "./components/Otp";
+import Preferences from "./components/Preferences";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
@@ -46,30 +48,21 @@ export default function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      session && setSession(session);
+      setSession(session);
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      switch (event) {
-        case "SIGNED_IN":
-          setSession((prevSession) => {
-            if (!prevSession) {
-              return session;
-            } else {
-              return prevSession;
-            }
-          });
-          break;
-        default:
-          setSession(session);
-          break;
-      }
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
     });
   }, []);
 
   if (loading || (!fontsLoaded && !fontError)) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size="large" />
+      </View>
+    );
   }
 
   return (
@@ -81,7 +74,7 @@ export default function App() {
               path={ROUTES.ROOT}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Navigate to={ROUTES.PROFILES} replace />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
@@ -101,27 +94,37 @@ export default function App() {
               path={ROUTES.AUTH}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Navigate to={ROUTES.PROFILES} replace />
                 ) : (
                   <Auth />
                 )
               }
             />
             <Route
-              path={ROUTES.CHECKOUT}
+              path={ROUTES.CREDITS}
               element={
                 session?.user ? (
-                  <Checkout key={session.user.id} session={session} />
+                  <Credits key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
               }
             />
             <Route
-              path={`${ROUTES.CHECKOUT}/:result`}
+              path={`${ROUTES.CREDITS}/:result`}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Credits key={session.user.id} session={session} />
+                ) : (
+                  <Navigate to={ROUTES.AUTH} replace />
+                )
+              }
+            />
+            <Route
+              path={ROUTES.EDIT}
+              element={
+                session?.user ? (
+                  <Edit key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
@@ -151,9 +154,19 @@ export default function App() {
               path={ROUTES.OTP}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Otp key={session.user.id} session={session} />
                 ) : (
                   <Otp />
+                )
+              }
+            />
+            <Route
+              path={ROUTES.PREFERENCES}
+              element={
+                session?.user ? (
+                  <Preferences key={session.user.id} session={session} />
+                ) : (
+                  <Navigate to={ROUTES.AUTH} replace />
                 )
               }
             />
@@ -178,9 +191,6 @@ export default function App() {
               }
             />
           </Routes>
-          {session?.user ? (
-            <Navigation key={session.user.id} session={session} />
-          ) : null}
         </Router>
       </View>
     </PaperProvider>

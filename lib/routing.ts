@@ -22,10 +22,12 @@ export const ROUTES = {
   ROOT: "/",
   ACCOUNT: "/account",
   AUTH: "/auth",
+  CREDITS: "/credits",
+  EDIT: "/edit",
   MATCH: "/match",
   MATCHES: "/matches",
-  CHECKOUT: "/checkout",
   OTP: "/otp",
+  PREFERENCES: "/preferences",
   PROFILE: "/profile",
   PROFILES: "/profiles",
 };

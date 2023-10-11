@@ -20,20 +20,11 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    ),
-    (
-        '33333333-3333-3333-3333-333333333333',
-        '{"full_name": "Third User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222'),
+    ('33333333-3333-3333-3333-333333333333');
 
 -- All users should have initial credits
 select
@@ -42,7 +33,7 @@ select
         $$values ('11111111-1111-1111-1111-111111111111'::uuid, 1), ('22222222-2222-2222-2222-222222222222'::uuid, 1), ('33333333-3333-3333-3333-333333333333'::uuid, 1)$$
     );
 
--- Other User first likes Test User should not result in a match
+-- Second User first likes First User should not result in a match
 insert into
     interactions (user_id, target_id, interaction)
 values
@@ -74,7 +65,7 @@ select
         $$values (1::bigint)$$
     );
 
--- New mutual likes between Test User and Third User should not result in match due to insufficient credits
+-- New mutual likes between First User and Third User should not result in match due to insufficient credits
 insert into
     interactions (user_id, target_id, interaction)
 values

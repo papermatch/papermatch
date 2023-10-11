@@ -12,18 +12,12 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222');
 
--- Insert match between Test User and Other User
+-- Insert match between First User and Second User
 insert into
     matches (user1_id, user2_id)
 values
@@ -39,24 +33,24 @@ select
         $$values (0::bigint)$$
     );
 
--- Authenticate as Test User
+-- Authenticate as First User
 set
     local "request.jwt.claims" to '{"sub": "11111111-1111-1111-1111-111111111111" }';
 
 set role 'authenticated';
 
--- Check that active match is now visible for Test User
+-- Check that active match is now visible for First User
 select
     results_eq (
         'select count(*) from public.get_active_matches()',
         $$values (1::bigint)$$
     );
 
--- Authenticate as Other User
+-- Authenticate as Second User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
--- Check that active match is now visible for Other User
+-- Check that active match is now visible for Second User
 select
     results_eq (
         'select count(*) from public.get_active_matches()',

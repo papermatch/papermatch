@@ -1,22 +1,31 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Alert, FlatList } from "react-native";
-import { Card, Text, TextInput, Button, Appbar } from "react-native-paper";
+import {
+  Card,
+  Text,
+  TextInput,
+  Appbar,
+  ActivityIndicator,
+  useTheme,
+  Menu,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
-import { ROUTES, Link } from "../lib/routing";
-import { useParams, useNavigate } from "../lib/routing";
+import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [match, setMatch] = useState<MatchData | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const theme = useTheme();
 
   useEffect(() => {
     if (id && session) {
@@ -37,8 +46,8 @@ export default function Match({ session }: { session: Session }) {
           switch (payload.eventType) {
             case "INSERT":
               setMessages((prevMessages) => [
-                ...prevMessages,
                 payload.new as MessageData,
+                ...prevMessages,
               ]);
               break;
           }
@@ -89,7 +98,7 @@ export default function Match({ session }: { session: Session }) {
         .from("messages")
         .select("*")
         .eq("match_id", id)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -148,53 +157,96 @@ export default function Match({ session }: { session: Session }) {
     }
   }
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header>
+      <Appbar.Header mode="center-aligned">
         <Appbar.BackAction
           onPress={() => {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username || ""} />
+        <Appbar.Content title={profile?.username || "Match"} />
+        <Menu
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="dots-vertical"
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              navigate(`${ROUTES.PROFILE}/${profile?.id}`);
+            }}
+            title="Profile"
+          />
+        </Menu>
       </Appbar.Header>
-      <View style={styles.container}>
-        <Link to={`${ROUTES.PROFILE}/${profile?.id}`}>
-          <Card style={styles.verticallySpaced}>
-            <Avatar size={100} url={profile?.avatar_url || ""} />
-            <Text variant="titleLarge">{profile?.username || ""}</Text>
-          </Card>
-        </Link>
-        <FlatList
-          data={messages}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Card style={styles.verticallySpaced}>
-              <Text
-                style={
-                  (styles.verticallySpaced,
-                  item.user_id === session.user.id && { alignSelf: "flex-end" })
-                }
-              >
-                {item.message}
-              </Text>
-            </Card>
-          )}
-        />
-        <TextInput
-          style={styles.verticallySpaced}
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Type a message"
-        />
-        <Button style={styles.verticallySpaced} onPress={handleMessage}>
-          Send
-        </Button>
-      </View>
+      {loading ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating={true} size="large" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={messages}
+            keyExtractor={(item) => item.id.toString()}
+            inverted={true}
+            renderItem={({ item }) => (
+              <Card style={styles.verticallySpaced}>
+                <View
+                  style={[
+                    {
+                      flexDirection:
+                        item.user_id == session.user.id ? "row-reverse" : "row",
+                      backgroundColor:
+                        item.user_id == session.user.id
+                          ? theme.colors.elevation.level5
+                          : theme.colors.elevation.level1,
+                      padding: 8,
+                    },
+                  ]}
+                >
+                  {item.user_id != session.user.id && (
+                    <View style={{ alignSelf: "flex-start" }}>
+                      <Avatar
+                        size={50}
+                        url={profile?.avatar_url || null}
+                        onPress={() =>
+                          navigate(`${ROUTES.PROFILE}/${profile?.id}`)
+                        }
+                      />
+                    </View>
+                  )}
+                  <Text style={{ marginHorizontal: 12 }}>{item.message}</Text>
+                </View>
+              </Card>
+            )}
+          />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <TextInput
+              style={{ flex: 1 }}
+              value={message}
+              onChangeText={setMessage}
+              onSubmitEditing={handleMessage}
+              placeholder="Type a message"
+              multiline={true}
+              numberOfLines={4}
+              right={
+                <TextInput.Icon
+                  icon="send"
+                  onPress={handleMessage}
+                  disabled={message.trim() === ""}
+                />
+              }
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

@@ -16,16 +16,10 @@ select
 
 -- Setup
 insert into
-    auth.users (id, raw_user_meta_data)
+    auth.users (id)
 values
-    (
-        '11111111-1111-1111-1111-111111111111',
-        '{"full_name": "Test User", "avatar_url": ""}'
-    ),
-    (
-        '22222222-2222-2222-2222-222222222222',
-        '{"full_name": "Other User", "avatar_url": ""}'
-    );
+    ('11111111-1111-1111-1111-111111111111'),
+    ('22222222-2222-2222-2222-222222222222');
 
 insert into
     public.interactions (user_id, target_id, interaction)
@@ -43,13 +37,13 @@ select
         $$values (1::bigint)$$
     );
 
--- Authenticate as Other User
+-- Authenticate as Second User
 set
     local "request.jwt.claims" to '{"sub": "22222222-2222-2222-2222-222222222222" }';
 
 set role 'authenticated';
 
--- Only Other User's interactions visible when authenticated
+-- Only Second User's interactions visible when authenticated
 select
     results_eq (
         'select count(*) from public.interactions',
