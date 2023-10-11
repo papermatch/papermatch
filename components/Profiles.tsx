@@ -6,7 +6,6 @@ import {
   Text,
   Appbar,
   ActivityIndicator,
-  Chip,
   Menu,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
@@ -15,8 +14,6 @@ import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
-import { calculateAge } from "../lib/utils";
-import { GenderData, KidsData } from "../lib/types";
 import { Attributes } from "./Attributes";
 
 export default function Profiles({ session }: { session: Session }) {
@@ -48,21 +45,21 @@ export default function Profiles({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      // Get active profiles (except current user)
       let { data, error } = await supabase
-        .rpc("get_active_profiles")
+        .rpc("get_compatible_profiles")
         .select("*");
 
       if (error) {
         throw error;
       }
 
+      let profiles = data?.map((item) => item.profile) || [];
+
       const blockedIDs = await getBlockedIDs();
-      data = data?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
+      profiles =
+        profiles?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
 
-      data = data?.filter((profile) => profile.id !== session.user.id) || [];
-
-      setProfiles(data);
+      setProfiles(profiles);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);

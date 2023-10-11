@@ -9,22 +9,27 @@ import {
   Text,
   ActivityIndicator,
   HelperText,
+  Divider,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import Navigation from "./Navigation";
-import { ROUTES, useNavigate } from "../lib/routing";
+import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
     Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
+  const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const { result } = useParams<{ result: string }>();
 
   useEffect(() => {
     if (Platform.OS === "web" && checkoutUrl) {
@@ -37,6 +42,17 @@ export default function Credits({ session }: { session: Session }) {
       getCredits();
     }
   }, [session]);
+
+  useEffect(() => {
+    if (result) {
+      setSnackbarMessage(
+        result === "success"
+          ? "Payment successful!"
+          : "Payment unsuccessful, you have not been charged."
+      );
+      setSnackbarVisible(true);
+    }
+  }, []);
 
   async function getCredits() {
     try {
@@ -105,15 +121,14 @@ export default function Credits({ session }: { session: Session }) {
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    // TODO(drw): Fix the urls here and in the edge function (currently the same)
-    if (navState.url === `${currentOrigin}/credits`) {
+    if (navState.url === `${currentOrigin}/credits/success`) {
       Alert.alert(
         "Payment Successful",
         "Your payment was successful.",
         [{ text: "OK" }],
         { cancelable: false }
       );
-    } else if (navState.url === `${currentOrigin}/credits`) {
+    } else if (navState.url === `${currentOrigin}/credits/cancelled`) {
       Alert.alert(
         "Payment Cancelled",
         "Your payment was cancelled.",
@@ -156,6 +171,10 @@ export default function Credits({ session }: { session: Session }) {
             costs 1 credit, and your profile will not be searchable if you have
             0 credits.
           </Text>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Purchase credits
+          </Text>
           <TextInput
             style={styles.verticallySpaced}
             label="Credits"
@@ -188,6 +207,16 @@ export default function Credits({ session }: { session: Session }) {
         </View>
       )}
       <Navigation key={session.user.id} session={session} />
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        action={{
+          label: "Dismiss",
+          onPress: () => setSnackbarVisible(false),
+        }}
+      >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

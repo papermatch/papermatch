@@ -58,7 +58,7 @@ export default function Matches({ session }: { session: Session }) {
               profile.id === match.user1_id || profile.id === match.user2_id
           );
           const message = messages.find(
-            (message) => message.match_id === match.id
+            (message) => message?.match_id === match.id
           );
           if (profile) {
             acc.push({

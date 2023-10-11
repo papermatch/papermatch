@@ -49,7 +49,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       }
 
       if (data.session) {
-        navigate(ROUTES.ACCOUNT);
+        navigate(ROUTES.PROFILES);
       } else {
         navigate(ROUTES.AUTH);
       }

@@ -5,7 +5,6 @@ import {
   Appbar,
   FAB,
   Menu,
-  Chip,
   Divider,
   Text,
   ActivityIndicator,

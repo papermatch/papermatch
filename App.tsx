@@ -1,6 +1,5 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
-import { Alert } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
@@ -75,7 +74,7 @@ export default function App() {
               path={ROUTES.ROOT}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Navigate to={ROUTES.PROFILES} replace />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )
@@ -95,7 +94,7 @@ export default function App() {
               path={ROUTES.AUTH}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Navigate to={ROUTES.PROFILES} replace />
                 ) : (
                   <Auth />
                 )
@@ -115,7 +114,7 @@ export default function App() {
               path={`${ROUTES.CREDITS}/:result`}
               element={
                 session?.user ? (
-                  <Navigate to={ROUTES.ACCOUNT} replace />
+                  <Credits key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={ROUTES.AUTH} replace />
                 )

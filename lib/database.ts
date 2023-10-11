@@ -388,31 +388,21 @@ export interface Database {
           username: string | null
         }[]
       }
-      get_compatible_profiles: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          about: string | null
-          avatar_url: string | null
-          birthday: string | null
-          diet: Database["public"]["Enums"]["diet_type"] | null
-          gender: Database["public"]["Enums"]["gender_type"] | null
-          id: string
-          intention: Database["public"]["Enums"]["intention_type"] | null
-          kids: Database["public"]["Enums"]["kids_type"] | null
-          lnglat: unknown | null
-          relationship: Database["public"]["Enums"]["relationship_type"] | null
-          updated_at: string | null
-          username: string | null
-        }[]
-      }
-      is_profile_blocked: {
+      get_compatibility_score: {
         Args: {
           user1_id: string
           user2_id: string
         }
-        Returns: boolean
+        Returns: number
       }
-      is_profile_compatible: {
+      get_compatible_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          profile: unknown
+          score: number
+        }[]
+      }
+      is_profile_blocked: {
         Args: {
           user1_id: string
           user2_id: string
