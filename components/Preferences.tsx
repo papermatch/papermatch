@@ -177,10 +177,9 @@ export default function Preferences({ session }: { session: Session }) {
     } else if (!regex.test(age)) {
       setAgeError("Age must be 2 digits or more");
       return false;
-    } else {
-      setAgeError("");
-      return true;
     }
+    setAgeError("");
+    return true;
   };
 
   const validateRadius = (radius: string) => {
@@ -191,10 +190,9 @@ export default function Preferences({ session }: { session: Session }) {
     } else if (!regex.test(radius)) {
       setRadiusError("Distance must be a number");
       return false;
-    } else {
-      setRadiusError("");
-      return true;
     }
+    setRadiusError("");
+    return true;
   };
 
   return (

@@ -16,7 +16,6 @@ import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import * as Location from "expo-location";
 import { Carousel } from "./Carousel";
 
 export default function Account({ session }: { session: Session }) {
@@ -25,23 +24,14 @@ export default function Account({ session }: { session: Session }) {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  );
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
-      getData();
+      getAvatarUrl();
       setEmail(session.user.email || "");
     }
   }, [session]);
-
-  async function getData() {
-    setLoading(true);
-    await Promise.all([getAvatarUrl(), updateLocation()]);
-    setLoading(false);
-  }
 
   async function getAvatarUrl() {
     try {
@@ -66,37 +56,6 @@ export default function Account({ session }: { session: Session }) {
       }
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function updateLocation() {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        throw new Error("Permission to access location was denied");
-      }
-
-      setLocation(await Location.getCurrentPositionAsync({}));
-
-      const updates = {
-        lnglat: location
-          ? location.coords.longitude + ", " + location.coords.latitude
-          : null,
-        updated_at: new Date(),
-      };
-
-      let { error } = await supabase
-        .from("profiles")
-        .update(updates)
-        .eq("id", session.user.id);
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
     }
   }
 
@@ -272,20 +231,6 @@ export default function Account({ session }: { session: Session }) {
       )}
       <Navigation key={session.user.id} session={session} />
       <Portal>
-        <Dialog visible={!loading && !location} dismissable={false}>
-          <Dialog.Title>Alert</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Please click "Ok" below to enable location access in your device
-              settings.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button mode="text" onPress={updateLocation}>
-              Ok
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
         <Dialog
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}

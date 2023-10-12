@@ -26,6 +26,7 @@ import {
   RelationshipType,
   RelationshipData,
 } from "../lib/types";
+import * as Location from "expo-location";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -39,6 +40,8 @@ export default function Edit({ session }: { session: Session }) {
   );
   const [kids, setKids] = useState<KidsType | null>(null);
   const [diet, setDiet] = useState<DietType | null>(null);
+  const [lnglat, setLnglat] = useState("");
+  const [lnglatError, setLnglatError] = useState("");
   const [about, setAbout] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -71,6 +74,7 @@ export default function Edit({ session }: { session: Session }) {
         setRelationship(data.relationship);
         setKids(data.kids);
         setDiet(data.diet);
+        setLnglat(data.lnglat || "");
         setAbout(data.about);
       }
     } catch (error) {
@@ -82,6 +86,25 @@ export default function Edit({ session }: { session: Session }) {
     }
   }
 
+  async function updateLocation() {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        throw new Error("Permission to access location was denied");
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+
+      if (location) {
+        setLnglat(`(${location.coords.longitude},${location.coords.latitude})`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    }
+  }
+
   async function updateProfile({
     username,
     gender,
@@ -89,6 +112,7 @@ export default function Edit({ session }: { session: Session }) {
     relationship,
     kids,
     diet,
+    lnglat,
     about,
   }: {
     username: string;
@@ -97,9 +121,10 @@ export default function Edit({ session }: { session: Session }) {
     relationship: RelationshipType | null;
     kids: KidsType | null;
     diet: DietType | null;
+    lnglat: string;
     about: string;
   }) {
-    if (!validateUsername(username)) {
+    if ([validateUsername(username), validateLnglat(lnglat)].includes(false)) {
       return;
     }
 
@@ -115,6 +140,7 @@ export default function Edit({ session }: { session: Session }) {
         kids: kids,
         diet: diet,
         about: about,
+        lnglat: lnglat || null,
         updated_at: new Date(),
       };
 
@@ -144,6 +170,20 @@ export default function Edit({ session }: { session: Session }) {
       return false;
     }
     setUsernameError("");
+    return true;
+  };
+
+  const validateLnglat = (lnglat: string) => {
+    const regex =
+      /^\(?-?[0-9]{1,3}(?:\.[0-9]{1,})?,\s?-?[0-9]{1,3}(?:\.[0-9]{1,})?\)?$/;
+    if (lnglat == "") {
+      setLnglatError("");
+      return true;
+    } else if (!regex.test(lnglat)) {
+      setLnglatError("Invalid longitude and latitude");
+      return false;
+    }
+    setLnglatError("");
     return true;
   };
 
@@ -185,7 +225,7 @@ export default function Edit({ session }: { session: Session }) {
           <TextInput
             style={styles.verticallySpaced}
             label="Username (your first name is fine)"
-            value={username || ""}
+            value={username}
             onChangeText={(text) => {
               setUsername(text);
               validateUsername(text);
@@ -232,9 +272,28 @@ export default function Edit({ session }: { session: Session }) {
             onChange={setDiet}
           />
           <TextInput
+            style={styles.verticallySpaced}
+            label="Location (lng,lat)"
+            value={lnglat}
+            onChangeText={(text) => {
+              setLnglat(text);
+              validateLnglat(text);
+            }}
+            right={
+              <TextInput.Icon
+                icon="crosshairs-gps"
+                onPress={() => updateLocation()}
+              />
+            }
+            error={!!lnglatError}
+          />
+          <HelperText type="error" visible={!!lnglatError}>
+            {lnglatError}
+          </HelperText>
+          <TextInput
             style={[styles.verticallySpaced]}
             label="About"
-            value={about ? about : ""}
+            value={about}
             onChangeText={(text) => setAbout(text)}
             multiline={true}
             numberOfLines={8}
@@ -251,6 +310,7 @@ export default function Edit({ session }: { session: Session }) {
                 relationship,
                 kids,
                 diet,
+                lnglat,
                 about,
               })
             }

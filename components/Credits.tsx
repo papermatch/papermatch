@@ -147,10 +147,9 @@ export default function Credits({ session }: { session: Session }) {
     if (!regex.test(quantity)) {
       setQuantityError("Quantity must be a number");
       return false;
-    } else {
-      setQuantityError("");
-      return true;
     }
+    setQuantityError("");
+    return true;
   };
 
   return (
