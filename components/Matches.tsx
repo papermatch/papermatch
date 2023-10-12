@@ -132,7 +132,7 @@ export default function Matches({ session }: { session: Session }) {
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={75}
-                        url={item.profile.avatar_url}
+                        url={item.profile.avatar_urls[0] || null}
                         onPress={() => {
                           navigate(`${ROUTES.MATCH}/${item.match.id}`);
                         }}

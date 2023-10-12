@@ -209,7 +209,7 @@ export interface Database {
       profiles: {
         Row: {
           about: string | null
-          avatar_url: string | null
+          avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
@@ -223,7 +223,7 @@ export interface Database {
         }
         Insert: {
           about?: string | null
-          avatar_url?: string | null
+          avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
@@ -237,7 +237,7 @@ export interface Database {
         }
         Update: {
           about?: string | null
-          avatar_url?: string | null
+          avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
@@ -375,7 +375,7 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: {
           about: string | null
-          avatar_url: string | null
+          avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null

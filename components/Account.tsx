@@ -20,7 +20,8 @@ import { Carousel } from "./Carousel";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
+  const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -28,19 +29,19 @@ export default function Account({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getAvatarUrl();
+      getAvatarUrls();
       setEmail(session.user.email || "");
     }
   }, [session]);
 
-  async function getAvatarUrl() {
+  async function getAvatarUrls() {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`avatar_url`)
+        .select(`avatar_urls`)
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
@@ -48,7 +49,7 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        setAvatarUrl(data.avatar_url);
+        setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -59,13 +60,27 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function updateAvatarUrl({ url }: { url: string }) {
+  async function updateAvatarUrl({
+    newUrl,
+    oldUrl,
+  }: {
+    newUrl: string;
+    oldUrl: string;
+  }) {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
+      const nextAvatarUrls = avatarUrls || [];
+      const index = nextAvatarUrls.indexOf(oldUrl);
+      if (index > -1) {
+        nextAvatarUrls[index] = newUrl;
+      } else {
+        nextAvatarUrls.push(newUrl);
+      }
+
       const updates = {
-        avatar_url: url,
+        avatar_urls: nextAvatarUrls,
         updated_at: new Date(),
       };
 
@@ -78,7 +93,8 @@ export default function Account({ session }: { session: Session }) {
         throw error;
       }
 
-      setAvatarUrl(url);
+      setAvatarUrls(nextAvatarUrls);
+      setNewAvatarUrl(newUrl);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
@@ -158,16 +174,17 @@ export default function Account({ session }: { session: Session }) {
       ) : (
         <ScrollView style={styles.container}>
           <Carousel
-            data={avatarUrl ? [avatarUrl, ""] : [""]}
+            data={avatarUrls ? [...avatarUrls, ""] : [""]}
             renderItem={(item) => (
               <Avatar
                 size={200}
                 url={item}
                 onUpload={(url: string) => {
-                  updateAvatarUrl({ url });
+                  updateAvatarUrl({ newUrl: url, oldUrl: item });
                 }}
               />
             )}
+            start={newAvatarUrl}
             loading={loading}
           />
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>

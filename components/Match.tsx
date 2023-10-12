@@ -215,7 +215,7 @@ export default function Match({ session }: { session: Session }) {
                     <View style={{ alignSelf: "flex-start" }}>
                       <Avatar
                         size={50}
-                        url={profile?.avatar_url || null}
+                        url={profile?.avatar_urls[0] || null}
                         onPress={() =>
                           navigate(`${ROUTES.PROFILE}/${profile?.id}`)
                         }

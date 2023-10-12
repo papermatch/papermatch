@@ -75,7 +75,7 @@ export default function Edit({ session }: { session: Session }) {
         setKids(data.kids);
         setDiet(data.diet);
         setLnglat(data.lnglat || "");
-        setAbout(data.about);
+        setAbout(data.about || "");
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -151,13 +151,13 @@ export default function Profile({ session }: { session: Session }) {
           {profile ? (
             <View>
               <Carousel
-                data={profile.avatar_url ? [profile.avatar_url] : []}
+                data={profile.avatar_urls || [""]}
                 renderItem={(item) => (
                   <Avatar
                     size={200}
                     url={item}
                     onPress={() => {
-                      setImageUrl(profile.avatar_url);
+                      setImageUrl(item);
                     }}
                   />
                 )}
@@ -226,7 +226,6 @@ export default function Profile({ session }: { session: Session }) {
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
                 resizeMode="contain"
-                onLoad={() => console.log(`Image ${imageUrl} loaded!`)}
                 onError={(error) =>
                   console.log(`Image ${imageUrl} error:`, error)
                 }

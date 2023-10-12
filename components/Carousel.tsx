@@ -5,6 +5,7 @@ import { IconButton } from "react-native-paper";
 type CarouselProps<T extends Key> = {
   data: T[];
   renderItem: (item: T) => ReactNode;
+  start?: T;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
 };
@@ -12,10 +13,13 @@ type CarouselProps<T extends Key> = {
 export const Carousel = <T extends Key>({
   data,
   renderItem,
+  start,
   style,
   loading,
 }: CarouselProps<T>) => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(
+    start && data.includes(start) ? data.indexOf(start) : 0
+  );
 
   return (
     <View
