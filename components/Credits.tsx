@@ -1,7 +1,7 @@
 import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Platform, Alert, View } from "react-native";
+import { Platform, View } from "react-native";
 import {
   Button,
   TextInput,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   HelperText,
   Divider,
+  Portal,
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
@@ -72,7 +73,9 @@ export default function Credits({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch credits");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -113,7 +116,9 @@ export default function Credits({ session }: { session: Session }) {
       setCheckoutUrl(data.url);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("An error occurred", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch checkout URL");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -122,19 +127,11 @@ export default function Credits({ session }: { session: Session }) {
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
     if (navState.url === `${currentOrigin}/credits/success`) {
-      Alert.alert(
-        "Payment Successful",
-        "Your payment was successful.",
-        [{ text: "OK" }],
-        { cancelable: false }
-      );
+      setSnackbarMessage("Payment successful!");
+      setSnackbarVisible(true);
     } else if (navState.url === `${currentOrigin}/credits/cancelled`) {
-      Alert.alert(
-        "Payment Cancelled",
-        "Your payment was cancelled.",
-        [{ text: "OK" }],
-        { cancelable: false }
-      );
+      setSnackbarMessage("Payment unsuccessful, you have not been charged.");
+      setSnackbarVisible(true);
     }
 
     if (session?.user?.id) {
@@ -155,7 +152,7 @@ export default function Credits({ session }: { session: Session }) {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Credits" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Credits" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -191,6 +188,7 @@ export default function Credits({ session }: { session: Session }) {
           </HelperText>
           <Button
             mode="contained"
+            labelStyle={styles.buttonLabel}
             style={styles.verticallySpaced}
             onPress={fetchCheckoutUrl}
             disabled={loading}
@@ -205,17 +203,20 @@ export default function Credits({ session }: { session: Session }) {
           ) : null}
         </View>
       )}
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
       <Navigation key={session.user.id} session={session} />
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        action={{
-          label: "Dismiss",
-          onPress: () => setSnackbarVisible(false),
-        }}
-      >
-        {snackbarMessage}
-      </Snackbar>
     </View>
   );
 }

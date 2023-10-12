@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import {
   Button,
   TextInput,
@@ -10,6 +10,7 @@ import {
   Text,
   HelperText,
   Divider,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -25,6 +26,8 @@ export default function Account({ session }: { session: Session }) {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,7 +56,9 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch avatar URLs");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -97,7 +102,9 @@ export default function Account({ session }: { session: Session }) {
       setNewAvatarUrl(newUrl);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update avatar URL");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -122,7 +129,29 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update email");
+        setSnackbarVisible(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteUser() {
+    try {
+      setLoading(true);
+      const { error } = await supabase.rpc("delete_current_user");
+      if (error) {
+        throw error;
+      }
+
+      supabase.auth.signOut();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to delete user");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -142,28 +171,10 @@ export default function Account({ session }: { session: Session }) {
     return true;
   };
 
-  async function deleteUser() {
-    try {
-      setLoading(true);
-      const { error } = await supabase.rpc("delete_current_user");
-      if (error) {
-        throw error;
-      }
-
-      supabase.auth.signOut();
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Account" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Account" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -214,6 +225,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="outlined"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => navigate(`${ROUTES.EDIT}`)}
             disabled={loading}
           >
@@ -222,6 +234,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="outlined"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
             disabled={loading}
           >
@@ -231,6 +244,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => supabase.auth.signOut()}
             disabled={loading}
           >
@@ -239,6 +253,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="contained-tonal"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => setDeleteDialogVisible(true)}
             disabled={loading}
           >
@@ -249,6 +264,7 @@ export default function Account({ session }: { session: Session }) {
       <Navigation key={session.user.id} session={session} />
       <Portal>
         <Dialog
+          style={styles.dialog}
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
         >
@@ -260,14 +276,35 @@ export default function Account({ session }: { session: Session }) {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button mode="text" onPress={() => setDeleteDialogVisible(false)}>
+            <Button
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => setDeleteDialogVisible(false)}
+            >
               Cancel
             </Button>
-            <Button mode="text" onPress={() => deleteUser()}>
+            <Button
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => deleteUser()}
+            >
               Ok
             </Button>
           </Dialog.Actions>
         </Dialog>
+      </Portal>
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </Portal>
     </View>
   );

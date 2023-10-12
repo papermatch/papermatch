@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, TouchableOpacity } from "react-native";
-import {
-  Avatar as RNPAvatar,
-  Button,
-  ActivityIndicator,
-} from "react-native-paper";
+import { View, TouchableOpacity } from "react-native";
+import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -85,7 +81,7 @@ export default function Avatar({
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
       } else {
         throw error;
       }

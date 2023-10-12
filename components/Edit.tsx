@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import {
   Button,
   TextInput,
   Appbar,
+  Portal,
   Snackbar,
   Menu,
   ActivityIndicator,
@@ -79,7 +80,9 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch profile");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -100,7 +103,9 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update location");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -157,7 +162,9 @@ export default function Edit({ session }: { session: Session }) {
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update profile");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -195,7 +202,7 @@ export default function Edit({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title="Edit" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Edit" />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -302,6 +309,7 @@ export default function Edit({ session }: { session: Session }) {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() =>
               updateProfile({
                 username,
@@ -320,13 +328,19 @@ export default function Edit({ session }: { session: Session }) {
           </Button>
         </ScrollView>
       )}
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        action={{ label: "Dismiss", onPress: () => setSnackbarVisible(false) }}
-      >
-        {snackbarMessage}
-      </Snackbar>
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }

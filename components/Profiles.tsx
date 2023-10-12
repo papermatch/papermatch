@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
   Appbar,
   ActivityIndicator,
   Menu,
+  Portal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -20,6 +22,8 @@ export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,7 +66,9 @@ export default function Profiles({ session }: { session: Session }) {
       setProfiles(profiles);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profiles");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -72,7 +78,7 @@ export default function Profiles({ session }: { session: Session }) {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Profiles" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Profiles" />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -155,6 +161,19 @@ export default function Profiles({ session }: { session: Session }) {
           )}
         </View>
       )}
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
       <Navigation key={session.user.id} session={session} />
     </View>
   );

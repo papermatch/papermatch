@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, TouchableOpacity } from "react-native";
 import {
   Appbar,
   FAB,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Portal,
   Modal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -25,6 +26,8 @@ export default function Profile({ session }: { session: Session }) {
   const [interaction, setInteraction] = useState(null);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -54,7 +57,9 @@ export default function Profile({ session }: { session: Session }) {
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profile");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -79,7 +84,9 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("An error occurred", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get interaction");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -99,7 +106,9 @@ export default function Profile({ session }: { session: Session }) {
       getInteraction();
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("An error occurred", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update interaction");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -112,7 +121,10 @@ export default function Profile({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username ?? "Profile"} />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title={profile?.username ?? "Profile"}
+        />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -233,6 +245,19 @@ export default function Profile({ session }: { session: Session }) {
             </TouchableOpacity>
           )}
         </Modal>
+      </Portal>
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </Portal>
     </View>
   );
