@@ -37,6 +37,11 @@ const styles = StyleSheet.create({
   aboveNav: {
     marginBottom: 60,
   },
+  fabContainer: {
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
+  },
 });
 
 export default styles;

@@ -4,6 +4,7 @@ import { ActivityIndicator } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
+import Blocked from "./components/Blocked";
 import Credits from "./components/Credits";
 import Edit from "./components/Edit";
 import Match from "./components/Match";
@@ -97,6 +98,16 @@ export default function App() {
                   <Navigate to={ROUTES.PROFILES} replace />
                 ) : (
                   <Auth />
+                )
+              }
+            />
+            <Route
+              path={ROUTES.BLOCKED}
+              element={
+                session?.user ? (
+                  <Blocked key={session.user.id} session={session} />
+                ) : (
+                  <Navigate to={ROUTES.AUTH} replace />
                 )
               }
             />

@@ -184,6 +184,9 @@ export default function Account({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Edit pictures
+          </Text>
           <Carousel
             data={avatarUrls ? [...avatarUrls, ""] : [""]}
             renderItem={(item) => (
@@ -198,6 +201,10 @@ export default function Account({ session }: { session: Session }) {
             start={newAvatarUrl}
             loading={loading}
           />
+          <Divider style={styles.verticallySpaced} />
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Profile settings
+          </Text>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <View style={{ flex: 1, flexDirection: "column" }}>
               <TextInput
@@ -241,6 +248,18 @@ export default function Account({ session }: { session: Session }) {
             Dating Preferences
           </Button>
           <Divider style={styles.verticallySpaced} />
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Account options
+          </Text>
+          <Button
+            mode="outlined"
+            style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
+            onPress={() => navigate(`${ROUTES.BLOCKED}`)}
+            disabled={loading}
+          >
+            Blocked Users
+          </Button>
           <Button
             mode="contained"
             style={styles.verticallySpaced}

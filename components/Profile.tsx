@@ -101,9 +101,16 @@ export default function Profile({ session }: { session: Session }) {
           updated_at: new Date(),
         },
       ]);
-      if (error) throw error;
 
-      getInteraction();
+      if (error) {
+        throw error;
+      }
+
+      if (type == "block") {
+        navigate(-1);
+      } else {
+        getInteraction();
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -145,9 +152,9 @@ export default function Profile({ session }: { session: Session }) {
           ) : (
             <Menu.Item
               onPress={() => {
-                handleInteraction("block");
+                handleInteraction(interaction == "block" ? "none" : "block");
               }}
-              title="Block"
+              title={interaction == "block" ? "Unblock" : "Block"}
             />
           )}
         </Menu>
@@ -198,7 +205,7 @@ export default function Profile({ session }: { session: Session }) {
         </ScrollView>
       )}
       {session?.user.id != id && profile && (
-        <View>
+        <View style={styles.fabContainer}>
           <FAB
             icon="thumb-down"
             style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
