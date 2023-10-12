@@ -17,6 +17,7 @@ import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { Attributes } from "./Attributes";
+import { Carousel } from "./Carousel";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -149,15 +150,19 @@ export default function Profile({ session }: { session: Session }) {
         <ScrollView style={styles.container}>
           {profile ? (
             <View>
-              <View style={styles.centerAligned}>
-                <Avatar
-                  size={200}
-                  url={profile?.avatar_url || null}
-                  onPress={() => {
-                    setImageUrl(profile?.avatar_url || null);
-                  }}
-                />
-              </View>
+              <Carousel
+                data={profile.avatar_url ? [profile.avatar_url] : []}
+                renderItem={(item) => (
+                  <Avatar
+                    size={200}
+                    url={item}
+                    onPress={() => {
+                      setImageUrl(profile.avatar_url);
+                    }}
+                  />
+                )}
+                loading={loading}
+              />
               <Attributes
                 style={{
                   flexDirection: "row",
@@ -172,7 +177,7 @@ export default function Profile({ session }: { session: Session }) {
                 About
               </Text>
               <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
-                {profile?.about}
+                {profile.about}
               </Text>
             </View>
           ) : (

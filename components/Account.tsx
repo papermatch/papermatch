@@ -17,6 +17,7 @@ import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 import * as Location from "expo-location";
+import { Carousel } from "./Carousel";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -197,15 +198,19 @@ export default function Account({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
-          <View style={[styles.centerAligned]}>
-            <Avatar
-              size={200}
-              url={avatarUrl}
-              onUpload={(url: string) => {
-                updateAvatarUrl({ url });
-              }}
-            />
-          </View>
+          <Carousel
+            data={avatarUrl ? [avatarUrl, ""] : [""]}
+            renderItem={(item) => (
+              <Avatar
+                size={200}
+                url={item}
+                onUpload={(url: string) => {
+                  updateAvatarUrl({ url });
+                }}
+              />
+            )}
+            loading={loading}
+          />
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <View style={{ flex: 1, flexDirection: "column" }}>
               <TextInput

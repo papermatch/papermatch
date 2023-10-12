@@ -26,9 +26,7 @@ export default function Avatar({
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
 
   useEffect(() => {
-    if (url) {
-      setAvatarUrl(url);
-    }
+    setAvatarUrl(url);
   }, [url]);
 
   function getContentTypeAndExtension(uri: string) {
@@ -105,7 +103,7 @@ export default function Avatar({
   }
 
   return (
-    <TouchableOpacity onPress={onPress ?? uploadAvatar} disabled={uploading}>
+    <TouchableOpacity onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <RNPAvatar.Image
           style={styles.verticallySpaced}
@@ -116,7 +114,7 @@ export default function Avatar({
         <RNPAvatar.Icon
           style={styles.verticallySpaced}
           size={size}
-          icon="account"
+          icon={onPress ? "account" : "plus"}
         />
       )}
     </TouchableOpacity>
