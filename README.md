@@ -11,7 +11,7 @@ A pay-per-match dating app, using React Native and Supabase.
     SUPABASE_URL=***
     ```
     Note: `SUPABASE_URL` should be set to 'http://localhost:54321' for local development
-3. Create another .env file in the supabase/ directory as follows
+3. Create another .env.development file in the supabase/ directory as follows
     ```
     STRIPE_API_KEY=***
     STRIPE_PRICE_ID=***
@@ -32,7 +32,7 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
 3. Start the Supabase containers locally
     ```
-    set -a && . supabase/.env && set +a
+    set -a && . supabase/.env.development && set +a
     npx supabase start
     ```
 4. Use the output from the previous command to update your .env files as described [above](#supabase-setup)
@@ -72,13 +72,14 @@ A pay-per-match dating app, using React Native and Supabase.
 1. `npx supabase link --project-ref ***`
 2. `npx supabase db push`
 3. `npx supabase functions deploy`
-4. `npx supabse secrets set --env-file supabase/.env`
+4. `npx supabse secrets set --env-file supabase/.env.production`
 5. Create a Vault Encryption Key and add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Vault
 6. Create a .env.production file with Supabase secrets
 7. Something something email templates?
 8. `vercel`
 9. Supabase Auth URL Configuration?
 10. Domains?
+11. Supabase .env.production w/ webhook signing secret from Stripe
 
 ### Push Local Changes
 
