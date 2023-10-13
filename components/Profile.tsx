@@ -76,8 +76,6 @@ export default function Profile({ session }: { session: Session }) {
         throw error;
       }
 
-      console.log(data);
-
       setDistance(data || null);
     } catch (error) {
       if (error instanceof Error) {

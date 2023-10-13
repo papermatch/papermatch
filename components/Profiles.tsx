@@ -7,6 +7,8 @@ import {
   Appbar,
   ActivityIndicator,
   Menu,
+  Checkbox,
+  Divider,
   Portal,
   Snackbar,
 } from "react-native-paper";
@@ -28,6 +30,7 @@ export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [data, setData] = useState<ProfilesData[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
@@ -38,24 +41,42 @@ export default function Profiles({ session }: { session: Session }) {
     }
   }, [session]);
 
-  async function getBlockedIDs(): Promise<string[]> {
-    const { data, error, status } = await supabase
-      .from("interactions")
-      .select("target_id")
-      .eq("user_id", session?.user.id)
-      .eq("interaction", "block");
-    if (error && status !== 406) {
-      throw error;
-    }
+  useEffect(() => {
+    getProfiles();
+  }, [showAll]);
 
-    return data?.map((interaction) => interaction.target_id) || [];
+  async function getInteractions(): Promise<{ [key: string]: string }> {
+    try {
+      const { data, error, status } = await supabase
+        .from("interactions")
+        .select("*")
+        .eq("user_id", session?.user.id);
+
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      return (
+        data?.reduce((acc, interaction) => {
+          acc[interaction.target_id] = interaction.interaction;
+          return acc;
+        }, {}) || {}
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get interactions");
+        setSnackbarVisible(true);
+      }
+    }
+    return {};
   }
 
   async function getProfiles() {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .rpc("search_active_profiles")
         .select("*");
 
@@ -63,11 +84,27 @@ export default function Profiles({ session }: { session: Session }) {
         throw error;
       }
 
-      const blockedIDs = await getBlockedIDs();
-      data =
-        data?.filter((item) => !blockedIDs.includes(item.profile.id)) || [];
+      const interactions = await getInteractions();
 
-      setData(data);
+      if (data) {
+        if (showAll) {
+          // Show all profiles (that are not blocked)
+          setData(
+            data.filter((item) => interactions[item.profile.id] !== "block")
+          );
+        } else {
+          // Show only profiles without an interaction (or none)
+          setData(
+            data.filter(
+              (item) =>
+                !interactions[item.profile.id] ||
+                interactions[item.profile.id] === "none"
+            )
+          );
+        }
+      } else {
+        setData([]);
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -109,6 +146,13 @@ export default function Profiles({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={styles.container}>
+          <Checkbox.Item
+            style={styles.verticallySpaced}
+            label="Show all profiles"
+            status={showAll ? "checked" : "unchecked"}
+            onPress={() => setShowAll(!showAll)}
+          />
+          <Divider style={styles.verticallySpaced} />
           {data.length ? (
             <FlatList
               data={data}
