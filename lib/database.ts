@@ -209,7 +209,7 @@ export interface Database {
       profiles: {
         Row: {
           about: string | null
-          avatar_url: string | null
+          avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
@@ -223,7 +223,7 @@ export interface Database {
         }
         Insert: {
           about?: string | null
-          avatar_url?: string | null
+          avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
@@ -237,7 +237,7 @@ export interface Database {
         }
         Update: {
           about?: string | null
-          avatar_url?: string | null
+          avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
@@ -375,7 +375,7 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: {
           about: string | null
-          avatar_url: string | null
+          avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
@@ -388,19 +388,19 @@ export interface Database {
           username: string | null
         }[]
       }
-      get_compatibility_score: {
+      get_user_distance: {
         Args: {
           user1_id: string
           user2_id: string
         }
         Returns: number
       }
-      get_compatible_profiles: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          profile: unknown
-          score: number
-        }[]
+      get_user_score: {
+        Args: {
+          user1_id: string
+          user2_id: string
+        }
+        Returns: number
       }
       is_profile_blocked: {
         Args: {
@@ -420,6 +420,14 @@ export interface Database {
           "": unknown
         }
         Returns: number
+      }
+      search_active_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          profile: unknown
+          distance: number
+          score: number
+        }[]
       }
       sec_to_gc: {
         Args: {

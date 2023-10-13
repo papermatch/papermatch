@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
   Appbar,
   ActivityIndicator,
   Menu,
+  Checkbox,
+  Divider,
+  Portal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -16,10 +20,19 @@ import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { Attributes } from "./Attributes";
 
+type ProfilesData = {
+  profile: ProfileData;
+  distance: number | null;
+  score: number | null;
+};
+
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
-  const [profiles, setProfiles] = useState<ProfileData[]>([]);
+  const [data, setData] = useState<ProfilesData[]>([]);
+  const [showAll, setShowAll] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,41 +41,75 @@ export default function Profiles({ session }: { session: Session }) {
     }
   }, [session]);
 
-  async function getBlockedIDs(): Promise<string[]> {
-    const { data, error, status } = await supabase
-      .from("interactions")
-      .select("target_id")
-      .eq("user_id", session?.user.id)
-      .eq("interaction", "block");
-    if (error && status !== 406) {
-      throw error;
-    }
+  useEffect(() => {
+    getProfiles();
+  }, [showAll]);
 
-    return data?.map((interaction) => interaction.target_id) || [];
+  async function getInteractions(): Promise<{ [key: string]: string }> {
+    try {
+      const { data, error, status } = await supabase
+        .from("interactions")
+        .select("*")
+        .eq("user_id", session?.user.id);
+
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      return (
+        data?.reduce((acc, interaction) => {
+          acc[interaction.target_id] = interaction.interaction;
+          return acc;
+        }, {}) || {}
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get interactions");
+        setSnackbarVisible(true);
+      }
+    }
+    return {};
   }
 
   async function getProfiles() {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
-        .rpc("get_compatible_profiles")
+      const { data, error } = await supabase
+        .rpc("search_active_profiles")
         .select("*");
 
       if (error) {
         throw error;
       }
 
-      let profiles = data?.map((item) => item.profile) || [];
+      const interactions = await getInteractions();
 
-      const blockedIDs = await getBlockedIDs();
-      profiles =
-        profiles?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
-
-      setProfiles(profiles);
+      if (data) {
+        if (showAll) {
+          // Show all profiles (that are not blocked)
+          setData(
+            data.filter((item) => interactions[item.profile.id] !== "block")
+          );
+        } else {
+          // Show only profiles without an interaction (or none)
+          setData(
+            data.filter(
+              (item) =>
+                !interactions[item.profile.id] ||
+                interactions[item.profile.id] === "none"
+            )
+          );
+        }
+      } else {
+        setData([]);
+      }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profiles");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -72,7 +119,7 @@ export default function Profiles({ session }: { session: Session }) {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Profiles" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Profiles" />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -99,14 +146,21 @@ export default function Profiles({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={styles.container}>
-          {profiles.length ? (
+          <Checkbox.Item
+            style={styles.verticallySpaced}
+            label="Show profiles you've already liked/passed"
+            status={showAll ? "checked" : "unchecked"}
+            onPress={() => setShowAll(!showAll)}
+          />
+          <Divider style={styles.verticallySpaced} />
+          {data.length ? (
             <FlatList
-              data={profiles}
-              keyExtractor={(profile) => profile.id.toString()}
-              renderItem={({ item: profile }) => (
+              data={data}
+              keyExtractor={(item) => item.profile.id.toString()}
+              renderItem={({ item }) => (
                 <Card
                   onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                    navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
                   }}
                   style={[styles.verticallySpaced]}
                 >
@@ -121,9 +175,9 @@ export default function Profiles({ session }: { session: Session }) {
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={100}
-                        url={profile.avatar_url}
+                        url={item.profile.avatar_urls[0] || null}
                         onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                          navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
                         }}
                       />
                     </View>
@@ -134,13 +188,14 @@ export default function Profiles({ session }: { session: Session }) {
                         marginLeft: 16,
                       }}
                     >
-                      <Text variant="titleLarge">{profile.username}</Text>
+                      <Text variant="titleLarge">{item.profile.username}</Text>
                       <Attributes
                         style={{
                           flexDirection: "row",
                           flexWrap: "wrap",
                         }}
-                        profile={profile}
+                        profile={item.profile}
+                        distance={item.distance}
                         loading={loading}
                       />
                     </View>
@@ -155,6 +210,19 @@ export default function Profiles({ session }: { session: Session }) {
           )}
         </View>
       )}
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
       <Navigation key={session.user.id} session={session} />
     </View>
   );

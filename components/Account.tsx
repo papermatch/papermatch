@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import {
   Button,
   TextInput,
@@ -10,46 +10,41 @@ import {
   Text,
   HelperText,
   Divider,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
-import * as Location from "expo-location";
+import { Carousel } from "./Carousel";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
+  const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  );
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
-      getData();
+      getAvatarUrls();
       setEmail(session.user.email || "");
     }
   }, [session]);
 
-  async function getData() {
-    setLoading(true);
-    await Promise.all([getAvatarUrl(), updateLocation()]);
-    setLoading(false);
-  }
-
-  async function getAvatarUrl() {
+  async function getAvatarUrls() {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
-        .select(`avatar_url`)
+        .select(`avatar_urls`)
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
@@ -57,55 +52,40 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        setAvatarUrl(data.avatar_url);
+        setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch avatar URLs");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
     }
   }
 
-  async function updateLocation() {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        throw new Error("Permission to access location was denied");
-      }
-
-      setLocation(await Location.getCurrentPositionAsync({}));
-
-      const updates = {
-        lnglat: location
-          ? location.coords.longitude + ", " + location.coords.latitude
-          : null,
-        updated_at: new Date(),
-      };
-
-      let { error } = await supabase
-        .from("profiles")
-        .update(updates)
-        .eq("id", session.user.id);
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    }
-  }
-
-  async function updateAvatarUrl({ url }: { url: string }) {
+  async function updateAvatarUrl({
+    newUrl,
+    oldUrl,
+  }: {
+    newUrl: string;
+    oldUrl: string;
+  }) {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
+      const nextAvatarUrls = avatarUrls || [];
+      const index = nextAvatarUrls.indexOf(oldUrl);
+      if (index > -1) {
+        nextAvatarUrls[index] = newUrl;
+      } else {
+        nextAvatarUrls.push(newUrl);
+      }
+
       const updates = {
-        avatar_url: url,
+        avatar_urls: nextAvatarUrls,
         updated_at: new Date(),
       };
 
@@ -118,10 +98,13 @@ export default function Account({ session }: { session: Session }) {
         throw error;
       }
 
-      setAvatarUrl(url);
+      setAvatarUrls(nextAvatarUrls);
+      setNewAvatarUrl(newUrl);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update avatar URL");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -146,7 +129,29 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update email");
+        setSnackbarVisible(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteUser() {
+    try {
+      setLoading(true);
+      const { error } = await supabase.rpc("delete_current_user");
+      if (error) {
+        throw error;
+      }
+
+      supabase.auth.signOut();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to delete user");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -166,28 +171,10 @@ export default function Account({ session }: { session: Session }) {
     return true;
   };
 
-  async function deleteUser() {
-    try {
-      setLoading(true);
-      const { error } = await supabase.rpc("delete_current_user");
-      if (error) {
-        throw error;
-      }
-
-      supabase.auth.signOut();
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Account" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Account" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -197,15 +184,27 @@ export default function Account({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
-          <View style={[styles.centerAligned]}>
-            <Avatar
-              size={200}
-              url={avatarUrl}
-              onUpload={(url: string) => {
-                updateAvatarUrl({ url });
-              }}
-            />
-          </View>
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Edit pictures
+          </Text>
+          <Carousel
+            data={avatarUrls ? [...avatarUrls, ""] : [""]}
+            renderItem={(item) => (
+              <Avatar
+                size={200}
+                url={item}
+                onUpload={(url: string) => {
+                  updateAvatarUrl({ newUrl: url, oldUrl: item });
+                }}
+              />
+            )}
+            start={newAvatarUrl}
+            loading={loading}
+          />
+          <Divider style={styles.verticallySpaced} />
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Profile settings
+          </Text>
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <View style={{ flex: 1, flexDirection: "column" }}>
               <TextInput
@@ -233,6 +232,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="outlined"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => navigate(`${ROUTES.EDIT}`)}
             disabled={loading}
           >
@@ -241,15 +241,29 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="outlined"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
             disabled={loading}
           >
             Dating Preferences
           </Button>
           <Divider style={styles.verticallySpaced} />
+          <Text variant="titleLarge" style={styles.verticallySpaced}>
+            Account options
+          </Text>
+          <Button
+            mode="outlined"
+            style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
+            onPress={() => navigate(`${ROUTES.BLOCKED}`)}
+            disabled={loading}
+          >
+            Blocked Users
+          </Button>
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => supabase.auth.signOut()}
             disabled={loading}
           >
@@ -258,6 +272,7 @@ export default function Account({ session }: { session: Session }) {
           <Button
             mode="contained-tonal"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() => setDeleteDialogVisible(true)}
             disabled={loading}
           >
@@ -267,21 +282,8 @@ export default function Account({ session }: { session: Session }) {
       )}
       <Navigation key={session.user.id} session={session} />
       <Portal>
-        <Dialog visible={!loading && !location} dismissable={false}>
-          <Dialog.Title>Alert</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Please click "Ok" below to enable location access in your device
-              settings.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button mode="text" onPress={updateLocation}>
-              Ok
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
         <Dialog
+          style={styles.dialog}
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
         >
@@ -293,14 +295,35 @@ export default function Account({ session }: { session: Session }) {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button mode="text" onPress={() => setDeleteDialogVisible(false)}>
+            <Button
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => setDeleteDialogVisible(false)}
+            >
               Cancel
             </Button>
-            <Button mode="text" onPress={() => deleteUser()}>
+            <Button
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => deleteUser()}
+            >
               Ok
             </Button>
           </Dialog.Actions>
         </Dialog>
+      </Portal>
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </Portal>
     </View>
   );

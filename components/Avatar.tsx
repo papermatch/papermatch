@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, TouchableOpacity } from "react-native";
-import {
-  Avatar as RNPAvatar,
-  Button,
-  ActivityIndicator,
-} from "react-native-paper";
+import { View, TouchableOpacity } from "react-native";
+import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -26,9 +22,7 @@ export default function Avatar({
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
 
   useEffect(() => {
-    if (url) {
-      setAvatarUrl(url);
-    }
+    setAvatarUrl(url);
   }, [url]);
 
   function getContentTypeAndExtension(uri: string) {
@@ -64,7 +58,7 @@ export default function Avatar({
       );
       const filePath = `${uuidv4()}.${fileExt}`;
 
-      let { error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("avatars")
         .upload(filePath, decode(result.assets[0].base64), {
           contentType: contentType,
@@ -74,7 +68,7 @@ export default function Avatar({
         throw error;
       }
 
-      let { data } = await supabase.storage
+      const { data } = await supabase.storage
         .from("avatars")
         .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
 
@@ -87,7 +81,7 @@ export default function Avatar({
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
       } else {
         throw error;
       }
@@ -105,7 +99,7 @@ export default function Avatar({
   }
 
   return (
-    <TouchableOpacity onPress={onPress ?? uploadAvatar} disabled={uploading}>
+    <TouchableOpacity onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <RNPAvatar.Image
           style={styles.verticallySpaced}
@@ -116,7 +110,7 @@ export default function Avatar({
         <RNPAvatar.Icon
           style={styles.verticallySpaced}
           size={size}
-          icon="account"
+          icon={onPress ? "account" : "plus"}
         />
       )}
     </TouchableOpacity>

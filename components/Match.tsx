@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   useTheme,
   Menu,
+  Portal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -23,9 +25,11 @@ export default function Match({ session }: { session: Session }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
   const theme = useTheme();
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (id && session) {
@@ -68,7 +72,7 @@ export default function Match({ session }: { session: Session }) {
 
   async function getMatch() {
     try {
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("matches")
         .select("*")
         .eq("id", id)
@@ -85,7 +89,9 @@ export default function Match({ session }: { session: Session }) {
       setMatch(data);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get match");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -94,7 +100,7 @@ export default function Match({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("messages")
         .select("*")
         .eq("match_id", id)
@@ -107,7 +113,9 @@ export default function Match({ session }: { session: Session }) {
       setMessages(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get messages");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -116,7 +124,7 @@ export default function Match({ session }: { session: Session }) {
 
   async function getProfile(userID: string) {
     try {
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userID)
@@ -128,7 +136,9 @@ export default function Match({ session }: { session: Session }) {
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profile");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -152,7 +162,9 @@ export default function Match({ session }: { session: Session }) {
       setMessage("");
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error sending message", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to send message");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -165,7 +177,10 @@ export default function Match({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username || "Match"} />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title={profile?.username || "Match"}
+        />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -197,16 +212,24 @@ export default function Match({ session }: { session: Session }) {
             keyExtractor={(item) => item.id.toString()}
             inverted={true}
             renderItem={({ item }) => (
-              <Card style={styles.verticallySpaced}>
+              <Card
+                style={[
+                  styles.verticallySpaced,
+                  {
+                    backgroundColor:
+                      item.user_id == session.user.id
+                        ? theme.colors.elevation.level5
+                        : theme.colors.elevation.level1,
+                    marginLeft: item.user_id == session.user.id ? 64 : 0,
+                    marginRight: item.user_id == session.user.id ? 0 : 64,
+                  },
+                ]}
+              >
                 <View
                   style={[
                     {
                       flexDirection:
                         item.user_id == session.user.id ? "row-reverse" : "row",
-                      backgroundColor:
-                        item.user_id == session.user.id
-                          ? theme.colors.elevation.level5
-                          : theme.colors.elevation.level1,
                       padding: 8,
                     },
                   ]}
@@ -215,14 +238,16 @@ export default function Match({ session }: { session: Session }) {
                     <View style={{ alignSelf: "flex-start" }}>
                       <Avatar
                         size={50}
-                        url={profile?.avatar_url || null}
+                        url={profile?.avatar_urls[0] || null}
                         onPress={() =>
                           navigate(`${ROUTES.PROFILE}/${profile?.id}`)
                         }
                       />
                     </View>
                   )}
-                  <Text style={{ marginHorizontal: 12 }}>{item.message}</Text>
+                  <Text style={{ marginHorizontal: 12, alignSelf: "center" }}>
+                    {item.message}
+                  </Text>
                 </View>
               </Card>
             )}
@@ -247,6 +272,19 @@ export default function Match({ session }: { session: Session }) {
           </View>
         </View>
       )}
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }

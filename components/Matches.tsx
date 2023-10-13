@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, FlatList } from "react-native";
-import { Card, Text, Appbar, ActivityIndicator } from "react-native-paper";
+import { View, FlatList } from "react-native";
+import {
+  Card,
+  Text,
+  Appbar,
+  ActivityIndicator,
+  Portal,
+  Snackbar,
+} from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -18,6 +25,8 @@ type MatchesData = {
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<MatchesData[]>([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +39,7 @@ export default function Matches({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .rpc("get_active_matches")
         .select("*");
 
@@ -72,7 +81,9 @@ export default function Matches({ session }: { session: Session }) {
       );
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get matches");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -80,36 +91,56 @@ export default function Matches({ session }: { session: Session }) {
   }
 
   async function getProfiles(ids: string[]): Promise<ProfileData[]> {
-    let { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .in("id", ids);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", ids);
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profiles");
+        setSnackbarVisible(true);
+      }
     }
 
-    return data || [];
+    return [];
   }
 
   async function getMessages(ids: string[]): Promise<MessageData[]> {
-    let { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .in("match_id", ids)
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .in("match_id", ids)
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return ids.map((id) => data?.find((message) => message.match_id === id));
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get messages");
+        setSnackbarVisible(true);
+      }
     }
 
-    return ids.map((id) => data?.find((message) => message.match_id === id));
+    return [];
   }
 
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Matches" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Matches" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -132,7 +163,7 @@ export default function Matches({ session }: { session: Session }) {
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={75}
-                        url={item.profile.avatar_url}
+                        url={item.profile.avatar_urls[0] || null}
                         onPress={() => {
                           navigate(`${ROUTES.MATCH}/${item.match.id}`);
                         }}
@@ -152,7 +183,12 @@ export default function Matches({ session }: { session: Session }) {
                         {item.profile.username}
                       </Text>
                       <Text style={styles.verticallySpaced}>
-                        {item.message?.message || ""}
+                        {item.message
+                          ? item.message.message
+                              .replace(/\n/g, " ")
+                              .slice(0, 280) +
+                            (item.message.message.length > 280 ? "..." : "")
+                          : ""}
                       </Text>
                     </View>
                   </View>
@@ -164,6 +200,19 @@ export default function Matches({ session }: { session: Session }) {
           )}
         </View>
       )}
+      <Portal>
+        <Snackbar
+          style={[styles.snackbar, styles.aboveNav]}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
       <Navigation key={session.user.id} session={session} />
     </View>
   );

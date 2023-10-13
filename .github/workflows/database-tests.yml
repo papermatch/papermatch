@@ -1,7 +1,7 @@
 name: 'database-tests'
 on:
   pull_request:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest

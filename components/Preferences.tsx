@@ -1,11 +1,12 @@
 import { useState, useEffect, SetStateAction } from "react";
 import { supabase } from "../lib/supabase";
 import { Dispatch } from "react";
-import { View, Alert, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import {
   Button,
   TextInput,
   Appbar,
+  Portal,
   Snackbar,
   ActivityIndicator,
   HelperText,
@@ -59,7 +60,7 @@ export default function Preferences({ session }: { session: Session }) {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("preferences")
         .select("*")
         .eq("id", session?.user.id)
@@ -81,7 +82,9 @@ export default function Preferences({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get preferences");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -149,7 +152,9 @@ export default function Preferences({ session }: { session: Session }) {
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error);
+        setSnackbarMessage("Unable to update preferences");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -177,10 +182,9 @@ export default function Preferences({ session }: { session: Session }) {
     } else if (!regex.test(age)) {
       setAgeError("Age must be 2 digits or more");
       return false;
-    } else {
-      setAgeError("");
-      return true;
     }
+    setAgeError("");
+    return true;
   };
 
   const validateRadius = (radius: string) => {
@@ -191,10 +195,9 @@ export default function Preferences({ session }: { session: Session }) {
     } else if (!regex.test(radius)) {
       setRadiusError("Distance must be a number");
       return false;
-    } else {
-      setRadiusError("");
-      return true;
     }
+    setRadiusError("");
+    return true;
   };
 
   return (
@@ -205,7 +208,7 @@ export default function Preferences({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title="Preferences" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Preferences" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -217,7 +220,7 @@ export default function Preferences({ session }: { session: Session }) {
         <ScrollView style={styles.container}>
           <TextInput
             style={styles.verticallySpaced}
-            label="Minimum Age"
+            label="Minimum age"
             value={minAge}
             onChangeText={(text) => {
               setMinAge(text);
@@ -231,7 +234,7 @@ export default function Preferences({ session }: { session: Session }) {
           </HelperText>
           <TextInput
             style={styles.verticallySpaced}
-            label="Maximum Age"
+            label="Maximum age"
             value={maxAge}
             onChangeText={(text) => {
               setMaxAge(text);
@@ -281,7 +284,7 @@ export default function Preferences({ session }: { session: Session }) {
           <Divider style={styles.verticallySpaced} />
           <TextInput
             style={styles.verticallySpaced}
-            label="Maximum Distance"
+            label="Maximum distance (miles)"
             value={radius}
             onChangeText={(text) => {
               setRadius(text);
@@ -327,6 +330,7 @@ export default function Preferences({ session }: { session: Session }) {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             onPress={() =>
               updatePreferences({
                 minAge,
@@ -346,13 +350,19 @@ export default function Preferences({ session }: { session: Session }) {
           </Button>
         </ScrollView>
       )}
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        action={{ label: "Dismiss", onPress: () => setSnackbarVisible(false) }}
-      >
-        {snackbarMessage}
-      </Snackbar>
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }

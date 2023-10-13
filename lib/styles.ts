@@ -13,13 +13,34 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 6,
   },
-  centerAligned: {
-    alignItems: "center",
-  },
   bottom: {
     height: 60,
     justifyContent: "space-between",
     padding: 12,
+  },
+  buttonLabel: {
+    padding: 2,
+  },
+  appbarTitle: {
+    padding: 2,
+  },
+  dialog: {
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
+  },
+  snackbar: {
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
+  },
+  aboveNav: {
+    marginBottom: 60,
+  },
+  fabContainer: {
+    maxWidth: 600,
+    width: "100%",
+    alignSelf: "center",
   },
 });
 

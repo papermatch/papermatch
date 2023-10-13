@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, TouchableOpacity } from "react-native";
 import {
   Appbar,
   FAB,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Portal,
   Modal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -17,13 +18,17 @@ import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { Attributes } from "./Attributes";
+import { Carousel } from "./Carousel";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -35,13 +40,13 @@ export default function Profile({ session }: { session: Session }) {
 
   async function getData() {
     setLoading(true);
-    await Promise.all([getProfile(), getInteraction()]);
+    await Promise.all([getProfile(), getDistance(), getInteraction()]);
     setLoading(false);
   }
 
   async function getProfile() {
     try {
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", id)
@@ -53,7 +58,30 @@ export default function Profile({ session }: { session: Session }) {
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get profile");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  async function getDistance() {
+    try {
+      const { data, error } = await supabase.rpc("get_user_distance", {
+        user1_id: session?.user.id,
+        user2_id: id,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setDistance(data || null);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get distance");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -78,7 +106,9 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("An error occurred", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to get interaction");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -93,12 +123,21 @@ export default function Profile({ session }: { session: Session }) {
           updated_at: new Date(),
         },
       ]);
-      if (error) throw error;
 
-      getInteraction();
+      if (error) {
+        throw error;
+      }
+
+      if (type == "block") {
+        navigate(-1);
+      } else {
+        getInteraction();
+      }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("An error occurred", error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to update interaction");
+        setSnackbarVisible(true);
       }
     }
   }
@@ -111,7 +150,10 @@ export default function Profile({ session }: { session: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title={profile?.username ?? "Profile"} />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title={profile?.username ?? "Profile"}
+        />
         <Menu
           visible={appbarMenuVisible}
           onDismiss={() => setAppbarMenuVisible(false)}
@@ -132,9 +174,9 @@ export default function Profile({ session }: { session: Session }) {
           ) : (
             <Menu.Item
               onPress={() => {
-                handleInteraction("block");
+                handleInteraction(interaction == "block" ? "none" : "block");
               }}
-              title="Block"
+              title={interaction == "block" ? "Unblock" : "Block"}
             />
           )}
         </Menu>
@@ -149,21 +191,26 @@ export default function Profile({ session }: { session: Session }) {
         <ScrollView style={styles.container}>
           {profile ? (
             <View>
-              <View style={styles.centerAligned}>
-                <Avatar
-                  size={200}
-                  url={profile?.avatar_url || null}
-                  onPress={() => {
-                    setImageUrl(profile?.avatar_url || null);
-                  }}
-                />
-              </View>
+              <Carousel
+                data={profile.avatar_urls || [""]}
+                renderItem={(item) => (
+                  <Avatar
+                    size={200}
+                    url={item}
+                    onPress={() => {
+                      setImageUrl(item);
+                    }}
+                  />
+                )}
+                loading={loading}
+              />
               <Attributes
                 style={{
                   flexDirection: "row",
                   flexWrap: "wrap",
                   justifyContent: "center",
                 }}
+                distance={distance}
                 profile={profile}
                 loading={loading}
               />
@@ -172,7 +219,7 @@ export default function Profile({ session }: { session: Session }) {
                 About
               </Text>
               <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
-                {profile?.about}
+                {profile.about}
               </Text>
             </View>
           ) : (
@@ -181,7 +228,7 @@ export default function Profile({ session }: { session: Session }) {
         </ScrollView>
       )}
       {session?.user.id != id && profile && (
-        <View>
+        <View style={styles.fabContainer}>
           <FAB
             icon="thumb-down"
             style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
@@ -221,7 +268,6 @@ export default function Profile({ session }: { session: Session }) {
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
                 resizeMode="contain"
-                onLoad={() => console.log(`Image ${imageUrl} loaded!`)}
                 onError={(error) =>
                   console.log(`Image ${imageUrl} error:`, error)
                 }
@@ -229,6 +275,19 @@ export default function Profile({ session }: { session: Session }) {
             </TouchableOpacity>
           )}
         </Modal>
+      </Portal>
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </Portal>
     </View>
   );

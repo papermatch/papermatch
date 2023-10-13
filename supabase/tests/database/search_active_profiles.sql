@@ -6,8 +6,8 @@ select
 select
     has_function (
         'public',
-        'get_compatible_profiles',
-        'get_compatible_profiles function should exist'
+        'search_active_profiles',
+        'search_active_profiles function should exist'
     );
 
 -- Setup
@@ -121,7 +121,7 @@ set role 'authenticated';
 -- First User is only compatible with Second User (Third User only satisfies min_age)
 select
     results_eq (
-        'select (profile).id, score from public.get_compatible_profiles()',
+        'select (profile).id, score from public.search_active_profiles()',
         $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float),
                  ('33333333-3333-3333-3333-333333333333'::uuid, 2::float),
                  ('44444444-4444-4444-4444-444444444444'::uuid, 1::float)$$

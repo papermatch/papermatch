@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { Alert, View } from "react-native";
+import { View, ScrollView } from "react-native";
 import {
   Button,
   TextInput,
@@ -8,6 +8,8 @@ import {
   HelperText,
   ActivityIndicator,
   Appbar,
+  Portal,
+  Snackbar,
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
@@ -15,6 +17,7 @@ import styles from "../lib/styles";
 import { calculateAge } from "../lib/utils";
 
 export default function Auth() {
+  const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("signUp");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -23,7 +26,8 @@ export default function Auth() {
   const [birthday, setBirthday] = useState("");
   const [birthdayError, setBirthdayError] = useState("");
   const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   async function handleAuth() {
@@ -61,7 +65,9 @@ export default function Auth() {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to send OTP");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -119,7 +125,7 @@ export default function Auth() {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content title="Paper" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Paper" />
       </Appbar.Header>
       {loading ? (
         <View
@@ -128,7 +134,7 @@ export default function Auth() {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <SegmentedButtons
             style={styles.verticallySpaced}
             value={mode}
@@ -207,13 +213,27 @@ export default function Auth() {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             disabled={loading}
             onPress={handleAuth}
           >
             Continue
           </Button>
-        </View>
+        </ScrollView>
       )}
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }

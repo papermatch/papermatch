@@ -18,7 +18,7 @@ select
             'id',
             'updated_at',
             'username',
-            'avatar_url',
+            'avatar_urls',
             'birthday',
             'gender',
             'kids',

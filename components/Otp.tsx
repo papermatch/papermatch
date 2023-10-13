@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Alert, View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { supabase } from "../lib/supabase";
 import {
   Button,
@@ -7,19 +7,23 @@ import {
   ActivityIndicator,
   HelperText,
   Appbar,
+  Portal,
+  Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
+  const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
@@ -31,7 +35,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
     navigate(-1);
   }
 
-  async function verify() {
+  async function handleOtp() {
     if (!validateOtp(otp)) {
       return;
     }
@@ -55,7 +59,9 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        console.log(error.message);
+        setSnackbarMessage("Unable to verify OTP");
+        setSnackbarVisible(true);
       }
     } finally {
       setLoading(false);
@@ -81,7 +87,10 @@ export default function Otp({ session = undefined }: { session?: Session }) {
             navigate(-1);
           }}
         />
-        <Appbar.Content title="One-time password" />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title="One-time password"
+        />
       </Appbar.Header>
       {loading ? (
         <View
@@ -90,7 +99,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <TextInput
             style={styles.verticallySpaced}
             label="OTP"
@@ -109,13 +118,27 @@ export default function Otp({ session = undefined }: { session?: Session }) {
           <Button
             mode="contained"
             style={styles.verticallySpaced}
+            labelStyle={styles.buttonLabel}
             disabled={loading}
-            onPress={verify}
+            onPress={handleOtp}
           >
             Verify
           </Button>
-        </View>
+        </ScrollView>
       )}
+      <Portal>
+        <Snackbar
+          style={styles.snackbar}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          action={{
+            label: "Dismiss",
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }
