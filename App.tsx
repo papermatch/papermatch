@@ -53,8 +53,21 @@ export default function App() {
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    supabase.auth.onAuthStateChange((event, session) => {
+      switch (event) {
+        case "SIGNED_IN":
+          setSession((prevSession) => {
+            // Don't update if the user hasn't changed
+            if (prevSession?.user.id === session?.user.id) {
+              return prevSession;
+            }
+            return session;
+          });
+          break;
+        default:
+          setSession(session);
+          break;
+      }
     });
   }, []);
 
