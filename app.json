@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "papermatch",
+    "name": "Paper Match",
     "slug": "papermatch",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/papermatch.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/papermatch.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,14 +20,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/papermatch.png",
         "backgroundColor": "#ffffff"
       },
       "package": "ch.papermat.papermatch"
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/papermatch.png"
     },
     "plugins": [
       [

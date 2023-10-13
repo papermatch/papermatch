@@ -5,7 +5,7 @@ A pay-per-match dating app, using React Native and Supabase.
 ## Supabase Setup
 
 1. Create a new [Supabase project](https://supabase.com/dashboard/projects) (e.g. papermatch) in your preferred organization (e.g. papermatch)
-2. Create a .env file in the root directory as follows (with information from the Project Settings/API page)
+2. Create a .env.development file in the root directory as follows (with information from the Project Settings/API page)
     ```
     SUPABASE_ANON_KEY=***
     SUPABASE_URL=***
@@ -66,6 +66,19 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     npx supabase gen types typescript --local --schema public > lib/database.ts
     ```
+
+## Remote development
+
+1. `npx supabase link --project-ref ***`
+2. `npx supabase db push`
+3. `npx supabase functions deploy`
+4. `npx supabse secrets set --env-file supabase/.env`
+5. Create a Vault Encryption Key and add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Vault
+6. Create a .env.production file with Supabase secrets
+7. Something something email templates?
+8. `vercel`
+9. Supabase Auth URL Configuration?
+10. Domains?
 
 ### Push Local Changes
 

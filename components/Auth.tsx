@@ -125,7 +125,7 @@ export default function Auth() {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Paper" />
+        <Appbar.Content titleStyle={styles.appbarTitle} title="Authentication" />
       </Appbar.Header>
       {loading ? (
         <View
