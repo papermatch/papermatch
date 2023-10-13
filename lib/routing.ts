@@ -18,6 +18,8 @@ import {
   useParams as useParamsNative,
 } from "react-router-native";
 
+export const BASENAME = "/app";
+
 export const ROUTES = {
   ROOT: "/",
   ACCOUNT: "/account",

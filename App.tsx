@@ -15,7 +15,7 @@ import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
-import { ROUTES, Router, Route, Navigate } from "./lib/routing";
+import { BASENAME, ROUTES, Router, Route, Navigate } from "./lib/routing";
 import {
   useFonts,
   Caveat_400Regular,
@@ -69,7 +69,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <View style={{ height: dimensions.window.height, overflow: "hidden" }}>
-        <Router>
+        <Router basename={BASENAME}>
           <Routes>
             <Route
               path={ROUTES.ROOT}

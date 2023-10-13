@@ -16,12 +16,13 @@ import {
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import Navigation from "./Navigation";
-import { ROUTES, useParams, useNavigate } from "../lib/routing";
+import { BASENAME, ROUTES, useParams, useNavigate } from "../lib/routing";
 import styles from "../lib/styles";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
-    Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
+    (Platform.OS === "web" ? window.location.origin : "https://www.papermat.ch") +
+    BASENAME;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
