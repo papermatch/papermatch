@@ -21,7 +21,7 @@ begin
             select
                 1
             from
-                public.interactions i1 
+                public.interactions i1
             join
                 public.interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
             where
@@ -34,7 +34,7 @@ begin
         -- Check for an existing match
         select into match *
         from public.matches
-        where 
+        where
             ((user1_id = new.user_id and user2_id = new.target_id) or
             (user1_id = new.target_id and user2_id = new.user_id));
 
@@ -73,7 +73,7 @@ begin
     -- Check for an active match
     select into match_id id
     from public.matches
-    where 
+    where
         ((user1_id = new.user_id and user2_id = new.target_id) or
         (user1_id = new.target_id and user2_id = new.user_id)) and
         active = true;
@@ -101,7 +101,7 @@ begin
     select
         i2.user_id as user2_id
     from
-        public.interactions i1 
+        public.interactions i1
     join
         public.interactions i2 on i1.user_id = i2.target_id and i2.user_id = i1.target_id
     where
@@ -111,7 +111,7 @@ begin
         not exists (
             select 1
             from public.matches
-            where 
+            where
                 (user1_id = i1.user_id and user2_id = i2.user_id) or
                 (user1_id = i2.user_id and user2_id = i1.user_id)
         )
@@ -129,7 +129,7 @@ begin
             values (new.user_id, pending_match.user2_id);
         end if;
     end loop;
-    
+
     return new;
 end;
 $$ language plpgsql security definer;
@@ -137,7 +137,7 @@ $$ language plpgsql security definer;
 create function handle_new_match () returns trigger as $$
 begin
     insert into credits (user_id, creditor, creditor_id, credits)
-    values 
+    values
         (new.user1_id, 'match', new.id::varchar, -1),
         (new.user2_id, 'match', new.id::varchar, -1);
 

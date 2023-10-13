@@ -39,7 +39,7 @@ export default function Matches({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .rpc("get_active_matches")
         .select("*");
 

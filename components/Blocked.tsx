@@ -6,7 +6,6 @@ import {
   Text,
   Appbar,
   ActivityIndicator,
-  Menu,
   IconButton,
   Portal,
   Snackbar,
@@ -20,7 +19,6 @@ import styles from "../lib/styles";
 
 export default function Blocked({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -51,7 +49,7 @@ export default function Blocked({ session }: { session: Session }) {
 
       const blockedIDs = await getBlockedIDs();
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .in("id", blockedIDs);

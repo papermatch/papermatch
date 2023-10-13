@@ -23,6 +23,7 @@ import { Carousel } from "./Carousel";
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -39,13 +40,13 @@ export default function Profile({ session }: { session: Session }) {
 
   async function getData() {
     setLoading(true);
-    await Promise.all([getProfile(), getInteraction()]);
+    await Promise.all([getProfile(), getDistance(), getInteraction()]);
     setLoading(false);
   }
 
   async function getProfile() {
     try {
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", id)
@@ -59,6 +60,29 @@ export default function Profile({ session }: { session: Session }) {
       if (error instanceof Error) {
         console.log(error.message);
         setSnackbarMessage("Unable to get profile");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  async function getDistance() {
+    try {
+      const { data, error } = await supabase.rpc("get_user_distance", {
+        user1_id: session?.user.id,
+        user2_id: id,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      console.log(data);
+
+      setDistance(data || null);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to get distance");
         setSnackbarVisible(true);
       }
     }
@@ -188,6 +212,7 @@ export default function Profile({ session }: { session: Session }) {
                   flexWrap: "wrap",
                   justifyContent: "center",
                 }}
+                distance={distance}
                 profile={profile}
                 loading={loading}
               />

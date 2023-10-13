@@ -60,7 +60,7 @@ add column about text;
 create function public.delete_current_user () returns void as $$
 begin
     delete from auth.users where id = auth.uid();
-    return; 
+    return;
 end;
 $$ language plpgsql security definer;
 
@@ -101,7 +101,7 @@ begin
 
     insert into public.credits (user_id, creditor, credits, created_at)
     VALUES (new.id, 'init', 1, now());
-    
+
     insert into public.preferences (id)
     values (new.id);
 
@@ -191,7 +191,7 @@ begin
     if q1.keywords is not null then
         d := d + 1;
         if p2.about is not null and exists (
-            select 1 
+            select 1
             from unnest(q1.keywords) as keyword
             where p2.about ilike '%' || keyword || '%'
         ) then
@@ -211,18 +211,18 @@ create function public.get_compatible_profiles () returns table (profile public.
 begin
     return query
     with q as (
-        select 
+        select
             p, public.get_compatibility_score(auth.uid(), p.id) as s
-        from 
+        from
             public.get_active_profiles() as p
-        where 
+        where
             p.id != auth.uid()
     )
-    select 
+    select
         p, s
-    from 
+    from
         q
-    order by 
+    order by
         s desc;
 end;
 $$ language plpgsql security definer;

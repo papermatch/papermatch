@@ -388,19 +388,19 @@ export interface Database {
           username: string | null
         }[]
       }
-      get_compatibility_score: {
+      get_user_distance: {
         Args: {
           user1_id: string
           user2_id: string
         }
         Returns: number
       }
-      get_compatible_profiles: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          profile: unknown
-          score: number
-        }[]
+      get_user_score: {
+        Args: {
+          user1_id: string
+          user2_id: string
+        }
+        Returns: number
       }
       is_profile_blocked: {
         Args: {
@@ -420,6 +420,14 @@ export interface Database {
           "": unknown
         }
         Returns: number
+      }
+      search_active_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          profile: unknown
+          distance: number
+          score: number
+        }[]
       }
       sec_to_gc: {
         Args: {

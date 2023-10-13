@@ -21,7 +21,7 @@ export default function Navigation({ session }: { session: Session }) {
   async function getActive() {
     try {
       setLoading(true);
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("active")
         .select("*")
         .eq("id", session.user.id)

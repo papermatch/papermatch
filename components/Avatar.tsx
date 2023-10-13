@@ -58,7 +58,7 @@ export default function Avatar({
       );
       const filePath = `${uuidv4()}.${fileExt}`;
 
-      let { error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("avatars")
         .upload(filePath, decode(result.assets[0].base64), {
           contentType: contentType,
@@ -68,7 +68,7 @@ export default function Avatar({
         throw error;
       }
 
-      let { data } = await supabase.storage
+      const { data } = await supabase.storage
         .from("avatars")
         .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
 

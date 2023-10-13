@@ -12,11 +12,17 @@ import {
 
 type AttributesProps = {
   profile: ProfileData;
+  distance: number | null;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
 };
 
-export const Attributes = ({ profile, style, loading }: AttributesProps) => {
+export const Attributes = ({
+  profile,
+  distance,
+  style,
+  loading,
+}: AttributesProps) => {
   const gender = GenderData.find((item) => item.value === profile.gender);
   const intention = IntentionData.find(
     (item) => item.value === profile.intention
@@ -77,6 +83,11 @@ export const Attributes = ({ profile, style, loading }: AttributesProps) => {
           disabled={loading}
         >
           {diet?.label || ""}
+        </Chip>
+      )}
+      {distance !== null && (
+        <Chip style={{ margin: 4 }} icon="map-marker" disabled={loading}>
+          {Math.round(distance)} miles
         </Chip>
       )}
     </View>

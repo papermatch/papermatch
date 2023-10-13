@@ -18,10 +18,16 @@ import { ProfileData } from "../lib/types";
 import styles from "../lib/styles";
 import { Attributes } from "./Attributes";
 
+type ProfilesData = {
+  profile: ProfileData;
+  distance: number | null;
+  score: number | null;
+};
+
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
-  const [profiles, setProfiles] = useState<ProfileData[]>([]);
+  const [data, setData] = useState<ProfilesData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
@@ -50,20 +56,18 @@ export default function Profiles({ session }: { session: Session }) {
       setLoading(true);
 
       let { data, error } = await supabase
-        .rpc("get_compatible_profiles")
+        .rpc("search_active_profiles")
         .select("*");
 
       if (error) {
         throw error;
       }
 
-      let profiles = data?.map((item) => item.profile) || [];
-
       const blockedIDs = await getBlockedIDs();
-      profiles =
-        profiles?.filter((profile) => !blockedIDs.includes(profile.id)) || [];
+      data =
+        data?.filter((item) => !blockedIDs.includes(item.profile.id)) || [];
 
-      setProfiles(profiles);
+      setData(data);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -105,14 +109,14 @@ export default function Profiles({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={styles.container}>
-          {profiles.length ? (
+          {data.length ? (
             <FlatList
-              data={profiles}
-              keyExtractor={(profile) => profile.id.toString()}
-              renderItem={({ item: profile }) => (
+              data={data}
+              keyExtractor={(item) => item.profile.id.toString()}
+              renderItem={({ item }) => (
                 <Card
                   onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                    navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
                   }}
                   style={[styles.verticallySpaced]}
                 >
@@ -127,9 +131,9 @@ export default function Profiles({ session }: { session: Session }) {
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={100}
-                        url={profile.avatar_urls[0] || null}
+                        url={item.profile.avatar_urls[0] || null}
                         onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                          navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
                         }}
                       />
                     </View>
@@ -140,13 +144,14 @@ export default function Profiles({ session }: { session: Session }) {
                         marginLeft: 16,
                       }}
                     >
-                      <Text variant="titleLarge">{profile.username}</Text>
+                      <Text variant="titleLarge">{item.profile.username}</Text>
                       <Attributes
                         style={{
                           flexDirection: "row",
                           flexWrap: "wrap",
                         }}
-                        profile={profile}
+                        profile={item.profile}
+                        distance={item.distance}
                         loading={loading}
                       />
                     </View>

@@ -72,7 +72,7 @@ export default function Match({ session }: { session: Session }) {
 
   async function getMatch() {
     try {
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("matches")
         .select("*")
         .eq("id", id)
@@ -100,7 +100,7 @@ export default function Match({ session }: { session: Session }) {
     try {
       setLoading(true);
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("messages")
         .select("*")
         .eq("match_id", id)
@@ -124,7 +124,7 @@ export default function Match({ session }: { session: Session }) {
 
   async function getProfile(userID: string) {
     try {
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userID)

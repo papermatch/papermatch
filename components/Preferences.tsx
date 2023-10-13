@@ -60,7 +60,7 @@ export default function Preferences({ session }: { session: Session }) {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("preferences")
         .select("*")
         .eq("id", session?.user.id)
