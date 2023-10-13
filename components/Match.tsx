@@ -212,16 +212,24 @@ export default function Match({ session }: { session: Session }) {
             keyExtractor={(item) => item.id.toString()}
             inverted={true}
             renderItem={({ item }) => (
-              <Card style={styles.verticallySpaced}>
+              <Card
+                style={[
+                  styles.verticallySpaced,
+                  {
+                    backgroundColor:
+                      item.user_id == session.user.id
+                        ? theme.colors.elevation.level5
+                        : theme.colors.elevation.level1,
+                    marginLeft: item.user_id == session.user.id ? 64 : 0,
+                    marginRight: item.user_id == session.user.id ? 0 : 64,
+                  },
+                ]}
+              >
                 <View
                   style={[
                     {
                       flexDirection:
                         item.user_id == session.user.id ? "row-reverse" : "row",
-                      backgroundColor:
-                        item.user_id == session.user.id
-                          ? theme.colors.elevation.level5
-                          : theme.colors.elevation.level1,
                       padding: 8,
                     },
                   ]}
@@ -237,7 +245,9 @@ export default function Match({ session }: { session: Session }) {
                       />
                     </View>
                   )}
-                  <Text style={{ marginHorizontal: 12 }}>{item.message}</Text>
+                  <Text style={{ marginHorizontal: 12, alignSelf: "center" }}>
+                    {item.message}
+                  </Text>
                 </View>
               </Card>
             )}

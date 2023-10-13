@@ -148,7 +148,7 @@ export default function Profiles({ session }: { session: Session }) {
         <View style={styles.container}>
           <Checkbox.Item
             style={styles.verticallySpaced}
-            label="Show all profiles"
+            label="Show profiles you've already liked/passed"
             status={showAll ? "checked" : "unchecked"}
             onPress={() => setShowAll(!showAll)}
           />

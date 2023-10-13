@@ -183,7 +183,12 @@ export default function Matches({ session }: { session: Session }) {
                         {item.profile.username}
                       </Text>
                       <Text style={styles.verticallySpaced}>
-                        {item.message?.message || ""}
+                        {item.message
+                          ? item.message.message
+                              .replace(/\n/g, " ")
+                              .slice(0, 280) +
+                            (item.message.message.length > 280 ? "..." : "")
+                          : ""}
                       </Text>
                     </View>
                   </View>
