@@ -15,7 +15,7 @@ import {
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
@@ -48,6 +48,7 @@ export default function Preferences({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {

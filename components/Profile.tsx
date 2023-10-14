@@ -16,7 +16,7 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 
@@ -30,6 +30,7 @@ export default function Profile({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {

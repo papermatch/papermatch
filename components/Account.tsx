@@ -11,12 +11,13 @@ import {
   HelperText,
   Divider,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { Carousel } from "./Carousel";
 
 export default function Account({ session }: { session: Session }) {
@@ -29,6 +30,8 @@ export default function Account({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     if (session) {
@@ -287,15 +290,16 @@ export default function Account({ session }: { session: Session }) {
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
         >
-          <Dialog.Title>Warning</Dialog.Title>
+          <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium">
+            <Text variant="bodyMedium" style={styles.dialogText}>
               Deleting your account will permanently remove all of your matches
               and remaining credits! Click "Ok" below to confirm.
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button
+              textColor={theme.colors.onTertiaryContainer}
               mode="text"
               labelStyle={styles.buttonLabel}
               onPress={() => setDeleteDialogVisible(false)}
@@ -303,6 +307,7 @@ export default function Account({ session }: { session: Session }) {
               Cancel
             </Button>
             <Button
+              textColor={theme.colors.onTertiaryContainer}
               mode="text"
               labelStyle={styles.buttonLabel}
               onPress={() => deleteUser()}

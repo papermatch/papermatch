@@ -4,13 +4,14 @@ import { Session } from "@supabase/supabase-js";
 import { View } from "react-native";
 import { Appbar, Badge } from "react-native-paper";
 import { ROUTES, useNavigate, useLocation } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Navigation({ session }: { session: Session }) {
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {

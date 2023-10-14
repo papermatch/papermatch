@@ -5,7 +5,7 @@ import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Avatar({
   url,
@@ -20,6 +20,7 @@ export default function Avatar({
 }) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
+  const styles = useStyles();
 
   useEffect(() => {
     setAvatarUrl(url);

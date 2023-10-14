@@ -14,7 +14,7 @@ import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { MatchData, ProfileData, MessageData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 type MatchesData = {
   match: MatchData;
@@ -28,6 +28,7 @@ export default function Matches({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {

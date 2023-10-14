@@ -14,7 +14,7 @@ import {
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
 import { ROUTES, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
@@ -47,6 +47,7 @@ export default function Edit({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {

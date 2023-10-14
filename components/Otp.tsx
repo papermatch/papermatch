@@ -12,7 +12,7 @@ import {
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
   const [loading, setLoading] = useState(false);
@@ -23,6 +23,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const styles = useStyles();
   const email = location.state?.email || "";
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import {
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { calculateAge } from "../lib/utils";
 
 export default function Auth() {
@@ -29,6 +29,7 @@ export default function Auth() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   async function handleAuth() {
     if (
@@ -125,7 +126,10 @@ export default function Auth() {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Authentication" />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title="Authentication"
+        />
       </Appbar.Header>
       {loading ? (
         <View

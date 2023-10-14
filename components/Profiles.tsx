@@ -17,7 +17,7 @@ import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 
 type ProfilesData = {
@@ -34,6 +34,7 @@ export default function Profiles({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {

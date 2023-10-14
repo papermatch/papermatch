@@ -17,12 +17,13 @@ import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import Navigation from "./Navigation";
 import { BASENAME, ROUTES, useParams, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
-    (Platform.OS === "web" ? window.location.origin : "https://www.papermat.ch") +
-    BASENAME;
+    (Platform.OS === "web"
+      ? window.location.origin
+      : "https://www.papermat.ch") + BASENAME;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
@@ -31,6 +32,7 @@ export default function Credits({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
   const { result } = useParams<{ result: string }>();
 
   useEffect(() => {
