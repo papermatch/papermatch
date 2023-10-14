@@ -115,7 +115,7 @@ export default function Auth() {
     (params: { date: Date | undefined }) => {
       setDatePickerVisible(false);
       if (params.date) {
-        const birthday = params.date.toISOString().split("T")[0];
+        const birthday = params.date.toLocaleDateString("en-CA");
         setBirthday(birthday);
         validateBirthday(birthday);
       }
