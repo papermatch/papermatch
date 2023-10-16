@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (7);
+    plan (8);
 
 select
     has_function (
@@ -24,13 +24,14 @@ insert into
 values
     ('11111111-1111-1111-1111-111111111111'),
     ('22222222-2222-2222-2222-222222222222'),
-    ('33333333-3333-3333-3333-333333333333');
+    ('33333333-3333-3333-3333-333333333333'),
+    ('44444444-4444-4444-4444-444444444444');
 
 -- All users should have initial credits
 select
     results_eq (
-        'select user_id, credits from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'', ''33333333-3333-3333-3333-333333333333'')',
-        $$values ('11111111-1111-1111-1111-111111111111'::uuid, 1), ('22222222-2222-2222-2222-222222222222'::uuid, 1), ('33333333-3333-3333-3333-333333333333'::uuid, 1)$$
+        'select user_id, credits from public.credits where user_id in (''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'', ''33333333-3333-3333-3333-333333333333'', ''44444444-4444-4444-4444-444444444444'') order by user_id',
+        $$values ('11111111-1111-1111-1111-111111111111'::uuid, 1), ('22222222-2222-2222-2222-222222222222'::uuid, 1), ('33333333-3333-3333-3333-333333333333'::uuid, 1), ('44444444-4444-4444-4444-444444444444'::uuid, 1)$$
     );
 
 -- Second User first likes First User should not result in a match
@@ -115,6 +116,32 @@ select
     results_eq (
         'select count(*) from public.matches where user1_id = ''22222222-2222-2222-2222-222222222222'' and user2_id = ''33333333-3333-3333-3333-333333333333'' and active = true',
         $$values (1::bigint)$$
+    );
+
+insert into
+    credits (user_id, creditor, creditor_id, credits)
+values
+    (
+        '11111111-1111-1111-1111-111111111111',
+        'stripe',
+        'cs_test',
+        1
+    );
+
+-- First user liking Fourth User should not result in a match
+insert into
+    interactions (user_id, target_id, interaction)
+values
+    (
+        '11111111-1111-1111-1111-111111111111',
+        '44444444-4444-4444-4444-444444444444',
+        'like'
+    );
+
+select
+    results_eq (
+        'select count(*) from public.matches where user1_id = ''11111111-1111-1111-1111-111111111111'' and user2_id = ''44444444-4444-4444-4444-444444444444''',
+        $$values (0::bigint)$$
     );
 
 -- Cleanup
