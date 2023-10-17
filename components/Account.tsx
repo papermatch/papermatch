@@ -47,7 +47,7 @@ export default function Account({ session }: { session: Session }) {
 
       const { data, error, status } = await supabase
         .from("profiles")
-        .select(`avatar_urls`)
+        .select("avatar_urls")
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {

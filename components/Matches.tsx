@@ -6,6 +6,7 @@ import {
   Text,
   Appbar,
   ActivityIndicator,
+  Badge,
   Portal,
   Snackbar,
 } from "react-native-paper";
@@ -20,6 +21,7 @@ type MatchesData = {
   match: MatchData;
   profile: ProfileData;
   message: MessageData | null;
+  unread: boolean;
 };
 
 export default function Matches({ session }: { session: Session }) {
@@ -32,54 +34,21 @@ export default function Matches({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getMatches();
+      getData();
     }
   }, [session]);
 
-  async function getMatches() {
+  async function getData() {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase
-        .rpc("get_active_matches")
-        .select("*");
+      const { data, error } = await supabase.rpc("get_matches_data");
 
       if (error) {
         throw error;
       }
 
-      const profileIDs =
-        data?.map((match) => {
-          if (match.user1_id === session.user.id) {
-            return match.user2_id;
-          } else {
-            return match.user1_id;
-          }
-        }) || [];
-      const profiles = await getProfiles(profileIDs);
-
-      const matchIDs = data?.map((match) => match.id);
-      const messages = await getMessages(matchIDs || []);
-
-      setData(
-        data?.reduce((acc: MatchesData[], match) => {
-          const profile = profiles.find(
-            (profile) =>
-              profile.id === match.user1_id || profile.id === match.user2_id
-          );
-          const message = messages.find(
-            (message) => message?.match_id === match.id
-          );
-          if (profile) {
-            acc.push({
-              match: match,
-              profile: profile,
-              message: message || null,
-            });
-          }
-          return acc;
-        }, []) || []
-      );
+      setData(data || []);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -89,53 +58,6 @@ export default function Matches({ session }: { session: Session }) {
     } finally {
       setLoading(false);
     }
-  }
-
-  async function getProfiles(ids: string[]): Promise<ProfileData[]> {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("id", ids);
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-        setSnackbarMessage("Unable to get profiles");
-        setSnackbarVisible(true);
-      }
-    }
-
-    return [];
-  }
-
-  async function getMessages(ids: string[]): Promise<MessageData[]> {
-    try {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .in("match_id", ids)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      return ids.map((id) => data?.find((message) => message.match_id === id));
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-        setSnackbarMessage("Unable to get messages");
-        setSnackbarVisible(true);
-      }
-    }
-
-    return [];
   }
 
   return (
@@ -161,6 +83,11 @@ export default function Matches({ session }: { session: Session }) {
                   onPress={() => navigate(`${ROUTES.MATCH}/${item.match.id}`)}
                 >
                   <View style={{ flexDirection: "row", padding: 16 }}>
+                    <Badge
+                      visible={item.unread}
+                      size={10}
+                      style={{ position: "absolute", top: 10, right: 10 }}
+                    />
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
                         size={75}

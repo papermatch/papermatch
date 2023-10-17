@@ -19,7 +19,8 @@ select
             'match_id',
             'user_id',
             'message',
-            'created_at'
+            'created_at',
+            'is_read'
         ]
     );
 

@@ -38,12 +38,12 @@ export default function Profiles({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getProfiles();
+      getData();
     }
   }, [session]);
 
   useEffect(() => {
-    getProfiles();
+    getData();
   }, [showAll]);
 
   async function getInteractions(): Promise<{ [key: string]: string }> {
@@ -73,7 +73,7 @@ export default function Profiles({ session }: { session: Session }) {
     return {};
   }
 
-  async function getProfiles() {
+  async function getData() {
     try {
       setLoading(true);
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList } from "react-native";
+import { View, FlatList, ViewToken } from "react-native";
 import {
   Card,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   useTheme,
   Menu,
+  Badge,
   Portal,
   Snackbar,
 } from "react-native-paper";
@@ -54,6 +55,22 @@ export default function Match({ session }: { session: Session }) {
                 payload.new as MessageData,
                 ...prevMessages,
               ]);
+              break;
+            case "UPDATE":
+              setMessages((prevMessages) =>
+                prevMessages.map((message) => {
+                  if (message.id === payload.new.id) {
+                    return payload.new as MessageData;
+                  } else {
+                    return message;
+                  }
+                })
+              );
+              break;
+            case "DELETE":
+              setMessages((prevMessages) =>
+                prevMessages.filter((message) => message.id !== payload.old.id)
+              );
               break;
           }
         }
@@ -170,6 +187,40 @@ export default function Match({ session }: { session: Session }) {
     }
   }
 
+  async function setMessageRead(message: MessageData) {
+    try {
+      const { error } = await supabase.rpc("set_message_read", {
+        msg_id: message.id,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to update message");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  const viewabilityConfig = {
+    waitForInteraction: false,
+    viewAreaCoveragePercentThreshold: 10,
+  };
+
+  const handleViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: Array<ViewToken> }) => {
+      for (const { item } of viewableItems) {
+        if (item.user_id !== session.user.id && !item.is_read) {
+          setMessageRead(item);
+        }
+      }
+    },
+    []
+  );
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
@@ -235,6 +286,11 @@ export default function Match({ session }: { session: Session }) {
                     },
                   ]}
                 >
+                  <Badge
+                    visible={!item.is_read && item.user_id != session.user.id}
+                    size={10}
+                    style={{ position: "absolute", top: 10, right: 10 }}
+                  />
                   {item.user_id != session.user.id && (
                     <View style={{ alignSelf: "flex-start" }}>
                       <Avatar
@@ -252,6 +308,8 @@ export default function Match({ session }: { session: Session }) {
                 </View>
               </Card>
             )}
+            viewabilityConfig={viewabilityConfig}
+            onViewableItemsChanged={handleViewableItemsChanged}
           />
           <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
             <TextInput

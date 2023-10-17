@@ -118,6 +118,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          is_read: boolean
           match_id: string
           message: string
           user_id: string
@@ -125,6 +126,7 @@ export interface Database {
         Insert: {
           created_at?: string
           id?: string
+          is_read?: boolean
           match_id: string
           message: string
           user_id: string
@@ -132,6 +134,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          is_read?: boolean
           match_id?: string
           message?: string
           user_id?: string
@@ -388,6 +391,15 @@ export interface Database {
           username: string | null
         }[]
       }
+      get_matches_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          match: unknown
+          profile: unknown
+          message: unknown
+          unread: boolean
+        }[]
+      }
       get_user_distance: {
         Args: {
           user1_id: string
@@ -434,6 +446,12 @@ export interface Database {
           "": number
         }
         Returns: number
+      }
+      set_message_read: {
+        Args: {
+          msg_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

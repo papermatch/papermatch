@@ -8,6 +8,7 @@ import { useStyles } from "../lib/styles";
 
 export default function Navigation({ session }: { session: Session }) {
   const [active, setActive] = useState(false);
+  const [unread, setUnread] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,9 +16,15 @@ export default function Navigation({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getActive();
+      getData();
     }
   }, [session]);
+
+  async function getData() {
+    setLoading(true);
+    await Promise.all([getActive(), getUnread()]);
+    setLoading(false);
+  }
 
   async function getActive() {
     try {
@@ -42,6 +49,29 @@ export default function Navigation({ session }: { session: Session }) {
     }
   }
 
+  async function getUnread() {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .neq("user_id", session.user.id)
+        .eq("is_read", false);
+
+      if (error) {
+        throw error;
+      }
+
+      setUnread(!!data?.length || false);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <Appbar style={styles.bottom}>
       <Appbar.Action
@@ -56,14 +86,21 @@ export default function Navigation({ session }: { session: Session }) {
         }}
         animated={false}
       />
-      <Appbar.Action
-        icon={location.pathname === ROUTES.MATCHES ? "chat" : "chat-outline"}
-        size={30}
-        onPress={() => {
-          navigate(ROUTES.MATCHES);
-        }}
-        animated={false}
-      />
+      <View>
+        <Badge
+          visible={!loading && unread}
+          size={10}
+          style={{ position: "absolute", top: 10, right: 10 }}
+        />
+        <Appbar.Action
+          icon={location.pathname === ROUTES.MATCHES ? "chat" : "chat-outline"}
+          size={30}
+          onPress={() => {
+            navigate(ROUTES.MATCHES);
+          }}
+          animated={false}
+        />
+      </View>
       <View>
         <Badge
           visible={!loading && !active}
@@ -73,8 +110,8 @@ export default function Navigation({ session }: { session: Session }) {
         <Appbar.Action
           icon={
             location.pathname === ROUTES.CREDITS
-              ? "hand-coin"
-              : "hand-coin-outline"
+              ? "credit-card-plus"
+              : "credit-card-plus-outline"
           }
           size={30}
           onPress={() => {
