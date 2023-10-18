@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, TouchableOpacity } from "react-native";
+import { View, Pressable } from "react-native";
 import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
@@ -100,7 +100,7 @@ export default function Avatar({
   }
 
   return (
-    <TouchableOpacity onPress={onPress || uploadAvatar} disabled={uploading}>
+    <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <RNPAvatar.Image
           style={styles.verticallySpaced}
@@ -114,6 +114,6 @@ export default function Avatar({
           icon={onPress ? "account" : "plus"}
         />
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

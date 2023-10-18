@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, Pressable } from "react-native";
 import {
   Appbar,
   FAB,
@@ -268,7 +268,7 @@ export default function Profile({ session }: { session: Session }) {
           contentContainerStyle={{ flex: 1 }}
         >
           {!!imageUrl && (
-            <TouchableOpacity
+            <Pressable
               style={{ flex: 1 }}
               onPress={() => setImageUrl(null)}
             >
@@ -280,7 +280,7 @@ export default function Profile({ session }: { session: Session }) {
                   console.log(`Image ${imageUrl} error:`, error)
                 }
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </Modal>
       </Portal>

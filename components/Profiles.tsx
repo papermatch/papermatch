@@ -200,6 +200,16 @@ export default function Profiles({ session }: { session: Session }) {
                         loading={loading}
                       />
                     </View>
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                      }}
+                      pointerEvents="box-only"
+                    />
                   </View>
                 </Card>
               )}

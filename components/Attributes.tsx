@@ -36,13 +36,19 @@ export const Attributes = ({
   return (
     <View style={style}>
       {profile.birthday && (
-        <Chip style={{ margin: 4 }} icon="cake-variant" disabled={loading}>
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
+          icon="cake-variant"
+          disabled={loading}
+        >
           {calculateAge(Date.parse(profile.birthday))}
         </Chip>
       )}
       {profile.gender && (
         <Chip
           style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
           icon={gender?.icon || "gender-transgender"}
           disabled={loading}
         >
@@ -52,6 +58,7 @@ export const Attributes = ({
       {profile.kids && (
         <Chip
           style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
           icon={kids?.icon || "baby"}
           disabled={loading}
         >
@@ -61,6 +68,7 @@ export const Attributes = ({
       {profile.intention && (
         <Chip
           style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
           icon={intention?.icon || "heart"}
           disabled={loading}
         >
@@ -79,6 +87,7 @@ export const Attributes = ({
       {profile.diet && (
         <Chip
           style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
           icon={diet?.icon || "food-apple"}
           disabled={loading}
         >
@@ -86,7 +95,12 @@ export const Attributes = ({
         </Chip>
       )}
       {distance !== null && (
-        <Chip style={{ margin: 4 }} icon="map-marker" disabled={loading}>
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 2 }}
+          icon="map-marker"
+          disabled={loading}
+        >
           {Math.round(distance)} miles
         </Chip>
       )}
