@@ -48,7 +48,13 @@ export const Dropdown = <T extends Key>({
                   />
                 )
               }
-              disabled={true}
+              theme={{
+                colors: {
+                  surfaceDisabled: "rgb(226, 225, 236, 1)",
+                  onSurfaceDisabled: "rgb(69, 70, 79, 1)",
+                },
+              }}
+              editable={false}
             />
           </Pressable>
         }
