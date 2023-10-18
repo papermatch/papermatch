@@ -48,10 +48,12 @@ export default function App() {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    supabase
+      .auth.getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setLoading(false);
+      });
 
     supabase.auth.onAuthStateChange((event, session) => {
       switch (event) {

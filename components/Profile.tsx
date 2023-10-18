@@ -219,7 +219,12 @@ export default function Profile({ session }: { session: Session }) {
               <Text style={styles.verticallySpaced} variant="titleLarge">
                 About
               </Text>
-              <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
+              <Text
+                style={[
+                  styles.verticallySpaced,
+                  { marginLeft: 16, marginBottom: 88 },
+                ]}
+              >
                 {profile.about}
               </Text>
             </View>
@@ -234,6 +239,7 @@ export default function Profile({ session }: { session: Session }) {
             icon="thumb-down"
             style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
             color={interaction == "pass" ? "red" : "grey"}
+            size="medium"
             onPress={() =>
               interaction == "pass"
                 ? handleInteraction("none")
@@ -245,6 +251,7 @@ export default function Profile({ session }: { session: Session }) {
             icon="thumb-up"
             style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
             color={interaction == "like" ? "green" : "grey"}
+            size="medium"
             onPress={() =>
               interaction == "like"
                 ? handleInteraction("none")
