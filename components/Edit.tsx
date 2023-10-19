@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   HelperText,
   Text,
+  Divider
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
@@ -235,6 +236,7 @@ export default function Edit({ session }: { session: Session }) {
             Edit your profile below. The more information you provide, the
             better your matches will be!
           </Text>
+          <Divider style={styles.verticallySpaced} />
           <TextInput
             style={styles.verticallySpaced}
             label="Username (your first name is fine)"

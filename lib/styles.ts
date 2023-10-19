@@ -50,5 +50,13 @@ export const useStyles = () => {
       width: "100%",
       alignSelf: "center",
     },
+    modal: {
+      maxWidth: 600,
+      width: "100%",
+      alignSelf: "center",
+      padding: 26,
+      borderRadius: 21,
+      backgroundColor: theme.colors.tertiaryContainer
+    },
   });
 };

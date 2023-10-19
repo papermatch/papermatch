@@ -8,9 +8,10 @@ import {
   ActivityIndicator,
   Menu,
   Checkbox,
-  Divider,
   Portal,
+  Modal,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
@@ -20,25 +21,26 @@ import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 
+const MAX_USER_SCORE = 10;
+
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [data, setData] = useState<ProfilesData[]>([]);
-  const [showAll, setShowAll] = useState(false);
+  const [settingsVisible, setHideSettings] = useState(false);
+  const [hideInteractions, setHideInteractions] = useState(true);
+  const [hidePreferences, setHidePreferences] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     if (session) {
       getData();
     }
-  }, [session]);
-
-  useEffect(() => {
-    getData();
-  }, [showAll]);
+  }, [session, hideInteractions, hidePreferences]);
 
   async function getInteractions(): Promise<{ [key: string]: string }> {
     try {
@@ -79,27 +81,34 @@ export default function Profiles({ session }: { session: Session }) {
         throw error;
       }
 
+      let nextData = data || [];
+
       const interactions = await getInteractions();
 
-      if (data) {
-        if (showAll) {
-          // Show all profiles (that are not blocked)
-          setData(
-            data.filter((item) => interactions[item.profile.id] !== "block")
-          );
-        } else {
-          // Show only profiles without an interaction (or none)
-          setData(
-            data.filter(
-              (item) =>
-                !interactions[item.profile.id] ||
-                interactions[item.profile.id] === "none"
-            )
-          );
-        }
+      if (hideInteractions) {
+        // Show only profiles without an interaction (or none)
+        nextData = nextData.filter(
+          (item) =>
+            !interactions[item.profile.id] ||
+            interactions[item.profile.id] === "none"
+        );
       } else {
-        setData([]);
+        // Show all profiles (that are not blocked)
+        nextData = nextData.filter(
+          (item) => interactions[item.profile.id] !== "block"
+        );
       }
+
+      if (hidePreferences) {
+        // Show only profiles with a perfect score (or no score if no preferences)
+        nextData = nextData.filter(
+          (item) =>
+            !item.score ||
+            Math.abs(item.score - MAX_USER_SCORE) < Number.EPSILON
+        );
+      }
+
+      setData(nextData);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -127,6 +136,13 @@ export default function Profiles({ session }: { session: Session }) {
         >
           <Menu.Item
             onPress={() => {
+              setAppbarMenuVisible(false);
+              setHideSettings(!settingsVisible);
+            }}
+            title="Settings"
+          />
+          <Menu.Item
+            onPress={() => {
               navigate(ROUTES.PREFERENCES);
             }}
             title="Preferences"
@@ -141,13 +157,6 @@ export default function Profiles({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={styles.container}>
-          <Checkbox.Item
-            style={styles.verticallySpaced}
-            label="Show profiles you've already liked/passed"
-            status={showAll ? "checked" : "unchecked"}
-            onPress={() => setShowAll(!showAll)}
-          />
-          <Divider style={styles.verticallySpaced} />
           {data.length ? (
             <FlatList
               data={data}
@@ -215,6 +224,29 @@ export default function Profiles({ session }: { session: Session }) {
           )}
         </View>
       )}
+      <Portal>
+        <Modal
+          contentContainerStyle={styles.modal}
+          visible={settingsVisible}
+          onDismiss={() => setHideSettings(false)}
+        >
+          <View style={styles.verticallySpaced}>
+            <Text variant="titleLarge">Settings</Text>
+            <Checkbox.Item
+              labelStyle={{ color: theme.colors.onTertiaryContainer }}
+              label="Hide profiles you've already liked/passed"
+              status={hideInteractions ? "checked" : "unchecked"}
+              onPress={() => setHideInteractions(!hideInteractions)}
+            />
+            <Checkbox.Item
+              labelStyle={{ color: theme.colors.onTertiaryContainer }}
+              label="Hide profiles that don't meet all of your preferences"
+              status={hidePreferences ? "checked" : "unchecked"}
+              onPress={() => setHidePreferences(!hidePreferences)}
+            />
+          </View>
+        </Modal>
+      </Portal>
       <Portal>
         <Snackbar
           style={[styles.snackbar, styles.aboveNav]}

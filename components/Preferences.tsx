@@ -224,34 +224,39 @@ export default function Preferences({ session }: { session: Session }) {
             Update your preferences below. The more information you provide, the
             better your matches will be!
           </Text>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Minimum age"
-            value={minAge}
-            onChangeText={(text) => {
-              setMinAge(text);
-              validateAge(text, setMinAgeError);
-            }}
-            keyboardType="numeric"
-            error={!!minAgeError}
-          />
-          <HelperText type="error" visible={!!minAgeError}>
-            {minAgeError}
-          </HelperText>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Maximum age"
-            value={maxAge}
-            onChangeText={(text) => {
-              setMaxAge(text);
-              validateAge(text, setMaxAgeError);
-            }}
-            keyboardType="numeric"
-            error={!!maxAgeError}
-          />
-          <HelperText type="error" visible={!!maxAgeError}>
-            {maxAgeError}
-          </HelperText>
+          <Divider style={styles.verticallySpaced} />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <TextInput
+                label="Minimum age"
+                value={minAge}
+                onChangeText={(text) => {
+                  setMinAge(text);
+                  validateAge(text, setMinAgeError);
+                }}
+                keyboardType="numeric"
+                error={!!minAgeError}
+              />
+              <HelperText type="error" visible={!!minAgeError}>
+                {minAgeError}
+              </HelperText>
+            </View>
+            <View style={{ flex: 1, marginLeft: 8 }}>
+              <TextInput
+                label="Maximum age"
+                value={maxAge}
+                onChangeText={(text) => {
+                  setMaxAge(text);
+                  validateAge(text, setMaxAgeError);
+                }}
+                keyboardType="numeric"
+                error={!!maxAgeError}
+              />
+              <HelperText type="error" visible={!!maxAgeError}>
+                {maxAgeError}
+              </HelperText>
+            </View>
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Checkboxes
             label="Gender"
