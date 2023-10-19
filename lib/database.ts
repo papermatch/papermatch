@@ -168,7 +168,7 @@ export interface Database {
           relationship:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
@@ -183,7 +183,7 @@ export interface Database {
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
@@ -198,7 +198,7 @@ export interface Database {
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -281,13 +281,13 @@ export interface Database {
       cube:
         | {
             Args: {
-              "": number[]
+              "": number
             }
             Returns: unknown
           }
         | {
             Args: {
-              "": number
+              "": number[]
             }
             Returns: unknown
           }

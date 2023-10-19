@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, ViewToken } from "react-native";
+import { View, FlatList, ViewToken, Platform } from "react-native";
 import {
   Card,
   Text,
@@ -317,6 +317,7 @@ export default function Match({ session }: { session: Session }) {
               value={message}
               onChangeText={setMessage}
               onSubmitEditing={handleMessage}
+              blurOnSubmit={true}
               placeholder="Type a message"
               multiline={true}
               numberOfLines={4}

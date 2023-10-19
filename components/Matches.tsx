@@ -14,15 +14,8 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { MatchData, ProfileData, MessageData } from "../lib/types";
+import { MatchesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
-
-type MatchesData = {
-  match: MatchData;
-  profile: ProfileData;
-  message: MessageData | null;
-  unread: boolean;
-};
 
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -116,7 +109,7 @@ export default function Matches({ session }: { session: Session }) {
                               .replace(/\n/g, " ")
                               .slice(0, 280) +
                             (item.message.message.length > 280 ? "..." : "")
-                          : ""}
+                          : "(No messages yet.)"}
                       </Text>
                     </View>
                     <View

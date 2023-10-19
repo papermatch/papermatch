@@ -5,10 +5,12 @@ import { View } from "react-native";
 import { Appbar, Badge } from "react-native-paper";
 import { ROUTES, useNavigate, useLocation } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { MatchesData } from "../lib/types";
 
 export default function Navigation({ session }: { session: Session }) {
-  const [active, setActive] = useState(false);
-  const [unread, setUnread] = useState(false);
+  const [active, setActive] = useState(true);
+  const [newOrUnread, setNewOrUnread] = useState(false);
+  const [onboarding, setOnboarding] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,13 +24,12 @@ export default function Navigation({ session }: { session: Session }) {
 
   async function getData() {
     setLoading(true);
-    await Promise.all([getActive(), getUnread()]);
+    await Promise.all([getActive(), getNewOrUnread(), getOnboarding()]);
     setLoading(false);
   }
 
   async function getActive() {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from("active")
         .select("*")
@@ -44,31 +45,60 @@ export default function Navigation({ session }: { session: Session }) {
       if (error instanceof Error) {
         console.log(error.message);
       }
-    } finally {
-      setLoading(false);
     }
   }
 
-  async function getUnread() {
+  async function getNewOrUnread() {
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .neq("user_id", session.user.id)
-        .eq("is_read", false);
+      const { data, error } = await supabase.rpc("get_matches_data");
 
       if (error) {
         throw error;
       }
 
-      setUnread(!!data?.length || false);
+      setNewOrUnread(
+        data?.filter(
+          (item: MatchesData) => item.message === null || item.unread
+        ).length > 0 || false
+      );
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
       }
-    } finally {
-      setLoading(false);
+    }
+  }
+
+  async function getOnboarding() {
+    try {
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("updated_at,avatar_urls")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profilesError) {
+        throw profilesError;
+      }
+
+      const { data: preferencesData, error: preferencesError } = await supabase
+        .from("preferences")
+        .select("updated_at")
+        .eq("id", session.user.id)
+        .single();
+
+      if (preferencesError) {
+        throw preferencesError;
+      }
+
+      setOnboarding(
+        !profilesData.updated_at ||
+          profilesData.avatar_urls.length === 0 ||
+          !preferencesData.updated_at
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
     }
   }
 
@@ -88,7 +118,7 @@ export default function Navigation({ session }: { session: Session }) {
       />
       <View>
         <Badge
-          visible={!loading && unread}
+          visible={!loading && newOrUnread}
           size={10}
           style={{ position: "absolute", top: 10, right: 10 }}
         />
@@ -120,16 +150,23 @@ export default function Navigation({ session }: { session: Session }) {
           animated={false}
         />
       </View>
-      <Appbar.Action
-        icon={
-          location.pathname === ROUTES.ACCOUNT ? "account" : "account-outline"
-        }
-        size={30}
-        onPress={() => {
-          navigate(ROUTES.ACCOUNT);
-        }}
-        animated={false}
-      />
+      <View>
+        <Badge
+          visible={!loading && onboarding}
+          size={10}
+          style={{ position: "absolute", top: 10, right: 10 }}
+        />
+        <Appbar.Action
+          icon={
+            location.pathname === ROUTES.ACCOUNT ? "account" : "account-outline"
+          }
+          size={30}
+          onPress={() => {
+            navigate(ROUTES.ACCOUNT);
+          }}
+          animated={false}
+        />
+      </View>
     </Appbar>
   );
 }

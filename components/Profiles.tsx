@@ -16,15 +16,9 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { ProfileData } from "../lib/types";
+import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
-
-type ProfilesData = {
-  profile: ProfileData;
-  distance: number | null;
-  score: number | null;
-};
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);

@@ -10,6 +10,7 @@ import {
   Menu,
   ActivityIndicator,
   HelperText,
+  Text,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
@@ -230,6 +231,10 @@ export default function Edit({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
+          <Text style={styles.verticallySpaced}>
+            Edit your profile below. The more information you provide, the
+            better your matches will be!
+          </Text>
           <TextInput
             style={styles.verticallySpaced}
             label="Username (your first name is fine)"

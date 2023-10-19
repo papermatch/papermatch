@@ -15,16 +15,18 @@ import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
+  const location = useLocation();
+  const email = location.state?.email || "";
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarVisible, setSnackbarVisible] = useState(true);
+  const [snackbarMessage, setSnackbarMessage] = useState(
+    `Check ${email} for your one-time password`
+  );
   const navigate = useNavigate();
-  const location = useLocation();
   const styles = useStyles();
-  const email = location.state?.email || "";
 
   useEffect(() => {
     if (session) {
@@ -108,6 +110,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
               setOtp(text);
               validateOtp(text);
             }}
+            onSubmitEditing={handleOtp}
             value={otp}
             keyboardType="numeric"
             placeholder="Enter your OTP"

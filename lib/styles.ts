@@ -23,10 +23,10 @@ export const useStyles = () => {
       padding: 12,
     },
     buttonLabel: {
-      padding: 2,
+      padding: 1,
     },
     appbarTitle: {
-      padding: 2,
+      padding: 1,
     },
     dialog: {
       maxWidth: 600,

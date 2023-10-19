@@ -38,7 +38,7 @@ export const Attributes = ({
       {profile.birthday && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon="cake-variant"
           disabled={loading}
         >
@@ -48,7 +48,7 @@ export const Attributes = ({
       {profile.gender && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon={gender?.icon || "gender-transgender"}
           disabled={loading}
         >
@@ -58,7 +58,7 @@ export const Attributes = ({
       {profile.kids && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon={kids?.icon || "baby"}
           disabled={loading}
         >
@@ -68,7 +68,7 @@ export const Attributes = ({
       {profile.intention && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon={intention?.icon || "heart"}
           disabled={loading}
         >
@@ -87,7 +87,7 @@ export const Attributes = ({
       {profile.diet && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon={diet?.icon || "food-apple"}
           disabled={loading}
         >
@@ -97,7 +97,7 @@ export const Attributes = ({
       {distance !== null && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 2 }}
+          textStyle={{ padding: 1 }}
           icon="map-marker"
           disabled={loading}
         >

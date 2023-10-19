@@ -10,6 +10,7 @@ import {
   Text,
   HelperText,
   Divider,
+  Badge,
   Snackbar,
   useTheme,
 } from "react-native-paper";
@@ -20,8 +21,12 @@ import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Carousel } from "./Carousel";
 
+const MAX_AVATARS = 6;
+
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
+  const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
@@ -35,19 +40,24 @@ export default function Account({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getAvatarUrls();
+      getData();
       setEmail(session.user.email || "");
     }
   }, [session]);
 
-  async function getAvatarUrls() {
+  async function getData() {
+    setLoading(true);
+    await Promise.all([getPreferences(), getProfile()]);
+    setLoading(false);
+  }
+
+  async function getPreferences() {
     try {
-      setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       const { data, error, status } = await supabase
-        .from("profiles")
-        .select("avatar_urls")
+        .from("preferences")
+        .select("updated_at")
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
@@ -55,6 +65,32 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
+        setPreferencesOnboarding(!data.updated_at);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        setSnackbarMessage("Unable to fetch preferences");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  async function getProfile() {
+    try {
+      if (!session?.user) throw new Error("No user on the session!");
+
+      const { data, error, status } = await supabase
+        .from("profiles")
+        .select("updated_at,avatar_urls")
+        .eq("id", session?.user.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setProfileOnboarding(!data.updated_at);
         setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
@@ -63,8 +99,6 @@ export default function Account({ session }: { session: Session }) {
         setSnackbarMessage("Unable to fetch avatar URLs");
         setSnackbarVisible(true);
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -190,20 +224,33 @@ export default function Account({ session }: { session: Session }) {
           <Text variant="titleLarge" style={styles.verticallySpaced}>
             Edit pictures
           </Text>
-          <Carousel
-            data={avatarUrls ? [...avatarUrls, ""] : [""]}
-            renderItem={(item) => (
-              <Avatar
-                size={200}
-                url={item}
-                onUpload={(url: string) => {
-                  updateAvatarUrl({ newUrl: url, oldUrl: item });
-                }}
-              />
-            )}
-            start={newAvatarUrl}
-            loading={loading}
-          />
+          <View>
+            <Badge
+              visible={!loading && avatarUrls.length === 0}
+              size={10}
+              style={{ position: "absolute", top: 10, right: 10 }}
+            />
+            <Carousel
+              data={
+                avatarUrls
+                  ? avatarUrls.length < MAX_AVATARS
+                    ? [...avatarUrls, ""]
+                    : avatarUrls
+                  : [""]
+              }
+              renderItem={(item) => (
+                <Avatar
+                  size={200}
+                  url={item}
+                  onUpload={(url: string) => {
+                    updateAvatarUrl({ newUrl: url, oldUrl: item });
+                  }}
+                />
+              )}
+              start={newAvatarUrl}
+              loading={loading}
+            />
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>
             Profile settings
@@ -232,24 +279,38 @@ export default function Account({ session }: { session: Session }) {
               </HelperText>
             </View>
           </View>
-          <Button
-            mode="outlined"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() => navigate(`${ROUTES.EDIT}`)}
-            disabled={loading}
-          >
-            Edit Profile
-          </Button>
-          <Button
-            mode="outlined"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
-            disabled={loading}
-          >
-            Dating Preferences
-          </Button>
+          <View>
+            <Badge
+              visible={!loading && profileOnboarding}
+              size={10}
+              style={{ position: "absolute", top: 10, right: 10 }}
+            />
+            <Button
+              mode="outlined"
+              style={styles.verticallySpaced}
+              labelStyle={styles.buttonLabel}
+              onPress={() => navigate(`${ROUTES.EDIT}`)}
+              disabled={loading}
+            >
+              Edit Profile
+            </Button>
+          </View>
+          <View>
+            <Badge
+              visible={!loading && preferencesOnboarding}
+              size={10}
+              style={{ position: "absolute", top: 10, right: 10 }}
+            />
+            <Button
+              mode="outlined"
+              style={styles.verticallySpaced}
+              labelStyle={styles.buttonLabel}
+              onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
+              disabled={loading}
+            >
+              Dating Preferences
+            </Button>
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>
             Account options

@@ -12,6 +12,7 @@ import {
   HelperText,
   Divider,
   Chip,
+  Text,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useNavigate } from "../lib/routing";
@@ -219,6 +220,10 @@ export default function Preferences({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
+          <Text style={styles.verticallySpaced}>
+            Update your preferences below. The more information you provide, the
+            better your matches will be!
+          </Text>
           <TextInput
             style={styles.verticallySpaced}
             label="Minimum age"
