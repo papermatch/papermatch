@@ -115,10 +115,19 @@ export default function Account({ session }: { session: Session }) {
 
       const nextAvatarUrls = avatarUrls || [];
       const index = nextAvatarUrls.indexOf(oldUrl);
-      if (index > -1) {
-        nextAvatarUrls[index] = newUrl;
-      } else {
-        nextAvatarUrls.push(newUrl);
+      if (newUrl) {
+        // Replace the old URL with the new one
+        if (index > -1) {
+          nextAvatarUrls[index] = newUrl;
+        }
+        // Or add the new URL to the end of the list
+        else {
+          nextAvatarUrls.push(newUrl);
+        }
+      }
+      // If no new URL, just remove the old one
+      else if (index > -1) {
+        nextAvatarUrls.splice(index, 1);
       }
 
       const updates = {

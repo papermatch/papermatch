@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Pressable } from "react-native";
-import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
+import {
+  Avatar as RNPAvatar,
+  ActivityIndicator,
+  FAB,
+} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -102,11 +106,20 @@ export default function Avatar({
   return (
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
-        <RNPAvatar.Image
-          style={styles.verticallySpaced}
-          size={size}
-          source={{ uri: avatarUrl }}
-        />
+        <View>
+          <RNPAvatar.Image
+            style={styles.verticallySpaced}
+            size={size}
+            source={{ uri: avatarUrl }}
+          />
+          <FAB
+            icon="close"
+            style={{ position: "absolute", margin: 12, right: 0, top: 0 }}
+            customSize={30}
+            visible={!onPress}
+            onPress={() => onUpload && onUpload("")}
+          />
+        </View>
       ) : (
         <RNPAvatar.Icon
           style={styles.verticallySpaced}
