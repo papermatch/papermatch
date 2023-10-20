@@ -48,12 +48,10 @@ export default function App() {
   });
 
   useEffect(() => {
-    supabase
-      .auth.getSession()
-      .then(({ data: { session } }) => {
-        setSession(session);
-        setLoading(false);
-      });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
 
     supabase.auth.onAuthStateChange((event, session) => {
       switch (event) {
@@ -83,7 +81,13 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <View style={{ height: dimensions.window.height, overflow: "hidden" }}>
+      <View
+        style={{
+          backgroundColor: theme.colors.background,
+          height: dimensions.window.height,
+          overflow: "hidden",
+        }}
+      >
         <Router basename={BASENAME}>
           <Routes>
             <Route

@@ -62,7 +62,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to verify OTP");
         setSnackbarVisible(true);
       }

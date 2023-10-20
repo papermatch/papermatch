@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator, Image } from "react-native";
 import {
   Button,
   TextInput,
@@ -69,7 +69,7 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch preferences");
         setSnackbarVisible(true);
       }
@@ -90,12 +90,22 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
+        await Promise.all(
+          data.avatar_urls.map(async (avatarUrl: string) => {
+            try {
+              await Image.prefetch(avatarUrl);
+            } catch (error) {
+              console.error(`Error prefetching ${avatarUrl}:`, error);
+            }
+          })
+        );
+
         setProfileOnboarding(!data.updated_at);
         setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch avatar URLs");
         setSnackbarVisible(true);
       }
@@ -148,7 +158,7 @@ export default function Account({ session }: { session: Session }) {
       setNewAvatarUrl(newUrl);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update avatar URL");
         setSnackbarVisible(true);
       }
@@ -175,7 +185,7 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update email");
         setSnackbarVisible(true);
       }
@@ -195,7 +205,7 @@ export default function Account({ session }: { session: Session }) {
       supabase.auth.signOut();
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to delete user");
         setSnackbarVisible(true);
       }

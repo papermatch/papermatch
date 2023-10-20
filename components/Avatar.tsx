@@ -86,7 +86,7 @@ export default function Avatar({
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
       } else {
         throw error;
       }

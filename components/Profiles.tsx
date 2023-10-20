@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Image } from "react-native";
 import {
   Card,
   Text,
@@ -20,13 +20,19 @@ import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
+import { Carousel } from "./Carousel";
 
 const MAX_USER_SCORE = 10;
+const PROFILES_PER_PAGE = 3;
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState<ProfilesData[]>([]);
+  const [triggerCount, setTriggerCount] = useState(0);
+  const [initComplete, setInitComplete] = useState(false);
   const [settingsVisible, setHideSettings] = useState(false);
   const [hideInteractions, setHideInteractions] = useState(true);
   const [hidePreferences, setHidePreferences] = useState(true);
@@ -39,8 +45,15 @@ export default function Profiles({ session }: { session: Session }) {
   useEffect(() => {
     if (session) {
       getData();
+      setInitComplete(true);
     }
-  }, [session, hideInteractions, hidePreferences]);
+  }, [session, triggerCount]);
+
+  useEffect(() => {
+    setPage(0);
+    setHasMore(true);
+    initComplete && setTriggerCount((prev) => prev + 1);
+  }, [hideInteractions, hidePreferences]);
 
   async function getInteractions(): Promise<{ [key: string]: string }> {
     try {
@@ -61,7 +74,7 @@ export default function Profiles({ session }: { session: Session }) {
       );
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get interactions");
         setSnackbarVisible(true);
       }
@@ -75,16 +88,19 @@ export default function Profiles({ session }: { session: Session }) {
 
       const { data, error } = await supabase
         .rpc("search_active_profiles")
-        .select("*");
+        .select("*")
+        .range(page * PROFILES_PER_PAGE, (page + 1) * PROFILES_PER_PAGE - 1);
 
       if (error) {
         throw error;
       }
 
       let nextData = data || [];
+      if (nextData.length < PROFILES_PER_PAGE) {
+        setHasMore(false);
+      }
 
       const interactions = await getInteractions();
-
       if (hideInteractions) {
         // Show only profiles without an interaction (or none)
         nextData = nextData.filter(
@@ -108,10 +124,26 @@ export default function Profiles({ session }: { session: Session }) {
         );
       }
 
-      setData(nextData);
+      await Promise.all(
+        nextData.flatMap((item) =>
+          item.profile.avatar_urls.map(async (avatarUrl: string) => {
+            try {
+              await Image.prefetch(avatarUrl);
+            } catch (error) {
+              console.error(`Error prefetching ${avatarUrl}:`, error);
+            }
+          })
+        )
+      );
+
+      if (page === 0) {
+        setData(nextData);
+      } else {
+        setData((prevData) => [...prevData, ...nextData]);
+      }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profiles");
         setSnackbarVisible(true);
       }
@@ -149,60 +181,59 @@ export default function Profiles({ session }: { session: Session }) {
           />
         </Menu>
       </Appbar.Header>
-      {loading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator animating={true} size="large" />
-        </View>
-      ) : (
-        <View style={styles.container}>
-          {data.length ? (
-            <FlatList
-              data={data}
-              keyExtractor={(item) => item.profile.id.toString()}
-              renderItem={({ item }) => (
-                <Card
-                  onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
-                  }}
-                  style={[styles.verticallySpaced]}
+      <View style={styles.container}>
+        {data.length ? (
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.profile.id.toString()}
+            renderItem={({ item }) => (
+              <Card
+                onPress={() => {
+                  navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                }}
+                style={[styles.verticallySpaced]}
+              >
+                <View
+                  style={[
+                    {
+                      flexDirection: "row",
+                      padding: 16,
+                    },
+                  ]}
                 >
+                  <Carousel
+                    data={item.profile.avatar_urls}
+                    renderItem={(avatarUrl) => (
+                      <View style={{ alignSelf: "center" }}>
+                        <Avatar
+                          size={100}
+                          url={avatarUrl}
+                          onPress={() => {
+                            navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                          }}
+                        />
+                      </View>
+                    )}
+                    loading={loading}
+                    vertical={true}
+                  />
+
                   <View
-                    style={[
-                      {
-                        flexDirection: "row",
-                        padding: 16,
-                      },
-                    ]}
+                    style={{
+                      flex: 1,
+                      flexDirection: "column",
+                      marginLeft: 16,
+                    }}
                   >
-                    <View style={{ alignSelf: "center" }}>
-                      <Avatar
-                        size={100}
-                        url={item.profile.avatar_urls[0] || null}
-                        onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
-                        }}
-                      />
-                    </View>
-                    <View
+                    <Text variant="titleLarge">{item.profile.username}</Text>
+                    <Attributes
                       style={{
-                        flex: 1,
-                        flexDirection: "column",
-                        marginLeft: 16,
+                        flexDirection: "row",
+                        flexWrap: "wrap",
                       }}
-                    >
-                      <Text variant="titleLarge">{item.profile.username}</Text>
-                      <Attributes
-                        style={{
-                          flexDirection: "row",
-                          flexWrap: "wrap",
-                        }}
-                        profile={item.profile}
-                        distance={item.distance}
-                        loading={loading}
-                      />
-                    </View>
+                      profile={item.profile}
+                      distance={item.distance}
+                    />
                     <View
                       style={{
                         position: "absolute",
@@ -214,16 +245,46 @@ export default function Profiles({ session }: { session: Session }) {
                       pointerEvents="box-only"
                     />
                   </View>
-                </Card>
-              )}
-            />
-          ) : (
-            <Text style={styles.verticallySpaced}>
-              No compatible profiles found, try adjusting your preferences.
-            </Text>
-          )}
-        </View>
-      )}
+                </View>
+              </Card>
+            )}
+            onEndReached={() => {
+              if (hasMore) {
+                setPage((prev) => prev + 1);
+                setTriggerCount((prev) => prev + 1);
+              }
+            }}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={() =>
+              loading ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ActivityIndicator animating={true} size="large" />
+                </View>
+              ) : null
+            }
+          />
+        ) : loading ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ActivityIndicator animating={true} size="large" />
+          </View>
+        ) : (
+          <Text style={styles.verticallySpaced}>
+            No compatible profiles found, try adjusting your preferences.
+          </Text>
+        )}
+      </View>
       <Portal>
         <Modal
           contentContainerStyle={styles.modal}
@@ -237,12 +298,14 @@ export default function Profiles({ session }: { session: Session }) {
               label="Hide profiles you've already liked/passed"
               status={hideInteractions ? "checked" : "unchecked"}
               onPress={() => setHideInteractions(!hideInteractions)}
+              disabled={loading}
             />
             <Checkbox.Item
               labelStyle={{ color: theme.colors.onTertiaryContainer }}
               label="Hide profiles that don't meet all of your preferences"
               status={hidePreferences ? "checked" : "unchecked"}
               onPress={() => setHidePreferences(!hidePreferences)}
+              disabled={loading}
             />
           </View>
         </Modal>

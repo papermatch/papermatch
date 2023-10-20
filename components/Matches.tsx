@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Image } from "react-native";
 import {
   Card,
   Text,
@@ -14,7 +14,7 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { MatchesData } from "../lib/types";
+import { MatchesData, ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 
 export default function Matches({ session }: { session: Session }) {
@@ -41,10 +41,23 @@ export default function Matches({ session }: { session: Session }) {
         throw error;
       }
 
+      await Promise.all(
+        data.map(async (item: MatchesData) => {
+          try {
+            await Image.prefetch(item.profile.avatar_urls[0]);
+          } catch (error) {
+            console.error(
+              `Error prefetching ${item.profile.avatar_urls[0]}:`,
+              error
+            );
+          }
+        })
+      );
+
       setData(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get matches");
         setSnackbarVisible(true);
       }

@@ -56,10 +56,20 @@ export default function Profile({ session }: { session: Session }) {
         throw error;
       }
 
+      await Promise.all(
+        data.avatar_urls.map(async (avatarUrl: string) => {
+          try {
+            await Image.prefetch(avatarUrl);
+          } catch (error) {
+            console.error(`Error prefetching ${avatarUrl}:`, error);
+          }
+        })
+      );
+
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profile");
         setSnackbarVisible(true);
       }
@@ -80,7 +90,7 @@ export default function Profile({ session }: { session: Session }) {
       setDistance(data || null);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get distance");
         setSnackbarVisible(true);
       }
@@ -107,7 +117,7 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get interaction");
         setSnackbarVisible(true);
       }
@@ -136,7 +146,7 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update interaction");
         setSnackbarVisible(true);
       }
@@ -268,10 +278,7 @@ export default function Profile({ session }: { session: Session }) {
           contentContainerStyle={{ flex: 1 }}
         >
           {!!imageUrl && (
-            <Pressable
-              style={{ flex: 1 }}
-              onPress={() => setImageUrl(null)}
-            >
+            <Pressable style={{ flex: 1 }} onPress={() => setImageUrl(null)}>
               <Image
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}

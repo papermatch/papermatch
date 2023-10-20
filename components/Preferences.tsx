@@ -84,7 +84,7 @@ export default function Preferences({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get preferences");
         setSnackbarVisible(true);
       }

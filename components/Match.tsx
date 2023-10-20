@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, ViewToken, Platform } from "react-native";
+import { View, FlatList, ViewToken, Image } from "react-native";
 import {
   Card,
   Text,
@@ -107,7 +107,7 @@ export default function Match({ session }: { session: Session }) {
       setMatch(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get match");
         setSnackbarVisible(true);
       }
@@ -131,7 +131,7 @@ export default function Match({ session }: { session: Session }) {
       setMessages(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get messages");
         setSnackbarVisible(true);
       }
@@ -151,10 +151,12 @@ export default function Match({ session }: { session: Session }) {
         throw error;
       }
 
+      await Image.prefetch(data.avatar_urls[0]);
+
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profile");
         setSnackbarVisible(true);
       }
@@ -180,7 +182,7 @@ export default function Match({ session }: { session: Session }) {
       setMessage("");
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to send message");
         setSnackbarVisible(true);
       }
@@ -198,7 +200,7 @@ export default function Match({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update message");
         setSnackbarVisible(true);
       }

@@ -62,7 +62,7 @@ export default function Blocked({ session }: { session: Session }) {
       setProfiles(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profiles");
         setSnackbarVisible(true);
       }
@@ -92,7 +92,7 @@ export default function Blocked({ session }: { session: Session }) {
       getProfiles();
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to unblock user");
         setSnackbarVisible(true);
       }

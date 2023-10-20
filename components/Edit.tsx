@@ -83,7 +83,7 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch profile");
         setSnackbarVisible(true);
       }
@@ -106,7 +106,7 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update location");
         setSnackbarVisible(true);
       }
@@ -165,7 +165,7 @@ export default function Edit({ session }: { session: Session }) {
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update profile");
         setSnackbarVisible(true);
       }

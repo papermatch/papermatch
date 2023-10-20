@@ -76,7 +76,7 @@ export default function Credits({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch credits");
         setSnackbarVisible(true);
       }
@@ -112,7 +112,7 @@ export default function Credits({ session }: { session: Session }) {
       setCheckoutUrl(data.url);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch checkout URL");
         setSnackbarVisible(true);
       }

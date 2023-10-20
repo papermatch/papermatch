@@ -43,7 +43,7 @@ export default function Navigation({ session }: { session: Session }) {
       setActive(!!data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
       }
     }
   }
@@ -63,7 +63,7 @@ export default function Navigation({ session }: { session: Session }) {
       );
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
       }
     }
   }
@@ -97,7 +97,7 @@ export default function Navigation({ session }: { session: Session }) {
       );
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
       }
     }
   }
