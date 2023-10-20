@@ -80,6 +80,7 @@ A pay-per-match dating app, using React Native and Supabase.
 9. Supabase Auth URL Configuration?
 10. Domains?
 11. Supabase .env.production w/ webhook signing secret from Stripe
+12. Resend setup (custom SMTP for Auth)
 
 ### Push Local Changes
 

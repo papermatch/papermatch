@@ -67,7 +67,7 @@ export default function Auth() {
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
-        setSnackbarMessage("Unable to send OTP");
+        setSnackbarMessage("Unable to send OTP, please try again later");
         setSnackbarVisible(true);
       }
     } finally {

@@ -21,8 +21,9 @@ import {
   Caveat_400Regular,
   Caveat_500Medium,
 } from "@expo-google-fonts/caveat";
-import { Dimensions, View } from "react-native";
+import { View } from "react-native";
 import { PaperProvider } from "react-native-paper";
+import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
 
 export default function App() {
@@ -32,20 +33,7 @@ export default function App() {
     Caveat_400Regular,
     Caveat_500Medium,
   });
-  const [dimensions, setDimensions] = useState({
-    window: Dimensions.get("window"),
-    screen: Dimensions.get("screen"),
-  });
-
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener(
-      "change",
-      ({ window, screen }) => {
-        setDimensions({ window, screen });
-      }
-    );
-    return () => subscription?.remove();
-  });
+  const styles = useStyles();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -81,13 +69,7 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <View
-        style={{
-          backgroundColor: theme.colors.background,
-          height: dimensions.window.height,
-          overflow: "hidden",
-        }}
-      >
+      <View style={styles.appView}>
         <Router basename={BASENAME}>
           <Routes>
             <Route
