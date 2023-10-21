@@ -151,7 +151,9 @@ export default function Match({ session }: { session: Session }) {
         throw error;
       }
 
-      await Image.prefetch(data.avatar_urls[0]);
+      if (data.avatar_urls[0]) {
+        await Image.prefetch(data.avatar_urls[0]);
+      }
 
       setProfile(data);
     } catch (error) {

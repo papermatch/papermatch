@@ -18,7 +18,7 @@ import {
   useParams as useParamsNative,
 } from "react-router-native";
 
-export const BASENAME = "/app";
+export const BASENAME = Platform.OS === "web" ? "/app" : "";
 
 export const ROUTES = {
   ROOT: "/",
