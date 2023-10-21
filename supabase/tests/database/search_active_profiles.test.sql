@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (2);
+    plan (4);
 
 select
     has_function (
@@ -125,6 +125,26 @@ select
         $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float),
                  ('33333333-3333-3333-3333-333333333333'::uuid, 2::float),
                  ('44444444-4444-4444-4444-444444444444'::uuid, 1::float)$$
+    );
+
+-- If hide_preferences, First User only sees Second User (who is compatible with all preferences)
+select
+    results_eq (
+        'select (profile).id, score from public.search_active_profiles(false, true)',
+        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float)$$
+    );
+
+-- First User likes Third User and blocks Fourth User
+insert into public.interactions (user_id, target_id, interaction)
+values
+    ('11111111-1111-1111-1111-111111111111', '33333333-3333-3333-3333-333333333333', 'like'),
+    ('11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444', 'block');
+
+-- If hide_interactions, First User only sees Second User
+select
+    results_eq (
+        'select (profile).id, score from public.search_active_profiles(true, false)',
+        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float)$$
     );
 
 -- Cleanup

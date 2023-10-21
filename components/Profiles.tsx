@@ -23,7 +23,7 @@ import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 
 const MAX_USER_SCORE = 10;
-const PROFILES_PER_PAGE = 3;
+const PROFILES_PER_PAGE = 10;
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -55,39 +55,15 @@ export default function Profiles({ session }: { session: Session }) {
     initComplete && setTriggerCount((prev) => prev + 1);
   }, [hideInteractions, hidePreferences]);
 
-  async function getInteractions(): Promise<{ [key: string]: string }> {
-    try {
-      const { data, error, status } = await supabase
-        .from("interactions")
-        .select("*")
-        .eq("user_id", session?.user.id);
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      return (
-        data?.reduce((acc, interaction) => {
-          acc[interaction.target_id] = interaction.interaction;
-          return acc;
-        }, {}) || {}
-      );
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to get interactions");
-        setSnackbarVisible(true);
-      }
-    }
-    return {};
-  }
-
   async function getData() {
     try {
       setLoading(true);
 
       const { data, error } = await supabase
-        .rpc("search_active_profiles")
+        .rpc("search_active_profiles", {
+          hide_interactions: hideInteractions,
+          hide_preferences: hidePreferences,
+        })
         .select("*")
         .range(page * PROFILES_PER_PAGE, (page + 1) * PROFILES_PER_PAGE - 1);
 
@@ -98,30 +74,6 @@ export default function Profiles({ session }: { session: Session }) {
       let nextData = data || [];
       if (nextData.length < PROFILES_PER_PAGE) {
         setHasMore(false);
-      }
-
-      const interactions = await getInteractions();
-      if (hideInteractions) {
-        // Show only profiles without an interaction (or none)
-        nextData = nextData.filter(
-          (item) =>
-            !interactions[item.profile.id] ||
-            interactions[item.profile.id] === "none"
-        );
-      } else {
-        // Show all profiles (that are not blocked)
-        nextData = nextData.filter(
-          (item) => interactions[item.profile.id] !== "block"
-        );
-      }
-
-      if (hidePreferences) {
-        // Show only profiles with a perfect score (or no score if no preferences)
-        nextData = nextData.filter(
-          (item) =>
-            !item.score ||
-            Math.abs(item.score - MAX_USER_SCORE) < Number.EPSILON
-        );
       }
 
       await Promise.all(

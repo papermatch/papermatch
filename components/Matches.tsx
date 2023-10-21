@@ -44,7 +44,9 @@ export default function Matches({ session }: { session: Session }) {
       await Promise.all(
         data.map(async (item: MatchesData) => {
           try {
-            await Image.prefetch(item.profile.avatar_urls[0]);
+            if (item.profile.avatar_urls[0]) {
+              await Image.prefetch(item.profile.avatar_urls[0]);
+            }
           } catch (error) {
             console.error(
               `Error prefetching ${item.profile.avatar_urls[0]}:`,

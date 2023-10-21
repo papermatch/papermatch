@@ -150,7 +150,7 @@ const theme = {
     onError: "hsl(0, 0.00%, 99.99%)",
     errorContainer: "hsl(6, 99.99%, 92.00%)",
     onErrorContainer: "hsl(358, 99.99%, 12.70%)",
-    background: "hsl(285, 100.00%, 99.20%)",
+    background: "hsl(285, 99.99%, 99.20%)",
     onBackground: "hsl(240, 6.90%, 11.40%)",
     surface: "hsl(240, 41.90%, 93.90%)",
     onSurface: "hsl(240, 6.90%, 11.40%)",
