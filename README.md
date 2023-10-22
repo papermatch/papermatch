@@ -5,13 +5,12 @@ A pay-per-match dating app, using React Native and Supabase.
 ## Supabase Setup
 
 1. Create a new [Supabase project](https://supabase.com/dashboard/projects) (e.g. papermatch) in your preferred organization (e.g. papermatch)
-2. Create a .env.development file in the root directory as follows (with information from the Project Settings/API page)
+2. Create a .env.local file in the root directory as follows (with information from the Project Settings/API page)
     ```
     SUPABASE_ANON_KEY=***
     SUPABASE_URL=***
     ```
-    Note: `SUPABASE_URL` should be set to 'http://localhost:54321' for local development
-3. Create another .env.development file in the supabase/ directory as follows
+3. Create another .env.local file in the supabase/ directory as follows
     ```
     STRIPE_API_KEY=***
     STRIPE_PRICE_ID=***
@@ -32,10 +31,9 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
 3. Start the Supabase containers locally
     ```
-    set -a && . supabase/.env.development && set +a
     npx supabase start
     ```
-4. Use the output from the previous command to update your .env files as described [above](#supabase-setup)
+4. Use the output from the previous command to create an .env.test.local file as described [above](#supabase-setup)
 5. In the local [Supabase Studio](http://localhost:54323/project/default/sql/1) add the `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` secrets to the Vault
 
     ```sql
@@ -67,21 +65,6 @@ A pay-per-match dating app, using React Native and Supabase.
     npx supabase gen types typescript --local --schema public > lib/database.ts
     ```
 
-## Remote development
-
-1. `npx supabase link --project-ref ***`
-2. `npx supabase db push`
-3. `npx supabase functions deploy`
-4. `npx supabse secrets set --env-file supabase/.env.production`
-5. Create a Vault Encryption Key and add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Vault
-6. Create a .env.production file with Supabase secrets
-7. Something something email templates?
-8. `vercel`
-9. Supabase Auth URL Configuration?
-10. Domains?
-11. Supabase .env.production w/ webhook signing secret from Stripe
-12. Resend setup (custom SMTP for Auth)
-
 ### Push Local Changes
 
 1. Create an [Access Token](https://supabase.com/dashboard/account/tokens) (e.g. papermatch)
@@ -97,6 +80,14 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     npx supabase push
     ```
+5. Deploy your functions
+    ```
+    npx supabase functions deploy
+    ```
+6. Set Secrets
+    ```
+    npx supabse secrets set --env-file supabase/.env.local
+    ```
 
 ### Stripe Local Setup
 
@@ -105,9 +96,15 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
     ```
+2. Update supabase/.env.test.local file with webhook signing secret
+    ```
+    ...
+    STRIPE_WEBHOOK_SIGNING_SECRET=***
+    ...
+    ```
 3. Serve functions
     ```
-    npx supabase functions serve --no-verify-jwt --env-file ./supabase/.env
+    npx supabase functions serve --no-verify-jwt --env-file ./supabase/.env.test.local
     ```
 4. Trigger payment
     ```
@@ -117,6 +114,16 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
     deno cache --reload supabase/functions/stripe-webhook/index.ts
     ```
+
+## Production deployment
+
+1. [Configure Vercel](https://vercel.com/docs/cli), then build and deploy
+   ```
+   vercel build --prod
+   vercel deploy --prod --prebuilt
+   ```
+2. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+
 
 ## VSCode Setup
 
@@ -140,4 +147,4 @@ Add the following (test!) secrets to [GitHub settings](/settings/secrets/actions
 - `STRIPE_PRICE_ID`
 - `STRIPE_WEBHOOK_SIGNING_SECRET`
 
-Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env`
+Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env.local`

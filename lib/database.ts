@@ -434,7 +434,10 @@ export interface Database {
         Returns: number
       }
       search_active_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: {
+          hide_interactions?: boolean
+          hide_preferences?: boolean
+        }
         Returns: {
           profile: unknown
           distance: number
