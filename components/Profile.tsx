@@ -199,48 +199,50 @@ export default function Profile({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          {profile ? (
-            <View>
-              <Carousel
-                data={profile.avatar_urls || [""]}
-                renderItem={(item) => (
-                  <Avatar
-                    size={200}
-                    url={item}
-                    onPress={() => {
-                      setImageUrl(item);
-                    }}
-                  />
-                )}
-                loading={loading}
-              />
-              <Attributes
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                }}
-                distance={distance}
-                profile={profile}
-                loading={loading}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <Text style={styles.verticallySpaced} variant="titleLarge">
-                About
-              </Text>
-              <Text
-                style={[
-                  styles.verticallySpaced,
-                  { marginLeft: 16, marginBottom: 88 },
-                ]}
-              >
-                {profile.about}
-              </Text>
-            </View>
-          ) : (
-            <Text style={styles.verticallySpaced}>Profile not found</Text>
-          )}
+        <ScrollView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            {profile ? (
+              <View>
+                <Carousel
+                  data={profile.avatar_urls || [""]}
+                  renderItem={(item) => (
+                    <Avatar
+                      size={200}
+                      url={item}
+                      onPress={() => {
+                        setImageUrl(item);
+                      }}
+                    />
+                  )}
+                  loading={loading}
+                />
+                <Attributes
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                  }}
+                  distance={distance}
+                  profile={profile}
+                  loading={loading}
+                />
+                <Divider style={styles.verticallySpaced} />
+                <Text style={styles.verticallySpaced} variant="titleLarge">
+                  About
+                </Text>
+                <Text
+                  style={[
+                    styles.verticallySpaced,
+                    { marginLeft: 16, marginBottom: 88 },
+                  ]}
+                >
+                  {profile.about}
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.verticallySpaced}>Profile not found</Text>
+            )}
+          </View>
         </ScrollView>
       )}
       {session?.user.id != id && profile && (

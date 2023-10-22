@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Button,
   TextInput,
@@ -239,129 +246,136 @@ export default function Account({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <Text variant="titleLarge" style={styles.verticallySpaced}>
-            Edit pictures
-          </Text>
-          <View>
-            <Badge
-              visible={!loading && avatarUrls.length === 0}
-              size={10}
-              style={{ position: "absolute", top: 10, right: 10 }}
-            />
-            <Carousel
-              data={
-                avatarUrls
-                  ? avatarUrls.length < MAX_AVATARS
-                    ? [...avatarUrls, ""]
-                    : avatarUrls
-                  : [""]
-              }
-              renderItem={(item) => (
-                <Avatar
-                  size={200}
-                  url={item}
-                  onUpload={(url: string) => {
-                    updateAvatarUrl({ newUrl: url, oldUrl: item });
-                  }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                Edit pictures
+              </Text>
+              <View>
+                <Badge
+                  visible={!loading && avatarUrls.length === 0}
+                  size={10}
+                  style={{ position: "absolute", top: 10, right: 10 }}
                 />
-              )}
-              start={newAvatarUrl}
-              loading={loading}
-            />
-          </View>
-          <Divider style={styles.verticallySpaced} />
-          <Text variant="titleLarge" style={styles.verticallySpaced}>
-            Profile settings
-          </Text>
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <View style={{ flex: 1, flexDirection: "column" }}>
-              <TextInput
-                label="Update Email"
-                onChangeText={(text) => {
-                  setEmail(text);
-                  validateEmail(text);
-                }}
-                value={email}
-                placeholder="user@example.com"
-                autoCapitalize={"none"}
-                right={
-                  <TextInput.Icon
-                    icon="send"
-                    onPress={() => updateEmail({ email })}
+                <Carousel
+                  data={
+                    avatarUrls
+                      ? avatarUrls.length < MAX_AVATARS
+                        ? [...avatarUrls, ""]
+                        : avatarUrls
+                      : [""]
+                  }
+                  renderItem={(item) => (
+                    <Avatar
+                      size={200}
+                      url={item}
+                      onUpload={(url: string) => {
+                        updateAvatarUrl({ newUrl: url, oldUrl: item });
+                      }}
+                    />
+                  )}
+                  start={newAvatarUrl}
+                  loading={loading}
+                />
+              </View>
+              <Divider style={styles.verticallySpaced} />
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                Profile settings
+              </Text>
+              <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+                <View style={{ flex: 1, flexDirection: "column" }}>
+                  <TextInput
+                    label="Update Email"
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      validateEmail(text);
+                    }}
+                    value={email}
+                    placeholder="user@example.com"
+                    autoCapitalize={"none"}
+                    right={
+                      <TextInput.Icon
+                        icon="send"
+                        onPress={() => updateEmail({ email })}
+                      />
+                    }
+                    disabled={loading}
                   />
-                }
+                  <HelperText type="error" visible={!!emailError}>
+                    {emailError}
+                  </HelperText>
+                </View>
+              </View>
+              <View>
+                <Badge
+                  visible={!loading && profileOnboarding}
+                  size={10}
+                  style={{ position: "absolute", top: 10, right: 10 }}
+                />
+                <Button
+                  mode="outlined"
+                  style={styles.verticallySpaced}
+                  labelStyle={styles.buttonLabel}
+                  onPress={() => navigate(`${ROUTES.EDIT}`)}
+                  disabled={loading}
+                >
+                  Edit Profile
+                </Button>
+              </View>
+              <View>
+                <Badge
+                  visible={!loading && preferencesOnboarding}
+                  size={10}
+                  style={{ position: "absolute", top: 10, right: 10 }}
+                />
+                <Button
+                  mode="outlined"
+                  style={styles.verticallySpaced}
+                  labelStyle={styles.buttonLabel}
+                  onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
+                  disabled={loading}
+                >
+                  Dating Preferences
+                </Button>
+              </View>
+              <Divider style={styles.verticallySpaced} />
+              <Text variant="titleLarge" style={styles.verticallySpaced}>
+                Account options
+              </Text>
+              <Button
+                mode="outlined"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                onPress={() => navigate(`${ROUTES.BLOCKED}`)}
                 disabled={loading}
-              />
-              <HelperText type="error" visible={!!emailError}>
-                {emailError}
-              </HelperText>
+              >
+                Blocked Users
+              </Button>
+              <Button
+                mode="contained"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                onPress={() => supabase.auth.signOut()}
+                disabled={loading}
+              >
+                Sign Out
+              </Button>
+              <Button
+                mode="contained-tonal"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                onPress={() => setDeleteDialogVisible(true)}
+                disabled={loading}
+              >
+                Delete Account
+              </Button>
             </View>
-          </View>
-          <View>
-            <Badge
-              visible={!loading && profileOnboarding}
-              size={10}
-              style={{ position: "absolute", top: 10, right: 10 }}
-            />
-            <Button
-              mode="outlined"
-              style={styles.verticallySpaced}
-              labelStyle={styles.buttonLabel}
-              onPress={() => navigate(`${ROUTES.EDIT}`)}
-              disabled={loading}
-            >
-              Edit Profile
-            </Button>
-          </View>
-          <View>
-            <Badge
-              visible={!loading && preferencesOnboarding}
-              size={10}
-              style={{ position: "absolute", top: 10, right: 10 }}
-            />
-            <Button
-              mode="outlined"
-              style={styles.verticallySpaced}
-              labelStyle={styles.buttonLabel}
-              onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
-              disabled={loading}
-            >
-              Dating Preferences
-            </Button>
-          </View>
-          <Divider style={styles.verticallySpaced} />
-          <Text variant="titleLarge" style={styles.verticallySpaced}>
-            Account options
-          </Text>
-          <Button
-            mode="outlined"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() => navigate(`${ROUTES.BLOCKED}`)}
-            disabled={loading}
-          >
-            Blocked Users
-          </Button>
-          <Button
-            mode="contained"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() => supabase.auth.signOut()}
-            disabled={loading}
-          >
-            Sign Out
-          </Button>
-          <Button
-            mode="contained-tonal"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() => setDeleteDialogVisible(true)}
-            disabled={loading}
-          >
-            Delete Account
-          </Button>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
       <Navigation key={session.user.id} session={session} />
       <Portal>

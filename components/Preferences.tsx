@@ -1,7 +1,7 @@
 import { useState, useEffect, SetStateAction } from "react";
 import { supabase } from "../lib/supabase";
 import { Dispatch } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
@@ -219,147 +219,154 @@ export default function Preferences({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <Text style={styles.verticallySpaced}>
-            Update your preferences below. The more information you provide, the
-            better your matches will be!
-          </Text>
-          <Divider style={styles.verticallySpaced} />
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <View style={{ flex: 1, marginRight: 8 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <Text style={styles.verticallySpaced}>
+                Update your preferences below. The more information you provide,
+                the better your matches will be!
+              </Text>
+              <Divider style={styles.verticallySpaced} />
+              <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <TextInput
+                    label="Minimum age"
+                    value={minAge}
+                    onChangeText={(text) => {
+                      setMinAge(text);
+                      validateAge(text, setMinAgeError);
+                    }}
+                    keyboardType="numeric"
+                    error={!!minAgeError}
+                  />
+                  <HelperText type="error" visible={!!minAgeError}>
+                    {minAgeError}
+                  </HelperText>
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <TextInput
+                    label="Maximum age"
+                    value={maxAge}
+                    onChangeText={(text) => {
+                      setMaxAge(text);
+                      validateAge(text, setMaxAgeError);
+                    }}
+                    keyboardType="numeric"
+                    error={!!maxAgeError}
+                  />
+                  <HelperText type="error" visible={!!maxAgeError}>
+                    {maxAgeError}
+                  </HelperText>
+                </View>
+              </View>
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Gender"
+                data={GenderData}
+                value={gender}
+                onChange={setGender}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Family plan"
+                data={KidsData}
+                value={kids}
+                onChange={setKids}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Dating intention"
+                data={IntentionData}
+                value={intention}
+                onChange={setIntention}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Relationship style"
+                data={RelationshipData}
+                value={relationship}
+                onChange={setRelationship}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Diet"
+                data={DietData}
+                value={diet}
+                onChange={setDiet}
+              />
+              <Divider style={styles.verticallySpaced} />
               <TextInput
-                label="Minimum age"
-                value={minAge}
+                style={styles.verticallySpaced}
+                label="Maximum distance (miles)"
+                value={radius}
                 onChangeText={(text) => {
-                  setMinAge(text);
-                  validateAge(text, setMinAgeError);
+                  setRadius(text);
+                  validateRadius(text);
                 }}
                 keyboardType="numeric"
-                error={!!minAgeError}
+                error={!!radiusError}
               />
-              <HelperText type="error" visible={!!minAgeError}>
-                {minAgeError}
+              <HelperText type="error" visible={!!radiusError}>
+                {radiusError}
               </HelperText>
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
               <TextInput
-                label="Maximum age"
-                value={maxAge}
-                onChangeText={(text) => {
-                  setMaxAge(text);
-                  validateAge(text, setMaxAgeError);
-                }}
-                keyboardType="numeric"
-                error={!!maxAgeError}
-              />
-              <HelperText type="error" visible={!!maxAgeError}>
-                {maxAgeError}
-              </HelperText>
-            </View>
-          </View>
-          <Divider style={styles.verticallySpaced} />
-          <Checkboxes
-            label="Gender"
-            data={GenderData}
-            value={gender}
-            onChange={setGender}
-          />
-          <Divider style={styles.verticallySpaced} />
-          <Checkboxes
-            label="Family plan"
-            data={KidsData}
-            value={kids}
-            onChange={setKids}
-          />
-          <Divider style={styles.verticallySpaced} />
-          <Checkboxes
-            label="Dating intention"
-            data={IntentionData}
-            value={intention}
-            onChange={setIntention}
-          />
-          <Divider style={styles.verticallySpaced} />
-          <Checkboxes
-            label="Relationship style"
-            data={RelationshipData}
-            value={relationship}
-            onChange={setRelationship}
-          />
-          <Divider style={styles.verticallySpaced} />
-          <Checkboxes
-            label="Diet"
-            data={DietData}
-            value={diet}
-            onChange={setDiet}
-          />
-          <Divider style={styles.verticallySpaced} />
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Maximum distance (miles)"
-            value={radius}
-            onChangeText={(text) => {
-              setRadius(text);
-              validateRadius(text);
-            }}
-            keyboardType="numeric"
-            error={!!radiusError}
-          />
-          <HelperText type="error" visible={!!radiusError}>
-            {radiusError}
-          </HelperText>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Keywords"
-            value={keyword}
-            onChangeText={(text) => setKeyword(text)}
-            onSubmitEditing={() => updateKeywords(keyword)}
-            right={
-              <TextInput.Icon
-                icon="plus-circle"
-                onPress={() => updateKeywords(keyword)}
-              />
-            }
-          />
-          <View
-            style={[
-              styles.verticallySpaced,
-              { flexDirection: "row", flexWrap: "wrap" },
-            ]}
-          >
-            {keywords.map((keyword) => (
-              <Chip
-                style={{ margin: 8 }}
-                key={keyword}
-                onClose={() =>
-                  setKeywords(keywords.filter((k) => k !== keyword))
+                style={styles.verticallySpaced}
+                label="Keywords"
+                value={keyword}
+                onChangeText={(text) => setKeyword(text)}
+                onSubmitEditing={() => updateKeywords(keyword)}
+                right={
+                  <TextInput.Icon
+                    icon="plus-circle"
+                    onPress={() => updateKeywords(keyword)}
+                  />
                 }
+              />
+              <View
+                style={[
+                  styles.verticallySpaced,
+                  { flexDirection: "row", flexWrap: "wrap" },
+                ]}
               >
-                {keyword}
-              </Chip>
-            ))}
-          </View>
-          <Button
-            mode="contained"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() =>
-              updatePreferences({
-                minAge,
-                maxAge,
-                gender,
-                intention,
-                relationship,
-                kids,
-                diet,
-                radius,
-                keywords,
-              })
-            }
-            disabled={loading}
-          >
-            {loading ? "Loading ..." : "Update"}
-          </Button>
-        </ScrollView>
+                {keywords.map((keyword) => (
+                  <Chip
+                    style={{ margin: 8 }}
+                    key={keyword}
+                    onClose={() =>
+                      setKeywords(keywords.filter((k) => k !== keyword))
+                    }
+                  >
+                    {keyword}
+                  </Chip>
+                ))}
+              </View>
+              <Button
+                mode="contained"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                onPress={() =>
+                  updatePreferences({
+                    minAge,
+                    maxAge,
+                    gender,
+                    intention,
+                    relationship,
+                    kids,
+                    diet,
+                    radius,
+                    keywords,
+                  })
+                }
+                disabled={loading}
+              >
+                {loading ? "Loading ..." : "Update"}
+              </Button>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar

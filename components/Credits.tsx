@@ -1,7 +1,7 @@
 import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Platform, View } from "react-native";
+import { Platform, View, KeyboardAvoidingView } from "react-native";
 import {
   Button,
   TextInput,
@@ -157,47 +157,52 @@ export default function Credits({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
-          <Text style={styles.verticallySpaced}>
-            You have {credits} credit{credits === 1 ? "" : "s"}. Each match
-            costs 1 credit, and your profile will not be searchable if you have
-            0 credits.
-          </Text>
-          <Divider style={styles.verticallySpaced} />
-          <Text style={styles.verticallySpaced} variant="titleLarge">
-            Purchase credits
-          </Text>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Credits"
-            keyboardType="numeric"
-            value={quantity}
-            onChangeText={(text) => {
-              setQuantity(text);
-              validateQuantity(text);
-            }}
-            placeholder="Enter Quantity"
-            error={!!quantityError}
-          />
-          <HelperText type="error" visible={!!quantityError}>
-            {quantityError}
-          </HelperText>
-          <Button
-            mode="contained"
-            labelStyle={styles.buttonLabel}
-            style={styles.verticallySpaced}
-            onPress={fetchCheckoutUrl}
-            disabled={loading}
-          >
-            Checkout
-          </Button>
-          {Platform.OS !== "web" && checkoutUrl ? (
-            <WebView
-              source={{ uri: checkoutUrl }}
-              onNavigationStateChange={handleNavigationStateChange}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.container}>
+            <Text style={styles.verticallySpaced}>
+              You have {credits} credit{credits === 1 ? "" : "s"}. Each match
+              costs 1 credit, and your profile will not be searchable if you
+              have 0 credits.
+            </Text>
+            <Divider style={styles.verticallySpaced} />
+            <Text style={styles.verticallySpaced} variant="titleLarge">
+              Purchase credits
+            </Text>
+            <TextInput
+              style={styles.verticallySpaced}
+              label="Credits"
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={(text) => {
+                setQuantity(text);
+                validateQuantity(text);
+              }}
+              placeholder="Enter Quantity"
+              error={!!quantityError}
             />
-          ) : null}
-        </View>
+            <HelperText type="error" visible={!!quantityError}>
+              {quantityError}
+            </HelperText>
+            <Button
+              mode="contained"
+              labelStyle={styles.buttonLabel}
+              style={styles.verticallySpaced}
+              onPress={fetchCheckoutUrl}
+              disabled={loading}
+            >
+              Checkout
+            </Button>
+            {Platform.OS !== "web" && checkoutUrl ? (
+              <WebView
+                source={{ uri: checkoutUrl }}
+                onNavigationStateChange={handleNavigationStateChange}
+              />
+            ) : null}
+          </View>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar

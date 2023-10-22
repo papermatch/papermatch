@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { supabase } from "../lib/supabase";
 import {
   Button,
@@ -102,33 +102,40 @@ export default function Otp({ session = undefined }: { session?: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="OTP"
-            onChangeText={(text) => {
-              setOtp(text);
-              validateOtp(text);
-            }}
-            onSubmitEditing={handleOtp}
-            value={otp}
-            keyboardType="numeric"
-            placeholder="Enter your OTP"
-            error={!!otpError}
-          />
-          <HelperText type="error" visible={!!otpError}>
-            {otpError}
-          </HelperText>
-          <Button
-            mode="contained"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            disabled={loading}
-            onPress={handleOtp}
-          >
-            Verify
-          </Button>
-        </ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <TextInput
+                style={styles.verticallySpaced}
+                label="OTP"
+                onChangeText={(text) => {
+                  setOtp(text);
+                  validateOtp(text);
+                }}
+                onSubmitEditing={handleOtp}
+                value={otp}
+                keyboardType="numeric"
+                placeholder="Enter your OTP"
+                error={!!otpError}
+              />
+              <HelperText type="error" visible={!!otpError}>
+                {otpError}
+              </HelperText>
+              <Button
+                mode="contained"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                disabled={loading}
+                onPress={handleOtp}
+              >
+                Verify
+              </Button>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar
