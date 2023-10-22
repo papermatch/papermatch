@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Image } from "react-native";
 import {
   Card,
   Text,
@@ -8,106 +8,94 @@ import {
   ActivityIndicator,
   Menu,
   Checkbox,
-  Divider,
   Portal,
+  Modal,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { ProfileData } from "../lib/types";
-import styles from "../lib/styles";
+import { ProfilesData } from "../lib/types";
+import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
+import { Carousel } from "./Carousel";
 
-type ProfilesData = {
-  profile: ProfileData;
-  distance: number | null;
-  score: number | null;
-};
+const MAX_USER_SCORE = 10;
+const PROFILES_PER_PAGE = 10;
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState<ProfilesData[]>([]);
-  const [showAll, setShowAll] = useState(false);
+  const [triggerCount, setTriggerCount] = useState(0);
+  const [initComplete, setInitComplete] = useState(false);
+  const [settingsVisible, setHideSettings] = useState(false);
+  const [hideInteractions, setHideInteractions] = useState(true);
+  const [hidePreferences, setHidePreferences] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     if (session) {
-      getProfiles();
+      getData();
+      setInitComplete(true);
     }
-  }, [session]);
+  }, [session, triggerCount]);
 
   useEffect(() => {
-    getProfiles();
-  }, [showAll]);
+    setPage(0);
+    setHasMore(true);
+    initComplete && setTriggerCount((prev) => prev + 1);
+  }, [hideInteractions, hidePreferences]);
 
-  async function getInteractions(): Promise<{ [key: string]: string }> {
-    try {
-      const { data, error, status } = await supabase
-        .from("interactions")
-        .select("*")
-        .eq("user_id", session?.user.id);
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      return (
-        data?.reduce((acc, interaction) => {
-          acc[interaction.target_id] = interaction.interaction;
-          return acc;
-        }, {}) || {}
-      );
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-        setSnackbarMessage("Unable to get interactions");
-        setSnackbarVisible(true);
-      }
-    }
-    return {};
-  }
-
-  async function getProfiles() {
+  async function getData() {
     try {
       setLoading(true);
 
       const { data, error } = await supabase
-        .rpc("search_active_profiles")
-        .select("*");
+        .rpc("search_active_profiles", {
+          hide_interactions: hideInteractions,
+          hide_preferences: hidePreferences,
+        })
+        .select("*")
+        .range(page * PROFILES_PER_PAGE, (page + 1) * PROFILES_PER_PAGE - 1);
 
       if (error) {
         throw error;
       }
 
-      const interactions = await getInteractions();
+      let nextData = data || [];
+      if (nextData.length < PROFILES_PER_PAGE) {
+        setHasMore(false);
+      }
 
-      if (data) {
-        if (showAll) {
-          // Show all profiles (that are not blocked)
-          setData(
-            data.filter((item) => interactions[item.profile.id] !== "block")
-          );
-        } else {
-          // Show only profiles without an interaction (or none)
-          setData(
-            data.filter(
-              (item) =>
-                !interactions[item.profile.id] ||
-                interactions[item.profile.id] === "none"
-            )
-          );
-        }
+      await Promise.all(
+        nextData.flatMap((item) =>
+          item.profile.avatar_urls.map(async (avatarUrl: string) => {
+            try {
+              await Image.prefetch(avatarUrl);
+            } catch (error) {
+              console.error(`Error prefetching ${avatarUrl}:`, error);
+            }
+          })
+        )
+      );
+
+      if (page === 0) {
+        setData(nextData);
       } else {
-        setData([]);
+        setData((prevData) => [...prevData, ...nextData]);
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profiles");
         setSnackbarVisible(true);
       }
@@ -132,84 +120,148 @@ export default function Profiles({ session }: { session: Session }) {
         >
           <Menu.Item
             onPress={() => {
+              setAppbarMenuVisible(false);
+              setHideSettings(!settingsVisible);
+            }}
+            title="Settings"
+          />
+          <Menu.Item
+            onPress={() => {
               navigate(ROUTES.PREFERENCES);
             }}
             title="Preferences"
           />
         </Menu>
       </Appbar.Header>
-      {loading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator animating={true} size="large" />
-        </View>
-      ) : (
-        <View style={styles.container}>
-          <Checkbox.Item
-            style={styles.verticallySpaced}
-            label="Show profiles you've already liked/passed"
-            status={showAll ? "checked" : "unchecked"}
-            onPress={() => setShowAll(!showAll)}
-          />
-          <Divider style={styles.verticallySpaced} />
-          {data.length ? (
-            <FlatList
-              data={data}
-              keyExtractor={(item) => item.profile.id.toString()}
-              renderItem={({ item }) => (
-                <Card
-                  onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
-                  }}
-                  style={[styles.verticallySpaced]}
+      <View style={styles.container}>
+        {data.length ? (
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.profile.id.toString()}
+            renderItem={({ item }) => (
+              <Card
+                onPress={() => {
+                  navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                }}
+                style={[styles.verticallySpaced]}
+              >
+                <View
+                  style={[
+                    {
+                      flexDirection: "row",
+                      padding: 16,
+                    },
+                  ]}
                 >
+                  <Carousel
+                    data={item.profile.avatar_urls}
+                    renderItem={(avatarUrl) => (
+                      <View style={{ alignSelf: "center" }}>
+                        <Avatar
+                          size={100}
+                          url={avatarUrl}
+                          onPress={() => {
+                            navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                          }}
+                        />
+                      </View>
+                    )}
+                    loading={loading}
+                    vertical={true}
+                  />
+
                   <View
-                    style={[
-                      {
-                        flexDirection: "row",
-                        padding: 16,
-                      },
-                    ]}
+                    style={{
+                      flex: 1,
+                      flexDirection: "column",
+                      marginLeft: 16,
+                    }}
                   >
-                    <View style={{ alignSelf: "center" }}>
-                      <Avatar
-                        size={100}
-                        url={item.profile.avatar_urls[0] || null}
-                        onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
-                        }}
-                      />
-                    </View>
+                    <Text variant="titleLarge">{item.profile.username}</Text>
+                    <Attributes
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                      }}
+                      profile={item.profile}
+                      distance={item.distance}
+                    />
                     <View
                       style={{
-                        flex: 1,
-                        flexDirection: "column",
-                        marginLeft: 16,
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                       }}
-                    >
-                      <Text variant="titleLarge">{item.profile.username}</Text>
-                      <Attributes
-                        style={{
-                          flexDirection: "row",
-                          flexWrap: "wrap",
-                        }}
-                        profile={item.profile}
-                        distance={item.distance}
-                        loading={loading}
-                      />
-                    </View>
+                      pointerEvents="box-only"
+                    />
                   </View>
-                </Card>
-              )}
+                </View>
+              </Card>
+            )}
+            onEndReached={() => {
+              if (hasMore) {
+                setPage((prev) => prev + 1);
+                setTriggerCount((prev) => prev + 1);
+              }
+            }}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={() =>
+              loading ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ActivityIndicator animating={true} size="large" />
+                </View>
+              ) : null
+            }
+          />
+        ) : loading ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ActivityIndicator animating={true} size="large" />
+          </View>
+        ) : (
+          <Text style={styles.verticallySpaced}>
+            No compatible profiles found, try adjusting your preferences.
+          </Text>
+        )}
+      </View>
+      <Portal>
+        <Modal
+          contentContainerStyle={styles.modal}
+          visible={settingsVisible}
+          onDismiss={() => setHideSettings(false)}
+        >
+          <View style={styles.verticallySpaced}>
+            <Text variant="titleLarge">Settings</Text>
+            <Checkbox.Item
+              labelStyle={{ color: theme.colors.onTertiaryContainer }}
+              label="Hide profiles you've already liked/passed"
+              status={hideInteractions ? "checked" : "unchecked"}
+              onPress={() => setHideInteractions(!hideInteractions)}
+              disabled={loading}
             />
-          ) : (
-            <Text style={styles.verticallySpaced}>
-              No compatible profiles found, try adjusting your preferences.
-            </Text>
-          )}
-        </View>
-      )}
+            <Checkbox.Item
+              labelStyle={{ color: theme.colors.onTertiaryContainer }}
+              label="Hide profiles that don't meet all of your preferences"
+              status={hidePreferences ? "checked" : "unchecked"}
+              onPress={() => setHidePreferences(!hidePreferences)}
+              disabled={loading}
+            />
+          </View>
+        </Modal>
+      </Portal>
       <Portal>
         <Snackbar
           style={[styles.snackbar, styles.aboveNav]}

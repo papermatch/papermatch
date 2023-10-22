@@ -15,14 +15,15 @@ import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
-import { ROUTES, Router, Route, Navigate } from "./lib/routing";
+import { BASENAME, ROUTES, Router, Route, Navigate } from "./lib/routing";
 import {
   useFonts,
   Caveat_400Regular,
   Caveat_500Medium,
 } from "@expo-google-fonts/caveat";
-import { Dimensions, View } from "react-native";
+import { View } from "react-native";
 import { PaperProvider } from "react-native-paper";
+import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
 
 export default function App() {
@@ -32,20 +33,7 @@ export default function App() {
     Caveat_400Regular,
     Caveat_500Medium,
   });
-  const [dimensions, setDimensions] = useState({
-    window: Dimensions.get("window"),
-    screen: Dimensions.get("screen"),
-  });
-
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener(
-      "change",
-      ({ window, screen }) => {
-        setDimensions({ window, screen });
-      }
-    );
-    return () => subscription?.remove();
-  });
+  const styles = useStyles();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -53,8 +41,21 @@ export default function App() {
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    supabase.auth.onAuthStateChange((event, session) => {
+      switch (event) {
+        case "SIGNED_IN":
+          setSession((prevSession) => {
+            // Don't update if the user hasn't changed
+            if (prevSession?.user.id === session?.user.id) {
+              return prevSession;
+            }
+            return session;
+          });
+          break;
+        default:
+          setSession(session);
+          break;
+      }
     });
   }, []);
 
@@ -68,8 +69,8 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <View style={{ height: dimensions.window.height, overflow: "hidden" }}>
-        <Router>
+      <View style={styles.appView}>
+        <Router basename={BASENAME}>
           <Routes>
             <Route
               path={ROUTES.ROOT}

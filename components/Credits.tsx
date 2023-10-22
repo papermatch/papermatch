@@ -16,12 +16,14 @@ import {
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import Navigation from "./Navigation";
-import { ROUTES, useParams, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { BASENAME, ROUTES, useParams, useNavigate } from "../lib/routing";
+import { useStyles } from "../lib/styles";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
-    Platform.OS === "web" ? window.location.origin : "https://papermat.ch";
+    (Platform.OS === "web"
+      ? window.location.origin
+      : "https://www.papermat.ch") + BASENAME;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
@@ -30,6 +32,7 @@ export default function Credits({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
   const { result } = useParams<{ result: string }>();
 
   useEffect(() => {
@@ -73,7 +76,7 @@ export default function Credits({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch credits");
         setSnackbarVisible(true);
       }
@@ -93,30 +96,23 @@ export default function Credits({ session }: { session: Session }) {
         throw new Error("No user on the session!");
       }
 
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/stripe-checkout`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: session?.user.id,
-            quantity: parseInt(quantity) || 1,
-            origin: currentOrigin,
-          }),
-        }
-      );
+      const response = await supabase.functions.invoke("stripe-checkout", {
+        body: {
+          id: session?.user.id,
+          quantity: parseInt(quantity) || 1,
+          origin: currentOrigin,
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok " + response.statusText);
+      if (response.error) {
+        throw new Error(response.error);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setCheckoutUrl(data.url);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch checkout URL");
         setSnackbarVisible(true);
       }

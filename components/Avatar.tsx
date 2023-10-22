@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, TouchableOpacity } from "react-native";
-import { Avatar as RNPAvatar, ActivityIndicator } from "react-native-paper";
+import { View, Pressable } from "react-native";
+import {
+  Avatar as RNPAvatar,
+  ActivityIndicator,
+  FAB,
+} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Avatar({
   url,
@@ -20,6 +24,7 @@ export default function Avatar({
 }) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
+  const styles = useStyles();
 
   useEffect(() => {
     setAvatarUrl(url);
@@ -81,7 +86,7 @@ export default function Avatar({
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
       } else {
         throw error;
       }
@@ -99,13 +104,22 @@ export default function Avatar({
   }
 
   return (
-    <TouchableOpacity onPress={onPress || uploadAvatar} disabled={uploading}>
+    <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
-        <RNPAvatar.Image
-          style={styles.verticallySpaced}
-          size={size}
-          source={{ uri: avatarUrl }}
-        />
+        <View>
+          <RNPAvatar.Image
+            style={styles.verticallySpaced}
+            size={size}
+            source={{ uri: avatarUrl }}
+          />
+          <FAB
+            icon="close"
+            style={{ position: "absolute", margin: 12, right: 0, top: 0 }}
+            customSize={30}
+            visible={!onPress}
+            onPress={() => onUpload && onUpload("")}
+          />
+        </View>
       ) : (
         <RNPAvatar.Icon
           style={styles.verticallySpaced}
@@ -113,6 +127,6 @@ export default function Avatar({
           icon={onPress ? "account" : "plus"}
         />
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

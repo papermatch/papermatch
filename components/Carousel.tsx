@@ -1,6 +1,6 @@
 import { ReactNode, useState, Key } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
-import { IconButton } from "react-native-paper";
+import { IconButton, useTheme } from "react-native-paper";
 
 type CarouselProps<T extends Key> = {
   data: T[];
@@ -8,6 +8,7 @@ type CarouselProps<T extends Key> = {
   start?: T;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
+  vertical?: boolean;
 };
 
 export const Carousel = <T extends Key>({
@@ -16,36 +17,46 @@ export const Carousel = <T extends Key>({
   start,
   style,
   loading,
+  vertical,
 }: CarouselProps<T>) => {
   const [index, setIndex] = useState(
     start && data.includes(start) ? data.indexOf(start) : 0
   );
+  const theme = useTheme();
 
   return (
     <View
       style={[
         style,
         {
-          flexDirection: "row",
+          flexDirection: vertical ? "column" : "row",
           justifyContent: "space-between",
           alignItems: "center",
         },
       ]}
     >
       <IconButton
-        icon="chevron-left"
+        icon={vertical ? "chevron-up" : "chevron-left"}
+        iconColor={
+          index > 0 ? theme.colors.onSurface : theme.colors.onSurfaceDisabled
+        }
         onPress={() => {
-          setIndex(index - 1);
+          setIndex(Math.max(index - 1, 0));
         }}
-        disabled={loading || index <= 0}
+        disabled={loading}
       />
       {renderItem(data[index])}
       <IconButton
-        icon="chevron-right"
+        icon={vertical ? "chevron-down" : "chevron-right"}
+        iconColor={
+          index < data.length - 1
+            ? theme.colors.onSurface
+            : theme.colors.onSurfaceDisabled
+        }
         onPress={() => {
-          setIndex(index + 1);
+          setIndex(Math.min(index + 1, data.length - 1));
         }}
-        disabled={loading || index >= data.length - 1}
+        disabled={loading}
       />
     </View>
   );

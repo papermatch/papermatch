@@ -15,7 +15,7 @@ import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Blocked({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,7 @@ export default function Blocked({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {
@@ -61,7 +62,7 @@ export default function Blocked({ session }: { session: Session }) {
       setProfiles(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profiles");
         setSnackbarVisible(true);
       }
@@ -91,7 +92,7 @@ export default function Blocked({ session }: { session: Session }) {
       getProfiles();
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to unblock user");
         setSnackbarVisible(true);
       }

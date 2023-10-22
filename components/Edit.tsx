@@ -10,11 +10,13 @@ import {
   Menu,
   ActivityIndicator,
   HelperText,
+  Text,
+  Divider
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
 import { ROUTES, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
@@ -47,6 +49,7 @@ export default function Edit({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {
@@ -80,7 +83,7 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to fetch profile");
         setSnackbarVisible(true);
       }
@@ -103,7 +106,7 @@ export default function Edit({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update location");
         setSnackbarVisible(true);
       }
@@ -162,7 +165,7 @@ export default function Edit({ session }: { session: Session }) {
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update profile");
         setSnackbarVisible(true);
       }
@@ -229,6 +232,11 @@ export default function Edit({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
+          <Text style={styles.verticallySpaced}>
+            Edit your profile below. The more information you provide, the
+            better your matches will be!
+          </Text>
+          <Divider style={styles.verticallySpaced} />
           <TextInput
             style={styles.verticallySpaced}
             label="Username (your first name is fine)"

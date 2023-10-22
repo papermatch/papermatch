@@ -1,0 +1,20 @@
+{
+  "buildCommand": "expo export --platform web --clear",
+  "outputDirectory": "dist",
+  "devCommand": "expo",
+  "cleanUrls": true,
+  "framework": null,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/app",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/"
+    }
+  ]
+}

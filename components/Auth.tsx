@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import {
   Button,
   TextInput,
@@ -13,7 +13,7 @@ import {
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { calculateAge } from "../lib/utils";
 
 export default function Auth() {
@@ -29,6 +29,7 @@ export default function Auth() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   async function handleAuth() {
     if (
@@ -65,8 +66,8 @@ export default function Auth() {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
-        setSnackbarMessage("Unable to send OTP");
+        console.error(error.message);
+        setSnackbarMessage("Unable to send OTP, please try again later");
         setSnackbarVisible(true);
       }
     } finally {
@@ -114,7 +115,7 @@ export default function Auth() {
     (params: { date: Date | undefined }) => {
       setDatePickerVisible(false);
       if (params.date) {
-        const birthday = params.date.toISOString().split("T")[0];
+        const birthday = params.date.toLocaleDateString("en-CA");
         setBirthday(birthday);
         validateBirthday(birthday);
       }
@@ -125,7 +126,10 @@ export default function Auth() {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Paper" />
+        <Appbar.Content
+          titleStyle={styles.appbarTitle}
+          title="Authentication"
+        />
       </Appbar.Header>
       {loading ? (
         <View
@@ -143,10 +147,12 @@ export default function Auth() {
               {
                 value: "signUp",
                 label: "Sign Up",
+                labelStyle: { padding: 1 },
               },
               {
                 value: "signIn",
                 label: "Sign In",
+                labelStyle: { padding: 1 },
               },
             ]}
           />
@@ -157,6 +163,7 @@ export default function Auth() {
               setEmail(text);
               validateEmail(text);
             }}
+            onSubmitEditing={() => mode === "signIn" && handleAuth()}
             value={email}
             placeholder="user@example.com"
             autoCapitalize={"none"}
@@ -183,18 +190,20 @@ export default function Auth() {
               </HelperText>
               <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
                 <View style={[styles.verticallySpaced, { flex: 1 }]}>
-                  <TextInput
-                    label="Birthday"
-                    value={birthday}
-                    error={!!birthdayError}
-                    disabled={true}
-                    right={
-                      <TextInput.Icon
-                        icon="calendar"
-                        onPress={() => setDatePickerVisible(true)}
-                      />
-                    }
-                  />
+                  <Pressable onPress={() => setDatePickerVisible(true)}>
+                    <TextInput
+                      label="Birthday"
+                      value={birthday}
+                      error={!!birthdayError}
+                      editable={false}
+                      right={
+                        <TextInput.Icon
+                          icon="calendar"
+                          onPress={() => setDatePickerVisible(true)}
+                        />
+                      }
+                    />
+                  </Pressable>
                   <HelperText type="error" visible={!!birthdayError}>
                     {birthdayError}
                   </HelperText>

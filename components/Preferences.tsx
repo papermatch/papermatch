@@ -12,10 +12,11 @@ import {
   HelperText,
   Divider,
   Chip,
+  Text,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
@@ -48,6 +49,7 @@ export default function Preferences({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {
@@ -82,7 +84,7 @@ export default function Preferences({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get preferences");
         setSnackbarVisible(true);
       }
@@ -218,34 +220,43 @@ export default function Preferences({ session }: { session: Session }) {
         </View>
       ) : (
         <ScrollView style={styles.container}>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Minimum age"
-            value={minAge}
-            onChangeText={(text) => {
-              setMinAge(text);
-              validateAge(text, setMinAgeError);
-            }}
-            keyboardType="numeric"
-            error={!!minAgeError}
-          />
-          <HelperText type="error" visible={!!minAgeError}>
-            {minAgeError}
-          </HelperText>
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Maximum age"
-            value={maxAge}
-            onChangeText={(text) => {
-              setMaxAge(text);
-              validateAge(text, setMaxAgeError);
-            }}
-            keyboardType="numeric"
-            error={!!maxAgeError}
-          />
-          <HelperText type="error" visible={!!maxAgeError}>
-            {maxAgeError}
-          </HelperText>
+          <Text style={styles.verticallySpaced}>
+            Update your preferences below. The more information you provide, the
+            better your matches will be!
+          </Text>
+          <Divider style={styles.verticallySpaced} />
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <TextInput
+                label="Minimum age"
+                value={minAge}
+                onChangeText={(text) => {
+                  setMinAge(text);
+                  validateAge(text, setMinAgeError);
+                }}
+                keyboardType="numeric"
+                error={!!minAgeError}
+              />
+              <HelperText type="error" visible={!!minAgeError}>
+                {minAgeError}
+              </HelperText>
+            </View>
+            <View style={{ flex: 1, marginLeft: 8 }}>
+              <TextInput
+                label="Maximum age"
+                value={maxAge}
+                onChangeText={(text) => {
+                  setMaxAge(text);
+                  validateAge(text, setMaxAgeError);
+                }}
+                keyboardType="numeric"
+                error={!!maxAgeError}
+              />
+              <HelperText type="error" visible={!!maxAgeError}>
+                {maxAgeError}
+              </HelperText>
+            </View>
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Checkboxes
             label="Gender"

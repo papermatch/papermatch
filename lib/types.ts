@@ -8,6 +8,19 @@ export type MatchData = Database["public"]["Tables"]["matches"]["Row"];
 export type MessageData = Database["public"]["Tables"]["messages"]["Row"];
 export type ProfileData = Database["public"]["Tables"]["profiles"]["Row"];
 
+export type MatchesData = {
+  match: MatchData;
+  profile: ProfileData;
+  message: MessageData | null;
+  unread: boolean;
+};
+
+export type ProfilesData = {
+  profile: ProfileData;
+  distance: number | null;
+  score: number | null;
+};
+
 export type CreditorType = Database["public"]["Enums"]["creditor_type"];
 export type DietType = Database["public"]["Enums"]["diet_type"];
 export type GenderType = Database["public"]["Enums"]["gender_type"];
@@ -86,7 +99,7 @@ export const GenderData: AttributeData<GenderType>[] = [
 export const IntentionData: AttributeData<IntentionType>[] = [
   {
     value: "unsure",
-    label: "Figuring out my intention",
+    label: "Figuring out my dating intention",
     icon: "head-question",
   },
   {

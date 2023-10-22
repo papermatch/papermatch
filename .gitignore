@@ -29,7 +29,14 @@ yarn-error.*
 *.pem
 
 # env files
-.env*
+.env.local
+.env.*.local
 
 # typescript
 *.tsbuildinfo
+
+# Vercel
+.vercel
+
+# VS Code
+.vscode/

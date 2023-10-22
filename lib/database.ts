@@ -118,6 +118,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          is_read: boolean
           match_id: string
           message: string
           user_id: string
@@ -125,6 +126,7 @@ export interface Database {
         Insert: {
           created_at?: string
           id?: string
+          is_read?: boolean
           match_id: string
           message: string
           user_id: string
@@ -132,6 +134,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          is_read?: boolean
           match_id?: string
           message?: string
           user_id?: string
@@ -165,7 +168,7 @@ export interface Database {
           relationship:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
@@ -180,7 +183,7 @@ export interface Database {
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
@@ -195,7 +198,7 @@ export interface Database {
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -278,13 +281,13 @@ export interface Database {
       cube:
         | {
             Args: {
-              "": number[]
+              "": number
             }
             Returns: unknown
           }
         | {
             Args: {
-              "": number
+              "": number[]
             }
             Returns: unknown
           }
@@ -388,6 +391,15 @@ export interface Database {
           username: string | null
         }[]
       }
+      get_matches_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          match: unknown
+          profile: unknown
+          message: unknown
+          unread: boolean
+        }[]
+      }
       get_user_distance: {
         Args: {
           user1_id: string
@@ -422,7 +434,10 @@ export interface Database {
         Returns: number
       }
       search_active_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: {
+          hide_interactions?: boolean
+          hide_preferences?: boolean
+        }
         Returns: {
           profile: unknown
           distance: number
@@ -434,6 +449,12 @@ export interface Database {
           "": number
         }
         Returns: number
+      }
+      set_message_read: {
+        Args: {
+          msg_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

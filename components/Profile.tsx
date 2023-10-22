@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, Pressable } from "react-native";
 import {
   Appbar,
   FAB,
@@ -16,7 +16,7 @@ import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 
@@ -30,6 +30,7 @@ export default function Profile({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
+  const styles = useStyles();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -55,10 +56,20 @@ export default function Profile({ session }: { session: Session }) {
         throw error;
       }
 
+      await Promise.all(
+        data.avatar_urls.map(async (avatarUrl: string) => {
+          try {
+            await Image.prefetch(avatarUrl);
+          } catch (error) {
+            console.error(`Error prefetching ${avatarUrl}:`, error);
+          }
+        })
+      );
+
       setProfile(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get profile");
         setSnackbarVisible(true);
       }
@@ -79,7 +90,7 @@ export default function Profile({ session }: { session: Session }) {
       setDistance(data || null);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get distance");
         setSnackbarVisible(true);
       }
@@ -106,7 +117,7 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to get interaction");
         setSnackbarVisible(true);
       }
@@ -135,7 +146,7 @@ export default function Profile({ session }: { session: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to update interaction");
         setSnackbarVisible(true);
       }
@@ -218,7 +229,12 @@ export default function Profile({ session }: { session: Session }) {
               <Text style={styles.verticallySpaced} variant="titleLarge">
                 About
               </Text>
-              <Text style={[styles.verticallySpaced, { marginLeft: 16 }]}>
+              <Text
+                style={[
+                  styles.verticallySpaced,
+                  { marginLeft: 16, marginBottom: 88 },
+                ]}
+              >
                 {profile.about}
               </Text>
             </View>
@@ -233,6 +249,7 @@ export default function Profile({ session }: { session: Session }) {
             icon="thumb-down"
             style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
             color={interaction == "pass" ? "red" : "grey"}
+            size="medium"
             onPress={() =>
               interaction == "pass"
                 ? handleInteraction("none")
@@ -244,6 +261,7 @@ export default function Profile({ session }: { session: Session }) {
             icon="thumb-up"
             style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
             color={interaction == "like" ? "green" : "grey"}
+            size="medium"
             onPress={() =>
               interaction == "like"
                 ? handleInteraction("none")
@@ -260,10 +278,7 @@ export default function Profile({ session }: { session: Session }) {
           contentContainerStyle={{ flex: 1 }}
         >
           {!!imageUrl && (
-            <TouchableOpacity
-              style={{ flex: 1 }}
-              onPress={() => setImageUrl(null)}
-            >
+            <Pressable style={{ flex: 1 }} onPress={() => setImageUrl(null)}>
               <Image
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
@@ -272,7 +287,7 @@ export default function Profile({ session }: { session: Session }) {
                   console.log(`Image ${imageUrl} error:`, error)
                 }
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </Modal>
       </Portal>

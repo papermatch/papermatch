@@ -2,7 +2,7 @@ import { Key } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Text, Checkbox, IconButton } from "react-native-paper";
 import { AttributeData } from "../lib/types";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 type CheckboxesProps<T extends Key> = {
   label: string;
@@ -21,6 +21,8 @@ export const Checkboxes = <T extends Key>({
   style,
   loading,
 }: CheckboxesProps<T>) => {
+  const styles = useStyles();
+
   return (
     <View style={style}>
       <Text style={styles.verticallySpaced} variant="titleLarge">

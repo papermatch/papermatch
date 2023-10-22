@@ -1,5 +1,5 @@
 import { useState, Key } from "react";
-import { StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle, Pressable } from "react-native";
 import { TextInput, Menu } from "react-native-paper";
 import { AttributeData } from "../lib/types";
 
@@ -28,27 +28,35 @@ export const Dropdown = <T extends Key>({
         visible={menuVisible}
         onDismiss={() => setMenuVisible(false)}
         anchor={
-          <TextInput
-            label={label}
-            value={data.find((item) => item.value === value)?.label || ""}
-            left={
-              <TextInput.Icon
-                onPress={() => {
-                  setMenuVisible(!menuVisible);
-                }}
-                icon={menuVisible ? "menu-up" : "menu-down"}
-              />
-            }
-            right={
-              value && (
+          <Pressable onPress={() => setMenuVisible(!menuVisible)}>
+            <TextInput
+              label={label}
+              value={data.find((item) => item.value === value)?.label || ""}
+              left={
                 <TextInput.Icon
-                  icon="close-circle"
-                  onPress={() => onChange(null)}
+                  onPress={() => {
+                    setMenuVisible(!menuVisible);
+                  }}
+                  icon={menuVisible ? "menu-up" : "menu-down"}
                 />
-              )
-            }
-            disabled={true}
-          />
+              }
+              right={
+                value && (
+                  <TextInput.Icon
+                    icon="close-circle"
+                    onPress={() => onChange(null)}
+                  />
+                )
+              }
+              theme={{
+                colors: {
+                  surfaceDisabled: "rgb(226, 225, 236, 1)",
+                  onSurfaceDisabled: "rgb(69, 70, 79, 1)",
+                },
+              }}
+              editable={false}
+            />
+          </Pressable>
         }
         anchorPosition="bottom"
       >

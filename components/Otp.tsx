@@ -12,18 +12,21 @@ import {
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
-import styles from "../lib/styles";
+import { useStyles } from "../lib/styles";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
+  const location = useLocation();
+  const email = location.state?.email || "";
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarVisible, setSnackbarVisible] = useState(true);
+  const [snackbarMessage, setSnackbarMessage] = useState(
+    `Check ${email} for your one-time password`
+  );
   const navigate = useNavigate();
-  const location = useLocation();
-  const email = location.state?.email || "";
+  const styles = useStyles();
 
   useEffect(() => {
     if (session) {
@@ -59,7 +62,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.error(error.message);
         setSnackbarMessage("Unable to verify OTP");
         setSnackbarVisible(true);
       }
@@ -107,6 +110,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
               setOtp(text);
               validateOtp(text);
             }}
+            onSubmitEditing={handleOtp}
             value={otp}
             keyboardType="numeric"
             placeholder="Enter your OTP"
