@@ -44,7 +44,11 @@
       ]
     ],
     "sdkVersion": "49.0.0",
-    "entryPoint": ".vscode/exponentIndex.js"
+    "extra": {
+      "eas": {
+        "projectId": "a9f567cc-0977-4189-9ac3-e8bb1a80b2d0"
+      }
+    }
   },
   "name": "papermatch"
 }

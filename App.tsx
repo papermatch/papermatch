@@ -1,6 +1,7 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
-import { ActivityIndicator } from "react-native-paper";
+import { View } from "react-native";
+import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
 import Account from "./components/Account";
@@ -21,8 +22,7 @@ import {
   Caveat_400Regular,
   Caveat_500Medium,
 } from "@expo-google-fonts/caveat";
-import { View } from "react-native";
-import { PaperProvider } from "react-native-paper";
+import { StatusBar } from "expo-status-bar";
 import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
 
@@ -69,6 +69,7 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
+      <StatusBar style="auto" />
       <View style={styles.appView}>
         <Router basename={BASENAME}>
           <Routes>

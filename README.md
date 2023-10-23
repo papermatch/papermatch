@@ -125,6 +125,13 @@ A pay-per-match dating app, using React Native and Supabase.
 2. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
 
 
+## Expo Application Services
+
+1. `eas build:configure`
+2. `eas secret:push --scope project --env-file .env.local`
+3. `eas build --platform android --profile preview`
+4. `eas build:run -p android --latest`
+
 ## VSCode Setup
 
 ```json
