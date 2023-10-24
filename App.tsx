@@ -19,9 +19,9 @@ import { Routes } from "react-router-dom";
 import { BASENAME, ROUTES, Router, Route, Navigate } from "./lib/routing";
 import {
   useFonts,
-  Caveat_400Regular,
-  Caveat_500Medium,
-} from "@expo-google-fonts/caveat";
+  EduNSWACTFoundation_400Regular,
+  EduNSWACTFoundation_500Medium,
+} from "@expo-google-fonts/edu-nsw-act-foundation";
 import { StatusBar } from "expo-status-bar";
 import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
@@ -30,8 +30,8 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [fontsLoaded, fontError] = useFonts({
-    Caveat_400Regular,
-    Caveat_500Medium,
+    EduNSWACTFoundation_400Regular,
+    EduNSWACTFoundation_500Medium,
   });
   const styles = useStyles();
 

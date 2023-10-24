@@ -286,7 +286,7 @@ export default function Profile({ session }: { session: Session }) {
                 style={{ flex: 1 }}
                 resizeMode="contain"
                 onError={(error) =>
-                  console.log(`Image ${imageUrl} error:`, error)
+                  console.error(`Image ${imageUrl} error:`, error)
                 }
               />
             </Pressable>

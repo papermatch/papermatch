@@ -4,12 +4,12 @@
     "slug": "papermatch",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/papermatch.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/papermatch.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fdfef5"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,14 +20,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/papermatch.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch"
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/papermatch.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [

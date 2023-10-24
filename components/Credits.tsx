@@ -108,7 +108,6 @@ export default function Credits({ session }: { session: Session }) {
       }
 
       const data = await response.data;
-      console.log(data);
       setCheckoutUrl(data.url);
     } catch (error) {
       if (error instanceof Error) {
@@ -122,7 +121,6 @@ export default function Credits({ session }: { session: Session }) {
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    console.log(navState);
     if (navState.url === `${currentOrigin}/credits/success`) {
       setCheckoutUrl(null);
       setSnackbarMessage("Payment successful!");

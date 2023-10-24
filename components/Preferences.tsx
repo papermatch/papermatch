@@ -154,7 +154,7 @@ export default function Preferences({ session }: { session: Session }) {
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error);
+        console.error(error);
         setSnackbarMessage("Unable to update preferences");
         setSnackbarVisible(true);
       }

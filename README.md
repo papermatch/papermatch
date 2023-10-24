@@ -117,19 +117,20 @@ A pay-per-match dating app, using React Native and Supabase.
 
 ## Production deployment
 
-1. [Configure Vercel](https://vercel.com/docs/cli), then build and deploy
+1. [Configure Vercel](https://vercel.com/docs/cli)
+2. Add Environment Variables (`SUPABASE_ANON_KEY`, `SUPABASE_URL`) to project settings
+3. Deploy for production
    ```
-   vercel build --prod
-   vercel deploy --prod --prebuilt
+   vercel --prod
    ```
-2. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+4. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
 
 
 ## Expo Application Services
 
 1. `eas build:configure`
 2. `eas secret:push --scope project --env-file .env.local`
-3. `eas build --platform android --profile preview`
+3. `eas build --platform android --profile development`
 4. `eas build:run -p android --latest`
 
 ## VSCode Setup
