@@ -6,7 +6,8 @@
     "start": "expo start",
     "start:test": "NODE_ENV=test expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@expo-google-fonts/edu-nsw-act-foundation": "^0.2.3",
@@ -32,7 +33,8 @@
     "react-native-webview": "13.2.2",
     "react-router-dom": "^6.15.0",
     "react-router-native": "^6.15.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "react-native-maps": "1.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

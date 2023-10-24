@@ -12,6 +12,7 @@ import {
   HelperText,
   Text,
   Divider,
+  FAB,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
@@ -30,6 +31,8 @@ import {
   RelationshipData,
 } from "../lib/types";
 import * as Location from "expo-location";
+import { StatusBar } from "expo-status-bar";
+import MapView, { Marker } from "react-native-maps";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,7 @@ export default function Edit({ session }: { session: Session }) {
   const [diet, setDiet] = useState<DietType | null>(null);
   const [lnglat, setLnglat] = useState("");
   const [lnglatError, setLnglatError] = useState("");
+  const [mapVisible, setMapVisible] = useState(false);
   const [about, setAbout] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -56,6 +60,10 @@ export default function Edit({ session }: { session: Session }) {
       getProfile();
     }
   }, [session]);
+
+  useEffect(() => {
+    console.log("lnglat", lnglat);
+  }, [lnglat]);
 
   async function getProfile() {
     try {
@@ -102,7 +110,7 @@ export default function Edit({ session }: { session: Session }) {
       const location = await Location.getCurrentPositionAsync({});
 
       if (location) {
-        setLnglat(`(${location.coords.longitude},${location.coords.latitude})`);
+        setLnglat(toLngLat(location.coords));
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -110,6 +118,8 @@ export default function Edit({ session }: { session: Session }) {
         setSnackbarMessage("Unable to update location");
         setSnackbarVisible(true);
       }
+    } finally {
+      setMapVisible(true);
     }
   }
 
@@ -173,6 +183,21 @@ export default function Edit({ session }: { session: Session }) {
       setLoading(false);
     }
   }
+
+  const toLngLat = ({
+    latitude,
+    longitude,
+  }: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    return `(${longitude},${latitude})`;
+  };
+
+  const toLatLng = ({ lnglat }: { lnglat: string }) => {
+    const [longitude, latitude] = lnglat.replace(/[()]/g, "").split(",");
+    return { latitude: parseFloat(latitude), longitude: parseFloat(longitude) };
+  };
 
   const validateUsername = (username: string) => {
     if (username.trim() === "") {
@@ -302,10 +327,11 @@ export default function Edit({ session }: { session: Session }) {
                 right={
                   <TextInput.Icon
                     icon="crosshairs-gps"
-                    onPress={() => updateLocation()}
+                    onPress={updateLocation}
                   />
                 }
                 error={!!lnglatError}
+                editable={Platform.OS === "web"}
               />
               <HelperText type="error" visible={!!lnglatError}>
                 {lnglatError}
@@ -356,6 +382,33 @@ export default function Edit({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
+      {Platform.OS !== "web" && mapVisible ? (
+        <Portal>
+          <StatusBar hidden={true} />
+          <View style={{ flex: 1 }}>
+            <MapView
+              style={{ width: "100%", height: "100%" }}
+              initialRegion={{
+                ...toLatLng({ lnglat }),
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              onRegionChangeComplete={(event) => {
+                setLnglat(toLngLat(event));
+              }}
+            >
+              <Marker coordinate={toLatLng({ lnglat })} />
+            </MapView>
+          </View>
+          <FAB
+            icon="keyboard-backspace"
+            style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
+            size="medium"
+            onPress={() => setMapVisible(false)}
+            disabled={loading}
+          />
+        </Portal>
+      ) : null}
     </View>
   );
 }
