@@ -1,4 +1,3 @@
-import { SUPABASE_URL } from "@env";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Platform, View, KeyboardAvoidingView } from "react-native";
@@ -15,8 +14,9 @@ import {
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
+import { StatusBar } from "expo-status-bar";
 import Navigation from "./Navigation";
-import { BASENAME, ROUTES, useParams, useNavigate } from "../lib/routing";
+import { BASENAME, useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 
 export default function Credits({ session }: { session: Session }) {
@@ -31,7 +31,6 @@ export default function Credits({ session }: { session: Session }) {
   const [credits, setCredits] = useState(0);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const navigate = useNavigate();
   const styles = useStyles();
   const { result } = useParams<{ result: string }>();
 
@@ -109,6 +108,7 @@ export default function Credits({ session }: { session: Session }) {
       }
 
       const data = await response.data;
+      console.log(data);
       setCheckoutUrl(data.url);
     } catch (error) {
       if (error instanceof Error) {
@@ -122,16 +122,15 @@ export default function Credits({ session }: { session: Session }) {
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
+    console.log(navState);
     if (navState.url === `${currentOrigin}/credits/success`) {
+      setCheckoutUrl(null);
       setSnackbarMessage("Payment successful!");
       setSnackbarVisible(true);
-    } else if (navState.url === `${currentOrigin}/credits/cancelled`) {
+    } else if (navState.url === `${currentOrigin}/credits/cancel`) {
+      setCheckoutUrl(null);
       setSnackbarMessage("Payment unsuccessful, you have not been charged.");
       setSnackbarVisible(true);
-    }
-
-    if (session?.user?.id) {
-      navigate(ROUTES.ACCOUNT);
     }
   };
 
@@ -195,12 +194,6 @@ export default function Credits({ session }: { session: Session }) {
             >
               Checkout
             </Button>
-            {Platform.OS !== "web" && checkoutUrl ? (
-              <WebView
-                source={{ uri: checkoutUrl }}
-                onNavigationStateChange={handleNavigationStateChange}
-              />
-            ) : null}
           </View>
         </KeyboardAvoidingView>
       )}
@@ -217,6 +210,16 @@ export default function Credits({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
+      {Platform.OS !== "web" && checkoutUrl ? (
+        <Portal>
+          <StatusBar hidden={true} />
+          <WebView
+            style={{ flex: 1 }}
+            source={{ uri: checkoutUrl }}
+            onNavigationStateChange={handleNavigationStateChange}
+          />
+        </Portal>
+      ) : null}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

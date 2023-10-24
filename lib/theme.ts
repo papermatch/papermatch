@@ -1,13 +1,17 @@
 import { Platform } from "react-native";
 import { configureFonts, MD3LightTheme } from "react-native-paper";
 
-const FONT_SCALE = 1.1;
+const FONT_SCALE = 1.2;
 
 const fontFamilyRegular = Platform.select({
+  web: "Caveat_400Regular",
+  ios: "System",
   default: "Caveat_400Regular",
 });
 
 const fontFamilyMedium = Platform.select({
+  web: "Caveat_500Medium",
+  ios: "System",
   default: "Caveat_500Medium",
 });
 

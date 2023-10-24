@@ -319,7 +319,14 @@ export default function Match({ session }: { session: Session }) {
                         />
                       </View>
                     )}
-                    <Text style={{ marginHorizontal: 12, alignSelf: "center" }}>
+                    <Text
+                      style={{
+                        flexShrink: 1,
+                          marginHorizontal: 12,
+                        alignSelf: "center",
+                        padding: 1,
+                      }}
+                    >
                       {item.message}
                     </Text>
                   </View>
@@ -337,7 +344,7 @@ export default function Match({ session }: { session: Session }) {
                 blurOnSubmit={true}
                 placeholder="Type a message"
                 multiline={true}
-                numberOfLines={4}
+                numberOfLines={1}
                 right={
                   <TextInput.Icon
                     icon="send"

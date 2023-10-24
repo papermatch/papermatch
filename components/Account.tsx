@@ -289,7 +289,7 @@ export default function Account({ session }: { session: Session }) {
               <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
                 <View style={{ flex: 1, flexDirection: "column" }}>
                   <TextInput
-                    label="Update Email"
+                    label="Update email"
                     onChangeText={(text) => {
                       setEmail(text);
                       validateEmail(text);
