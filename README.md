@@ -7,6 +7,7 @@ A pay-per-match dating app, using React Native and Supabase.
 1. Create a new [Supabase project](https://supabase.com/dashboard/projects) (e.g. papermatch) in your preferred organization (e.g. papermatch)
 2. Create a .env.local file in the root directory as follows (with information from the Project Settings/API page)
     ```
+    GOOGLE_MAPS_API_KEY=***
     SUPABASE_ANON_KEY=***
     SUPABASE_URL=***
     ```

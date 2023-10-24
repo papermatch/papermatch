@@ -32,7 +32,7 @@ import {
 } from "../lib/types";
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -60,10 +60,6 @@ export default function Edit({ session }: { session: Session }) {
       getProfile();
     }
   }, [session]);
-
-  useEffect(() => {
-    console.log("lnglat", lnglat);
-  }, [lnglat]);
 
   async function getProfile() {
     try {
@@ -195,6 +191,9 @@ export default function Edit({ session }: { session: Session }) {
   };
 
   const toLatLng = ({ lnglat }: { lnglat: string }) => {
+    if (!lnglat) {
+      return { latitude: 0, longitude: 0 };
+    }
     const [longitude, latitude] = lnglat.replace(/[()]/g, "").split(",");
     return { latitude: parseFloat(latitude), longitude: parseFloat(longitude) };
   };
@@ -396,6 +395,7 @@ export default function Edit({ session }: { session: Session }) {
               onRegionChangeComplete={(event) => {
                 setLnglat(toLngLat(event));
               }}
+              provider={PROVIDER_GOOGLE}
             >
               <Marker coordinate={toLatLng({ lnglat })} />
             </MapView>
