@@ -36,7 +36,7 @@ export const useStyles = () => {
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
-      padding: 12,
+      paddingHorizontal: 12,
       flex: 1,
     },
     verticallySpaced: {

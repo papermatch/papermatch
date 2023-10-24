@@ -277,9 +277,11 @@ export default function Edit({ session }: { session: Session }) {
                 maxLength={50}
                 error={!!usernameError}
               />
-              <HelperText type="error" visible={!!usernameError}>
-                {usernameError}
-              </HelperText>
+              {usernameError && (
+                <HelperText type="error" visible={!!usernameError}>
+                  {usernameError}
+                </HelperText>
+              )}
               <Dropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Gender"
@@ -332,9 +334,11 @@ export default function Edit({ session }: { session: Session }) {
                 error={!!lnglatError}
                 editable={Platform.OS === "web"}
               />
-              <HelperText type="error" visible={!!lnglatError}>
-                {lnglatError}
-              </HelperText>
+              {lnglatError && (
+                <HelperText type="error" visible={!!lnglatError}>
+                  {lnglatError}
+                </HelperText>
+              )}
               <TextInput
                 style={[styles.verticallySpaced]}
                 label="About"

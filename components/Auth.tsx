@@ -180,9 +180,12 @@ export default function Auth() {
                 autoCapitalize={"none"}
                 error={!!emailError}
               />
-              <HelperText type="error" visible={!!emailError}>
-                {emailError}
-              </HelperText>
+              {emailError && (
+                <HelperText type="error" visible={!!emailError}>
+                  {emailError}
+                </HelperText>
+              )}
+
               {mode === "signUp" && (
                 <View>
                   <TextInput
@@ -196,9 +199,11 @@ export default function Auth() {
                     maxLength={50}
                     error={!!usernameError}
                   />
-                  <HelperText type="error" visible={!!usernameError}>
-                    {usernameError}
-                  </HelperText>
+                  {usernameError && (
+                    <HelperText type="error" visible={!!usernameError}>
+                      {usernameError}
+                    </HelperText>
+                  )}
                   <View
                     style={(styles.verticallySpaced, { flexDirection: "row" })}
                   >
@@ -217,9 +222,11 @@ export default function Auth() {
                           }
                         />
                       </Pressable>
-                      <HelperText type="error" visible={!!birthdayError}>
-                        {birthdayError}
-                      </HelperText>
+                      {birthdayError && (
+                        <HelperText type="error" visible={!!birthdayError}>
+                          {birthdayError}
+                        </HelperText>
+                      )}
                     </View>
                     <DatePickerModal
                       label="Select your birthday"

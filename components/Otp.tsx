@@ -121,9 +121,11 @@ export default function Otp({ session = undefined }: { session?: Session }) {
                 placeholder="Enter your OTP"
                 error={!!otpError}
               />
-              <HelperText type="error" visible={!!otpError}>
-                {otpError}
-              </HelperText>
+              {otpError && (
+                <HelperText type="error" visible={!!otpError}>
+                  {otpError}
+                </HelperText>
+              )}
               <Button
                 mode="contained"
                 style={styles.verticallySpaced}

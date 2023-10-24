@@ -3,12 +3,12 @@ import { supabase } from "../lib/supabase";
 import {
   View,
   ScrollView,
-  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import {
+  ActivityIndicator,
   Button,
   TextInput,
   Appbar,
@@ -305,9 +305,11 @@ export default function Account({ session }: { session: Session }) {
                     }
                     disabled={loading}
                   />
-                  <HelperText type="error" visible={!!emailError}>
-                    {emailError}
-                  </HelperText>
+                  {emailError && (
+                    <HelperText type="error" visible={!!emailError}>
+                      {emailError}
+                    </HelperText>
+                  )}
                 </View>
               </View>
               <View>

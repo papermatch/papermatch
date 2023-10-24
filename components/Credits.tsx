@@ -180,9 +180,11 @@ export default function Credits({ session }: { session: Session }) {
               placeholder="Enter Quantity"
               error={!!quantityError}
             />
-            <HelperText type="error" visible={!!quantityError}>
-              {quantityError}
-            </HelperText>
+            {quantityError && (
+              <HelperText type="error" visible={!!quantityError}>
+                {quantityError}
+              </HelperText>
+            )}
             <Button
               mode="contained"
               labelStyle={styles.buttonLabel}
