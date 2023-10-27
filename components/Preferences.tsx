@@ -242,11 +242,11 @@ export default function Preferences({ session }: { session: Session }) {
                     keyboardType="numeric"
                     error={!!minAgeError}
                   />
-                  {minAgeError && (
+                  {minAgeError ? (
                     <HelperText type="error" visible={!!minAgeError}>
                       {minAgeError}
                     </HelperText>
-                  )}
+                  ) : null}
                 </View>
                 <View style={{ flex: 1, marginLeft: 8 }}>
                   <TextInput
@@ -259,11 +259,11 @@ export default function Preferences({ session }: { session: Session }) {
                     keyboardType="numeric"
                     error={!!maxAgeError}
                   />
-                  {maxAgeError && (
+                  {maxAgeError ? (
                     <HelperText type="error" visible={!!maxAgeError}>
                       {maxAgeError}
                     </HelperText>
-                  )}
+                  ) : null}
                 </View>
               </View>
               <Divider style={styles.verticallySpaced} />
@@ -313,11 +313,11 @@ export default function Preferences({ session }: { session: Session }) {
                 keyboardType="numeric"
                 error={!!radiusError}
               />
-              {radiusError && (
+              {radiusError ? (
                 <HelperText type="error" visible={!!radiusError}>
                   {radiusError}
                 </HelperText>
-              )}
+              ) : null}
               <TextInput
                 style={styles.verticallySpaced}
                 label="Keywords"

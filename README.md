@@ -13,6 +13,9 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
 3. Create another .env.local file in the supabase/ directory as follows
     ```
+    ONESIGNAL_APP_ID=***
+    ONESIGNAL_REST_API_KEY=***
+    ONESIGNAL_USER_AUTH_KEY=***
     STRIPE_API_KEY=***
     STRIPE_PRICE_ID=***
     STRIPE_WEBHOOK_SIGNING_SECRET=***
@@ -32,7 +35,7 @@ A pay-per-match dating app, using React Native and Supabase.
     ```
 3. Start the Supabase containers locally
     ```
-    npx supabase start
+    npx supabase start:test -- --clear
     ```
 4. Use the output from the previous command to create an .env.test.local file as described [above](#supabase-setup)
 5. In the local [Supabase Studio](http://localhost:54323/project/default/sql/1) add the `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` secrets to the Vault
@@ -133,6 +136,7 @@ A pay-per-match dating app, using React Native and Supabase.
 2. `eas secret:push --scope project --env-file .env.local`
 3. `eas build --platform android --profile development`
 4. `eas build:run -p android --latest`
+5. [Configure OneSignal](https://documentation.onesignal.com/docs/react-native-expo-sdk-setup) for notifications
 
 ## VSCode Setup
 

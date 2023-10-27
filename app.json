@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#fdfef5"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "ch.papermat.papermatch"
@@ -41,13 +39,20 @@
         {
           "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
         }
+      ],
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
       ]
     ],
     "sdkVersion": "49.0.0",
     "extra": {
       "eas": {
         "projectId": "a9f567cc-0977-4189-9ac3-e8bb1a80b2d0"
-      }
+      },
+      "oneSignalAppId": "a7d4e561-c578-447a-aac8-809075f9e326"
     }
   },
   "name": "papermatch"

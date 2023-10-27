@@ -305,11 +305,11 @@ export default function Account({ session }: { session: Session }) {
                     }
                     disabled={loading}
                   />
-                  {emailError && (
+                  {emailError ? (
                     <HelperText type="error" visible={!!emailError}>
                       {emailError}
                     </HelperText>
-                  )}
+                  ) : null}
                 </View>
               </View>
               <View>
