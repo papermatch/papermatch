@@ -45,6 +45,10 @@
         {
           "mode": "development"
         }
+      ],
+      [
+        "./scripts/withDrawableAssets",
+        "./assets/onesignal"
       ]
     ],
     "sdkVersion": "49.0.0",
