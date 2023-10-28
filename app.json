@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#fdfef5"
       },
-      "package": "ch.papermat.papermatch"
+      "package": "ch.papermat.papermatch",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",

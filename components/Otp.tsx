@@ -56,9 +56,9 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       }
 
       if (data.session) {
-        navigate(ROUTES.PROFILES);
+        navigate(`../${ROUTES.PROFILES}`);
       } else {
-        navigate(ROUTES.AUTH);
+        navigate(`../${ROUTES.AUTH}`);
       }
     } catch (error) {
       if (error instanceof Error) {

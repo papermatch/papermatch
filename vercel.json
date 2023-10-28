@@ -4,16 +4,9 @@
   "devCommand": "expo",
   "cleanUrls": true,
   "framework": null,
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/app",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
-      "source": "/app/:path*",
+      "source": "/(.*)",
       "destination": "/"
     }
   ]

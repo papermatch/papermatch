@@ -188,7 +188,7 @@ export default function Account({ session }: { session: Session }) {
       if (error) {
         throw error;
       } else {
-        navigate(ROUTES.OTP, { state: { email } });
+        navigate(`../${ROUTES.OTP}`, { state: { email } });
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -322,7 +322,7 @@ export default function Account({ session }: { session: Session }) {
                   mode="outlined"
                   style={styles.verticallySpaced}
                   labelStyle={styles.buttonLabel}
-                  onPress={() => navigate(`${ROUTES.EDIT}`)}
+                  onPress={() => navigate(`../${ROUTES.EDIT}`)}
                   disabled={loading}
                 >
                   Edit Profile
@@ -338,7 +338,7 @@ export default function Account({ session }: { session: Session }) {
                   mode="outlined"
                   style={styles.verticallySpaced}
                   labelStyle={styles.buttonLabel}
-                  onPress={() => navigate(`${ROUTES.PREFERENCES}`)}
+                  onPress={() => navigate(`../${ROUTES.PREFERENCES}`)}
                   disabled={loading}
                 >
                   Dating Preferences
@@ -352,7 +352,7 @@ export default function Account({ session }: { session: Session }) {
                 mode="outlined"
                 style={styles.verticallySpaced}
                 labelStyle={styles.buttonLabel}
-                onPress={() => navigate(`${ROUTES.BLOCKED}`)}
+                onPress={() => navigate(`../${ROUTES.BLOCKED}`)}
                 disabled={loading}
               >
                 Blocked Users

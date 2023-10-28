@@ -68,7 +68,7 @@ export default function Auth() {
       if (error) {
         throw error;
       } else {
-        navigate(ROUTES.OTP, { state: { email } });
+        navigate(`../${ROUTES.OTP}`, { state: { email } });
       }
     } catch (error) {
       if (error instanceof Error) {

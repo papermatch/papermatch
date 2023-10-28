@@ -18,6 +18,28 @@ Deno.serve(async (req) => {
   try {
     const { user_id, contents } = await req.json();
 
+    // Check for valid user_id
+    if (!user_id) {
+      return new Response(
+        JSON.stringify({ error: "Missing parameter: user_id" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Check for valid contents
+    if (!contents) {
+      return new Response(
+        JSON.stringify({ error: "Missing parameter: contents" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const notification = new OneSignal.Notification();
     notification.app_id = onesignalAppId;
     notification.include_external_user_ids = [user_id];

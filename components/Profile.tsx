@@ -178,7 +178,7 @@ export default function Profile({ session }: { session: Session }) {
           {session?.user.id == id ? (
             <Menu.Item
               onPress={() => {
-                navigate(ROUTES.EDIT);
+                navigate(`../${ROUTES.EDIT}`);
               }}
               title="Edit"
             />

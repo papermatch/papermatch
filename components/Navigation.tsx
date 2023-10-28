@@ -112,7 +112,7 @@ export default function Navigation({ session }: { session: Session }) {
         }
         size={30}
         onPress={() => {
-          navigate(ROUTES.PROFILES);
+          navigate(`../${ROUTES.PROFILES}`);
         }}
         animated={false}
       />
@@ -126,7 +126,7 @@ export default function Navigation({ session }: { session: Session }) {
           icon={location.pathname === ROUTES.MATCHES ? "chat" : "chat-outline"}
           size={30}
           onPress={() => {
-            navigate(ROUTES.MATCHES);
+            navigate(`../${ROUTES.MATCHES}`);
           }}
           animated={false}
         />
@@ -145,7 +145,7 @@ export default function Navigation({ session }: { session: Session }) {
           }
           size={30}
           onPress={() => {
-            navigate(ROUTES.CREDITS);
+            navigate(`../${ROUTES.CREDITS}`);
           }}
           animated={false}
         />
@@ -162,7 +162,7 @@ export default function Navigation({ session }: { session: Session }) {
           }
           size={30}
           onPress={() => {
-            navigate(ROUTES.ACCOUNT);
+            navigate(`../${ROUTES.ACCOUNT}`);
           }}
           animated={false}
         />
