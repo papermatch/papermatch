@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
@@ -11,7 +11,8 @@ import {
   ActivityIndicator,
   HelperText,
   Text,
-  Divider
+  Divider,
+  FAB,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { Dropdown } from "./Dropdown";
@@ -30,6 +31,8 @@ import {
   RelationshipData,
 } from "../lib/types";
 import * as Location from "expo-location";
+import { StatusBar } from "expo-status-bar";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,7 @@ export default function Edit({ session }: { session: Session }) {
   const [diet, setDiet] = useState<DietType | null>(null);
   const [lnglat, setLnglat] = useState("");
   const [lnglatError, setLnglatError] = useState("");
+  const [mapVisible, setMapVisible] = useState(false);
   const [about, setAbout] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -102,7 +106,7 @@ export default function Edit({ session }: { session: Session }) {
       const location = await Location.getCurrentPositionAsync({});
 
       if (location) {
-        setLnglat(`(${location.coords.longitude},${location.coords.latitude})`);
+        setLnglat(toLngLat(location.coords));
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -110,6 +114,8 @@ export default function Edit({ session }: { session: Session }) {
         setSnackbarMessage("Unable to update location");
         setSnackbarVisible(true);
       }
+    } finally {
+      setMapVisible(true);
     }
   }
 
@@ -174,6 +180,24 @@ export default function Edit({ session }: { session: Session }) {
     }
   }
 
+  const toLngLat = ({
+    latitude,
+    longitude,
+  }: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    return `(${longitude},${latitude})`;
+  };
+
+  const toLatLng = ({ lnglat }: { lnglat: string }) => {
+    if (!lnglat) {
+      return { latitude: 0, longitude: 0 };
+    }
+    const [longitude, latitude] = lnglat.replace(/[()]/g, "").split(",");
+    return { latitude: parseFloat(latitude), longitude: parseFloat(longitude) };
+  };
+
   const validateUsername = (username: string) => {
     if (username.trim() === "") {
       setUsernameError("Username cannot be empty");
@@ -231,110 +255,122 @@ export default function Edit({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <Text style={styles.verticallySpaced}>
-            Edit your profile below. The more information you provide, the
-            better your matches will be!
-          </Text>
-          <Divider style={styles.verticallySpaced} />
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Username (your first name is fine)"
-            value={username}
-            onChangeText={(text) => {
-              setUsername(text);
-              validateUsername(text);
-            }}
-            maxLength={50}
-            error={!!usernameError}
-          />
-          <HelperText type="error" visible={!!usernameError}>
-            {usernameError}
-          </HelperText>
-          <Dropdown
-            style={[styles.verticallySpaced, { flex: 1 }]}
-            label="Gender"
-            data={GenderData}
-            value={gender}
-            onChange={setGender}
-          />
-          <Dropdown
-            style={[styles.verticallySpaced, { flex: 1 }]}
-            label="Family plan"
-            data={KidsData}
-            value={kids}
-            onChange={setKids}
-          />
-          <Dropdown
-            style={[styles.verticallySpaced, { flex: 1 }]}
-            label="Dating intention"
-            data={IntentionData}
-            value={intention}
-            onChange={setIntention}
-          />
-          <Dropdown
-            style={[styles.verticallySpaced, { flex: 1 }]}
-            label="Relationship style"
-            data={RelationshipData}
-            value={relationship}
-            onChange={setRelationship}
-          />
-          <Dropdown
-            style={[styles.verticallySpaced, { flex: 1 }]}
-            label="Diet"
-            data={DietData}
-            value={diet}
-            onChange={setDiet}
-          />
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Location (lng,lat)"
-            value={lnglat}
-            onChangeText={(text) => {
-              setLnglat(text);
-              validateLnglat(text);
-            }}
-            right={
-              <TextInput.Icon
-                icon="crosshairs-gps"
-                onPress={() => updateLocation()}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <Text style={styles.verticallySpaced}>
+                Edit your profile below. The more information you provide, the
+                better your matches will be!
+              </Text>
+              <Divider style={styles.verticallySpaced} />
+              <TextInput
+                style={styles.verticallySpaced}
+                label="Username (your first name is fine)"
+                value={username}
+                onChangeText={(text) => {
+                  setUsername(text);
+                  validateUsername(text);
+                }}
+                maxLength={50}
+                error={!!usernameError}
               />
-            }
-            error={!!lnglatError}
-          />
-          <HelperText type="error" visible={!!lnglatError}>
-            {lnglatError}
-          </HelperText>
-          <TextInput
-            style={[styles.verticallySpaced]}
-            label="About"
-            value={about}
-            onChangeText={(text) => setAbout(text)}
-            multiline={true}
-            numberOfLines={8}
-            maxLength={1500}
-          />
-          <Button
-            mode="contained"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            onPress={() =>
-              updateProfile({
-                username,
-                gender,
-                intention,
-                relationship,
-                kids,
-                diet,
-                lnglat,
-                about,
-              })
-            }
-            disabled={loading}
-          >
-            {loading ? "Loading ..." : "Update"}
-          </Button>
-        </ScrollView>
+              {usernameError ? (
+                <HelperText type="error" visible={!!usernameError}>
+                  {usernameError}
+                </HelperText>
+              ) : null}
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Gender"
+                data={GenderData}
+                value={gender}
+                onChange={setGender}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Family plan"
+                data={KidsData}
+                value={kids}
+                onChange={setKids}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Dating intention"
+                data={IntentionData}
+                value={intention}
+                onChange={setIntention}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Relationship style"
+                data={RelationshipData}
+                value={relationship}
+                onChange={setRelationship}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Diet"
+                data={DietData}
+                value={diet}
+                onChange={setDiet}
+              />
+              <TextInput
+                style={styles.verticallySpaced}
+                label="Location (lng,lat)"
+                value={lnglat}
+                onChangeText={(text) => {
+                  setLnglat(text);
+                  validateLnglat(text);
+                }}
+                right={
+                  <TextInput.Icon
+                    icon="crosshairs-gps"
+                    onPress={updateLocation}
+                  />
+                }
+                error={!!lnglatError}
+                editable={Platform.OS === "web"}
+              />
+              {lnglatError ? (
+                <HelperText type="error" visible={!!lnglatError}>
+                  {lnglatError}
+                </HelperText>
+              ) : null}
+              <TextInput
+                style={[styles.verticallySpaced]}
+                label="About"
+                value={about}
+                onChangeText={(text) => setAbout(text)}
+                multiline={true}
+                numberOfLines={8}
+                maxLength={1500}
+              />
+              <Button
+                mode="contained"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                onPress={() =>
+                  updateProfile({
+                    username,
+                    gender,
+                    intention,
+                    relationship,
+                    kids,
+                    diet,
+                    lnglat,
+                    about,
+                  })
+                }
+                disabled={loading}
+              >
+                {loading ? "Loading ..." : "Update"}
+              </Button>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar
@@ -349,6 +385,34 @@ export default function Edit({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
+      {Platform.OS !== "web" && mapVisible ? (
+        <Portal>
+          <StatusBar hidden={true} />
+          <View style={{ flex: 1 }}>
+            <MapView
+              style={{ width: "100%", height: "100%" }}
+              initialRegion={{
+                ...toLatLng({ lnglat }),
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              onRegionChangeComplete={(event) => {
+                setLnglat(toLngLat(event));
+              }}
+              provider={PROVIDER_GOOGLE}
+            >
+              <Marker coordinate={toLatLng({ lnglat })} />
+            </MapView>
+          </View>
+          <FAB
+            icon="keyboard-backspace"
+            style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
+            size="medium"
+            onPress={() => setMapVisible(false)}
+            disabled={loading}
+          />
+        </Portal>
+      ) : null}
     </View>
   );
 }

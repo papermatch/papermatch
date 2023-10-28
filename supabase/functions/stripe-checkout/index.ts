@@ -86,10 +86,6 @@ serve(async (req) => {
       );
     }
 
-    console.log(
-      `Creating checkout session for ${id} with quantity ${quantity} and origin ${origin}`
-    );
-
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       expand: ["line_items"],
@@ -113,8 +109,6 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
-
-  console.log(`Checkout session created: ${sessionUrl}`);
 
   return new Response(JSON.stringify({ ok: true, url: sessionUrl }), {
     status: 200,

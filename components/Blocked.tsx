@@ -119,7 +119,7 @@ export default function Blocked({ session }: { session: Session }) {
               renderItem={({ item: profile }) => (
                 <Card
                   onPress={() => {
-                    navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                    navigate(`../${ROUTES.PROFILE}/${profile.id}`);
                   }}
                   style={[styles.verticallySpaced]}
                 >
@@ -136,7 +136,7 @@ export default function Blocked({ session }: { session: Session }) {
                         size={50}
                         url={profile.avatar_urls[0] || null}
                         onPress={() => {
-                          navigate(`${ROUTES.PROFILE}/${profile.id}`);
+                          navigate(`../${ROUTES.PROFILE}/${profile.id}`);
                         }}
                       />
                     </View>

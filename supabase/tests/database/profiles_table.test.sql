@@ -50,7 +50,7 @@ select
     indexes_are (
         'public',
         'profiles',
-        array['profiles_pkey', 'profiles_username_key']
+        array['profiles_pkey']
     );
 
 select

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 import { useTheme } from "react-native-paper";
 
 export const useStyles = () => {
@@ -20,17 +20,23 @@ export const useStyles = () => {
   });
 
   return StyleSheet.create({
-    appView: {
-      backgroundColor: theme.colors.background,
-      height: dimensions.window.height,
-      overflow: "hidden",
-    },
+    appView: Platform.select({
+      default: {
+        backgroundColor: theme.colors.background,
+        flex: 1,
+      },
+      web: {
+        backgroundColor: theme.colors.background,
+        height: dimensions.window.height,
+        overflow: "hidden",
+      },
+    }),
     container: {
       maxWidth: 600,
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
-      padding: 12,
+      paddingHorizontal: 12,
       flex: 1,
     },
     verticallySpaced: {

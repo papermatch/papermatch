@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, ViewToken, Image } from "react-native";
+import {
+  View,
+  FlatList,
+  ViewToken,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Card,
   Text,
@@ -249,7 +256,7 @@ export default function Match({ session }: { session: Session }) {
         >
           <Menu.Item
             onPress={() => {
-              navigate(`${ROUTES.PROFILE}/${profile?.id}`);
+              navigate(`../${ROUTES.PROFILE}/${profile?.id}`);
             }}
             title="Profile"
           />
@@ -262,79 +269,93 @@ export default function Match({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
-          <FlatList
-            data={messages}
-            keyExtractor={(item) => item.id.toString()}
-            inverted={true}
-            renderItem={({ item }) => (
-              <Card
-                style={[
-                  styles.verticallySpaced,
-                  {
-                    backgroundColor:
-                      item.user_id == session.user.id
-                        ? theme.colors.elevation.level5
-                        : theme.colors.elevation.level1,
-                    marginLeft: item.user_id == session.user.id ? 64 : 0,
-                    marginRight: item.user_id == session.user.id ? 0 : 64,
-                  },
-                ]}
-              >
-                <View
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.container}>
+            <FlatList
+              data={messages}
+              keyExtractor={(item) => item.id.toString()}
+              inverted={true}
+              renderItem={({ item }) => (
+                <Card
                   style={[
+                    styles.verticallySpaced,
                     {
-                      flexDirection:
-                        item.user_id == session.user.id ? "row-reverse" : "row",
-                      padding: 8,
+                      backgroundColor:
+                        item.user_id == session.user.id
+                          ? theme.colors.elevation.level5
+                          : theme.colors.elevation.level1,
+                      marginLeft: item.user_id == session.user.id ? 64 : 0,
+                      marginRight: item.user_id == session.user.id ? 0 : 64,
                     },
                   ]}
                 >
-                  <Badge
-                    visible={!item.is_read && item.user_id != session.user.id}
-                    size={10}
-                    style={{ position: "absolute", top: 10, right: 10 }}
-                  />
-                  {item.user_id != session.user.id && (
-                    <View style={{ alignSelf: "flex-start" }}>
-                      <Avatar
-                        size={50}
-                        url={profile?.avatar_urls[0] || null}
-                        onPress={() =>
-                          navigate(`${ROUTES.PROFILE}/${profile?.id}`)
-                        }
-                      />
-                    </View>
-                  )}
-                  <Text style={{ marginHorizontal: 12, alignSelf: "center" }}>
-                    {item.message}
-                  </Text>
-                </View>
-              </Card>
-            )}
-            viewabilityConfig={viewabilityConfig}
-            onViewableItemsChanged={handleViewableItemsChanged}
-          />
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <TextInput
-              style={{ flex: 1 }}
-              value={message}
-              onChangeText={setMessage}
-              onSubmitEditing={handleMessage}
-              blurOnSubmit={true}
-              placeholder="Type a message"
-              multiline={true}
-              numberOfLines={4}
-              right={
-                <TextInput.Icon
-                  icon="send"
-                  onPress={handleMessage}
-                  disabled={message.trim() === ""}
-                />
-              }
+                  <View
+                    style={[
+                      {
+                        flexDirection:
+                          item.user_id == session.user.id
+                            ? "row-reverse"
+                            : "row",
+                        padding: 8,
+                      },
+                    ]}
+                  >
+                    <Badge
+                      visible={!item.is_read && item.user_id != session.user.id}
+                      size={10}
+                      style={{ position: "absolute", top: 10, right: 10 }}
+                    />
+                    {item.user_id != session.user.id && (
+                      <View style={{ alignSelf: "flex-start" }}>
+                        <Avatar
+                          size={50}
+                          url={profile?.avatar_urls[0] || null}
+                          onPress={() =>
+                            navigate(`../${ROUTES.PROFILE}/${profile?.id}`)
+                          }
+                        />
+                      </View>
+                    )}
+                    <Text
+                      style={{
+                        flexShrink: 1,
+                          marginHorizontal: 12,
+                        alignSelf: "center",
+                        padding: 1,
+                      }}
+                    >
+                      {item.message}
+                    </Text>
+                  </View>
+                </Card>
+              )}
+              viewabilityConfig={viewabilityConfig}
+              onViewableItemsChanged={handleViewableItemsChanged}
             />
+            <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+              <TextInput
+                style={{ flex: 1 }}
+                value={message}
+                onChangeText={setMessage}
+                onSubmitEditing={handleMessage}
+                blurOnSubmit={true}
+                placeholder="Type a message"
+                multiline={true}
+                numberOfLines={1}
+                right={
+                  <TextInput.Icon
+                    icon="send"
+                    onPress={handleMessage}
+                    disabled={message.trim() === ""}
+                  />
+                }
+              />
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar

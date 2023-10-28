@@ -6,136 +6,157 @@ A pay-per-match dating app, using React Native and Supabase.
 
 1. Create a new [Supabase project](https://supabase.com/dashboard/projects) (e.g. papermatch) in your preferred organization (e.g. papermatch)
 2. Create a .env.local file in the root directory as follows (with information from the Project Settings/API page)
-    ```
-    SUPABASE_ANON_KEY=***
-    SUPABASE_URL=***
-    ```
+   ```
+   GOOGLE_MAPS_API_KEY=***
+   SUPABASE_ANON_KEY=***
+   SUPABASE_URL=***
+   ```
 3. Create another .env.local file in the supabase/ directory as follows
-    ```
-    STRIPE_API_KEY=***
-    STRIPE_PRICE_ID=***
-    STRIPE_WEBHOOK_SIGNING_SECRET=***
-    ```
+   ```
+   ONESIGNAL_APP_ID=***
+   ONESIGNAL_REST_API_KEY=***
+   ONESIGNAL_USER_AUTH_KEY=***
+   STRIPE_API_KEY=***
+   STRIPE_PRICE_ID=***
+   STRIPE_WEBHOOK_SIGNING_SECRET=***
+   ```
 4. Also create a new Encryption Key (e.g. papermatch) on your Project Settings/Vault page, then insert your `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` as new "secrets"
 
 ## Local Development
 
 1. Clone this repository and cd into the directory
-    ```
-    git clone https://github.com/papermatch/papermatch.git
-    cd papermatch
-    ```
+   ```
+   git clone https://github.com/papermatch/papermatch.git
+   cd papermatch
+   ```
 2. Install dependencies
-    ```
-    npm install
-    ```
+   ```
+   npm install
+   ```
 3. Start the Supabase containers locally
-    ```
-    npx supabase start
-    ```
+   ```
+   npx supabase start:test -- --clear
+   ```
 4. Use the output from the previous command to create an .env.test.local file as described [above](#supabase-setup)
 5. In the local [Supabase Studio](http://localhost:54323/project/default/sql/1) add the `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` secrets to the Vault
 
-    ```sql
-    select vault.create_secret(
-      'http://supabase_kong_papermatch:8000',
-      'SUPABASE_URL'
-    );
+   ```sql
+   select vault.create_secret(
+     'http://supabase_kong_papermatch:8000',
+     'SUPABASE_URL'
+   );
 
-    select vault.create_secret(
-      '***',
-      'SUPABASE_SERVICE_ROLE_KEY'
-     );
-    ```
+   select vault.create_secret(
+     '***',
+     'SUPABASE_SERVICE_ROLE_KEY'
+    );
+   ```
 
 6. Run the React Native app
-    ```
-    npm run web
-    ```
+   ```
+   npm run web
+   ```
 7. To update locally with changes (note: you'll need to re-add secrets to the Vault)
-    ```
-    npx supabase db reset
-    ```
+   ```
+   npx supabase db reset
+   ```
 8. To stop the Supabase containers locally
-    ```
-    npx supabase stop
-    ```
+   ```
+   npx supabase stop
+   ```
 9. Optionally update database types, e.g.
-    ```
-    npx supabase gen types typescript --local --schema public > lib/database.ts
-    ```
+   ```
+   npx supabase gen types typescript --local --schema public > lib/database.ts
+   ```
 
 ### Push Local Changes
 
 1. Create an [Access Token](https://supabase.com/dashboard/account/tokens) (e.g. papermatch)
 2. Login using the Supabase CLI with Access Token from previous step
-    ```
-    npx supabase login
-    ```
+   ```
+   npx supabase login
+   ```
 3. Link your project (where `<project_id>` is the unique character string in your `SUPABASE_API_URL`)
-    ```
-    npx supabase link --project-ref <project-id>
-    ```
+   ```
+   npx supabase link --project-ref <project-id>
+   ```
 4. Push your local changes to the remote project
-    ```
-    npx supabase push
-    ```
+   ```
+   npx supabase push
+   ```
 5. Deploy your functions
-    ```
-    npx supabase functions deploy
-    ```
+   ```
+   npx supabase functions deploy
+   ```
 6. Set Secrets
-    ```
-    npx supabse secrets set --env-file supabase/.env.local
-    ```
+   ```
+   npx supabse secrets set --env-file supabase/.env.local
+   ```
 
 ### Stripe Local Setup
 
 1. [Install Stripe CLI](https://stripe.com/docs/stripe-cli#install)
 2. Start listening (and note the webhook signing secret for next step)
-    ```
-    stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
-    ```
-2. Update supabase/.env.test.local file with webhook signing secret
-    ```
-    ...
-    STRIPE_WEBHOOK_SIGNING_SECRET=***
-    ...
-    ```
-3. Serve functions
-    ```
-    npx supabase functions serve --no-verify-jwt --env-file ./supabase/.env.test.local
-    ```
-4. Trigger payment
-    ```
-    stripe trigger payment_intent.succeeded
-    ```
-5. Optionally update cache, e.g.
-    ```
-    deno cache --reload supabase/functions/stripe-webhook/index.ts
-    ```
+   ```
+   stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
+   ```
+3. Update supabase/.env.test.local file with webhook signing secret
+   ```
+   ...
+   STRIPE_WEBHOOK_SIGNING_SECRET=***
+   ...
+   ```
+4. Serve functions
+   ```
+   npx supabase functions serve --no-verify-jwt --env-file ./supabase/.env.test.local
+   ```
+5. Trigger payment
+   ```
+   stripe trigger payment_intent.succeeded
+   ```
+6. Optionally update cache, e.g.
+   ```
+   deno cache --reload supabase/functions/stripe-webhook/index.ts
+   ```
 
 ## Production deployment
 
-1. [Configure Vercel](https://vercel.com/docs/cli), then build and deploy
+1. [Configure Vercel](https://vercel.com/docs/cli)
+2. Add Environment Variables (`SUPABASE_ANON_KEY`, `SUPABASE_URL`) to project settings
+3. Deploy for production
    ```
-   vercel build --prod
-   vercel deploy --prod --prebuilt
+   vercel --prod
    ```
-2. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+4. [Configure Resend](https://resend.com/blog/how-to-configure-supabase-to-send-emails-from-your-domain) as [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
 
+## Expo Application Services
+
+1. Configure EAS build
+   ```
+   eas build:configure
+   eas secret:push --scope project --env-file .env.local
+   ``
+   ```
+2. Build with desired profile
+   ```
+   eas build --platform android --profile development
+   ```
+3. Run locally on device or emulator
+   ```
+   eas build:run -p android --latest
+   ```
+4. [Configure OneSignal](https://documentation.onesignal.com/docs/react-native-expo-sdk-setup) for notifications
+5. [Configure Google Play](https://docs.expo.dev/submit/android/) for submission
 
 ## VSCode Setup
 
 ```json
 {
-    "Prettier-SQL.SQLFlavourOverride": "postgresql",
-    "Prettier-SQL.logicalOperatorNewline": "after",
-    "Prettier-SQL.keywordCase": "lower",
-    "files.insertFinalNewline": true,
-    "deno.enablePaths": [
-        "./supabase/functions"
-    ]
+  "Prettier-SQL.SQLFlavourOverride": "postgresql",
+  "Prettier-SQL.logicalOperatorNewline": "after",
+  "Prettier-SQL.keywordCase": "lower",
+  "files.insertFinalNewline": true,
+  "deno.enablePaths": ["./supabase/functions"]
 }
 ```
 
@@ -143,8 +164,11 @@ A pay-per-match dating app, using React Native and Supabase.
 
 Add the following (test!) secrets to [GitHub settings](/settings/secrets/actions):
 
+- `ONESIGNAL_APP_ID`
+- `ONESIGNAL_REST_API_KEY`
+- `ONESIGNAL_USER_AUTH_KEY`
 - `STRIPE_API_KEY`
 - `STRIPE_PRICE_ID`
 - `STRIPE_WEBHOOK_SIGNING_SECRET`
 
-Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env.local`
+Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env.test.local`

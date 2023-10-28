@@ -1,6 +1,12 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Button,
   TextInput,
@@ -62,7 +68,7 @@ export default function Auth() {
       if (error) {
         throw error;
       } else {
-        navigate(ROUTES.OTP, { state: { email } });
+        navigate(`../${ROUTES.OTP}`, { state: { email } });
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -138,97 +144,113 @@ export default function Auth() {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <SegmentedButtons
-            style={styles.verticallySpaced}
-            value={mode}
-            onValueChange={setMode}
-            buttons={[
-              {
-                value: "signUp",
-                label: "Sign Up",
-                labelStyle: { padding: 1 },
-              },
-              {
-                value: "signIn",
-                label: "Sign In",
-                labelStyle: { padding: 1 },
-              },
-            ]}
-          />
-          <TextInput
-            style={styles.verticallySpaced}
-            label="Email"
-            onChangeText={(text) => {
-              setEmail(text);
-              validateEmail(text);
-            }}
-            onSubmitEditing={() => mode === "signIn" && handleAuth()}
-            value={email}
-            placeholder="user@example.com"
-            autoCapitalize={"none"}
-            error={!!emailError}
-          />
-          <HelperText type="error" visible={!!emailError}>
-            {emailError}
-          </HelperText>
-          {mode === "signUp" && (
-            <View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+              <SegmentedButtons
+                style={styles.verticallySpaced}
+                value={mode}
+                onValueChange={setMode}
+                buttons={[
+                  {
+                    value: "signUp",
+                    label: "Sign Up",
+                    labelStyle: { padding: 1 },
+                  },
+                  {
+                    value: "signIn",
+                    label: "Sign In",
+                    labelStyle: { padding: 1 },
+                  },
+                ]}
+              />
               <TextInput
                 style={styles.verticallySpaced}
-                label="Username (your first name is fine)"
-                value={username || ""}
+                label="Email"
                 onChangeText={(text) => {
-                  setUsername(text);
-                  validateUsername(text);
+                  setEmail(text);
+                  validateEmail(text);
                 }}
-                maxLength={50}
-                error={!!usernameError}
+                onSubmitEditing={() => mode === "signIn" && handleAuth()}
+                value={email}
+                placeholder="user@example.com"
+                autoCapitalize={"none"}
+                error={!!emailError}
               />
-              <HelperText type="error" visible={!!usernameError}>
-                {usernameError}
-              </HelperText>
-              <View style={(styles.verticallySpaced, { flexDirection: "row" })}>
-                <View style={[styles.verticallySpaced, { flex: 1 }]}>
-                  <Pressable onPress={() => setDatePickerVisible(true)}>
-                    <TextInput
-                      label="Birthday"
-                      value={birthday}
-                      error={!!birthdayError}
-                      editable={false}
-                      right={
-                        <TextInput.Icon
-                          icon="calendar"
-                          onPress={() => setDatePickerVisible(true)}
+              {emailError ? (
+                <HelperText type="error" visible={!!emailError}>
+                  {emailError}
+                </HelperText>
+              ) : null}
+
+              {mode === "signUp" && (
+                <View>
+                  <TextInput
+                    style={styles.verticallySpaced}
+                    label="Username (your first name is fine)"
+                    value={username || ""}
+                    onChangeText={(text) => {
+                      setUsername(text);
+                      validateUsername(text);
+                    }}
+                    maxLength={50}
+                    error={!!usernameError}
+                  />
+                  {usernameError ? (
+                    <HelperText type="error" visible={!!usernameError}>
+                      {usernameError}
+                    </HelperText>
+                  ) : null}
+                  <View
+                    style={(styles.verticallySpaced, { flexDirection: "row" })}
+                  >
+                    <View style={[styles.verticallySpaced, { flex: 1 }]}>
+                      <Pressable onPress={() => setDatePickerVisible(true)}>
+                        <TextInput
+                          label="Birthday"
+                          value={birthday}
+                          error={!!birthdayError}
+                          editable={false}
+                          right={
+                            <TextInput.Icon
+                              icon="calendar"
+                              onPress={() => setDatePickerVisible(true)}
+                            />
+                          }
                         />
-                      }
+                      </Pressable>
+                      {birthdayError ? (
+                        <HelperText type="error" visible={!!birthdayError}>
+                          {birthdayError}
+                        </HelperText>
+                      ) : null}
+                    </View>
+                    <DatePickerModal
+                      label="Select your birthday"
+                      locale="en"
+                      mode="single"
+                      visible={datePickerVisible}
+                      onDismiss={onDatePickerDismiss}
+                      onConfirm={onDatePickerConfirm}
                     />
-                  </Pressable>
-                  <HelperText type="error" visible={!!birthdayError}>
-                    {birthdayError}
-                  </HelperText>
+                  </View>
                 </View>
-                <DatePickerModal
-                  label="Select your birthday"
-                  locale="en"
-                  mode="single"
-                  visible={datePickerVisible}
-                  onDismiss={onDatePickerDismiss}
-                  onConfirm={onDatePickerConfirm}
-                />
-              </View>
+              )}
+              <Button
+                mode="contained"
+                style={styles.verticallySpaced}
+                labelStyle={styles.buttonLabel}
+                disabled={loading}
+                onPress={handleAuth}
+              >
+                Continue
+              </Button>
             </View>
-          )}
-          <Button
-            mode="contained"
-            style={styles.verticallySpaced}
-            labelStyle={styles.buttonLabel}
-            disabled={loading}
-            onPress={handleAuth}
-          >
-            Continue
-          </Button>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
       <Portal>
         <Snackbar

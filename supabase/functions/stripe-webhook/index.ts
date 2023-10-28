@@ -29,12 +29,9 @@ const stripe = new Stripe(Deno.env.get("STRIPE_API_KEY") as string, {
 console.log("Hello from Stripe Webhook!");
 
 serve(async (req) => {
-  console.log("req: ", req);
   const signature = req.headers.get("Stripe-Signature");
-  console.log("signature: ", signature);
 
   const body = await req.text();
-  console.log("body: ", body);
   let receivedEvent;
   try {
     receivedEvent = await stripe.webhooks.constructEventAsync(
@@ -77,7 +74,6 @@ serve(async (req) => {
           headers: { "Content-Type": "application/json" },
         });
       }
-      console.log("quantity: ", quantity);
 
       // Insert a new credit row into the Supabase database
       try {

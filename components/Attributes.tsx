@@ -78,6 +78,7 @@ export const Attributes = ({
       {profile.relationship && (
         <Chip
           style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
           icon={relationship?.icon || "heart-broken"}
           disabled={loading}
         >

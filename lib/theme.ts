@@ -1,18 +1,18 @@
 import { Platform } from "react-native";
 import { configureFonts, MD3LightTheme } from "react-native-paper";
 
-const FONT_SCALE = 1.1;
+const FONT_SCALE = 1.0;
 
 const fontFamilyRegular = Platform.select({
-  web: "Caveat_400Regular",
+  web: "EduNSWACTFoundation_400Regular",
   ios: "System",
-  default: "sans-serif",
+  default: "EduNSWACTFoundation_400Regular",
 });
 
 const fontFamilyMedium = Platform.select({
-  web: "Caveat_500Medium",
+  web: "EduNSWACTFoundation_500Medium",
   ios: "System",
-  default: "sans-serif",
+  default: "EduNSWACTFoundation_500Medium",
 });
 
 const fontConfig = {
@@ -150,11 +150,11 @@ const theme = {
     onError: "hsl(0, 0.00%, 99.99%)",
     errorContainer: "hsl(6, 99.99%, 92.00%)",
     onErrorContainer: "hsl(358, 99.99%, 12.70%)",
-    background: "hsl(285, 99.99%, 99.20%)",
+    background: "hsl(67, 81.80%, 97.80%)",
     onBackground: "hsl(240, 6.90%, 11.40%)",
     surface: "hsl(240, 41.90%, 93.90%)",
     onSurface: "hsl(240, 6.90%, 11.40%)",
-    surfaceVariant: "hsl(245, 22.40%, 90.40%)",
+    surfaceVariant: "hsl(245, 22.40%, 93.90%)",
     onSurfaceVariant: "hsl(234, 6.80%, 29.00%)",
     outline: "hsl(235, 4.50%, 48.00%)",
     outlineVariant: "hsl(240, 9.60%, 79.60%)",

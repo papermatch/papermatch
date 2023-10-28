@@ -88,7 +88,7 @@ export default function Matches({ session }: { session: Session }) {
               renderItem={({ item }) => (
                 <Card
                   style={styles.verticallySpaced}
-                  onPress={() => navigate(`${ROUTES.MATCH}/${item.match.id}`)}
+                  onPress={() => navigate(`../${ROUTES.MATCH}/${item.match.id}`)}
                 >
                   <View style={{ flexDirection: "row", padding: 16 }}>
                     <Badge
@@ -101,7 +101,7 @@ export default function Matches({ session }: { session: Session }) {
                         size={75}
                         url={item.profile.avatar_urls[0] || null}
                         onPress={() => {
-                          navigate(`${ROUTES.MATCH}/${item.match.id}`);
+                          navigate(`../${ROUTES.MATCH}/${item.match.id}`);
                         }}
                       />
                     </View>

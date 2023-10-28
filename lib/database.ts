@@ -450,6 +450,13 @@ export interface Database {
         }
         Returns: number
       }
+      send_onesignal_notify: {
+        Args: {
+          user_id: string
+          contents: string
+        }
+        Returns: boolean
+      }
       set_message_read: {
         Args: {
           msg_id: string

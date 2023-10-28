@@ -18,21 +18,21 @@ import {
   useParams as useParamsNative,
 } from "react-router-native";
 
-export const BASENAME = Platform.OS === "web" ? "/app" : "";
-
 export const ROUTES = {
   ROOT: "/",
-  ACCOUNT: "/account",
-  AUTH: "/auth",
-  BLOCKED: "/blocked",
-  CREDITS: "/credits",
-  EDIT: "/edit",
-  MATCH: "/match",
-  MATCHES: "/matches",
-  OTP: "/otp",
-  PREFERENCES: "/preferences",
-  PROFILE: "/profile",
-  PROFILES: "/profiles",
+  ACCOUNT: "account",
+  APP: "app",
+  AUTH: "auth",
+  BLOCKED: "blocked",
+  CREDITS: "credits",
+  EDIT: "edit",
+  MATCH: "match",
+  MATCHES: "matches",
+  OTP: "otp",
+  PREFERENCES: "preferences",
+  PRIVACY: "privacy",
+  PROFILE: "profile",
+  PROFILES: "profiles",
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;

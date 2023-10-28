@@ -4,30 +4,29 @@
     "slug": "papermatch",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/papermatch.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/papermatch.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fdfef5"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "ch.papermat.papermatch"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/papermatch.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#fdfef5"
       },
-      "package": "ch.papermat.papermatch"
+      "package": "ch.papermat.papermatch",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/papermatch.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
@@ -41,10 +40,25 @@
         {
           "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
         }
+      ],
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ],
+      [
+        "./scripts/withDrawableAssets",
+        "./assets/onesignal"
       ]
     ],
     "sdkVersion": "49.0.0",
-    "entryPoint": ".vscode/exponentIndex.js"
+    "extra": {
+      "eas": {
+        "projectId": "a9f567cc-0977-4189-9ac3-e8bb1a80b2d0"
+      },
+      "oneSignalAppId": "a7d4e561-c578-447a-aac8-809075f9e326"
+    }
   },
   "name": "papermatch"
 }

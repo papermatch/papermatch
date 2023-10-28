@@ -127,7 +127,7 @@ export default function Profiles({ session }: { session: Session }) {
           />
           <Menu.Item
             onPress={() => {
-              navigate(ROUTES.PREFERENCES);
+              navigate(`../${ROUTES.PREFERENCES}`);
             }}
             title="Preferences"
           />
@@ -141,7 +141,7 @@ export default function Profiles({ session }: { session: Session }) {
             renderItem={({ item }) => (
               <Card
                 onPress={() => {
-                  navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                  navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
                 }}
                 style={[styles.verticallySpaced]}
               >
@@ -161,7 +161,7 @@ export default function Profiles({ session }: { session: Session }) {
                           size={100}
                           url={avatarUrl}
                           onPress={() => {
-                            navigate(`${ROUTES.PROFILE}/${item.profile.id}`);
+                            navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
                           }}
                         />
                       </View>
