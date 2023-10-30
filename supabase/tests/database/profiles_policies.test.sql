@@ -8,7 +8,6 @@ select
         'public',
         'profiles',
         array[
-            'Public profiles are viewable by everyone.',
             'Users can insert their own profile.',
             'Users can update own profile.',
             'Non-blocked-by profiles are viewable.',
