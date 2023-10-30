@@ -82,7 +82,7 @@ A pay-per-match dating app, using React Native and Supabase.
    ```
 4. Push your local changes to the remote project
    ```
-   npx supabase push
+   npx supabase db push
    ```
 5. Deploy your functions
    ```
@@ -90,7 +90,7 @@ A pay-per-match dating app, using React Native and Supabase.
    ```
 6. Set Secrets
    ```
-   npx supabse secrets set --env-file supabase/.env.local
+   npx supabase secrets set --env-file supabase/.env.local
    ```
 
 ### Stripe Local Setup

@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, Pressable } from "react-native";
@@ -30,17 +31,6 @@ export default function Avatar({
     setAvatarUrl(url);
   }, [url]);
 
-  function getContentTypeAndExtension(uri: string) {
-    const match = uri.match(/^data:(.+?);base64,/);
-    if (match) {
-      const mime = require("mime");
-      const contentType = match[1];
-      const fileExt = mime.getExtension(contentType);
-      return { contentType, fileExt };
-    }
-    throw new Error("Invalid data URI");
-  }
-
   async function uploadAvatar() {
     try {
       setUploading(true);
@@ -58,9 +48,8 @@ export default function Avatar({
         throw new Error("No base64 found");
       }
 
-      const { contentType, fileExt } = getContentTypeAndExtension(
-        result.assets[0].uri
-      );
+      const contentType = "image/jpeg";
+      const fileExt = "jpeg";
       const filePath = `${uuidv4()}.${fileExt}`;
 
       const { error } = await supabase.storage

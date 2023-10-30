@@ -17,7 +17,7 @@ export const useStyles = () => {
       }
     );
     return () => subscription?.remove();
-  });
+  }, []);
 
   return StyleSheet.create({
     appView: Platform.select({
