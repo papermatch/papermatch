@@ -242,7 +242,7 @@ export default function Edit({ session }: { session: Session }) {
         >
           <Menu.Item
             onPress={() => {
-              navigate(`${ROUTES.PROFILE}/${session.user.id}`);
+              navigate(`../${ROUTES.PROFILE}/${session.user.id}`);
             }}
             title="View"
           />

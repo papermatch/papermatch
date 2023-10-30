@@ -96,143 +96,6 @@ export default function App() {
     );
   }
 
-  const AppRoutes = () => {
-    return (
-      <Routes>
-        <Route
-          path={ROUTES.ROOT}
-          element={
-            session?.user ? (
-              <Navigate to={ROUTES.PROFILES} replace />
-            ) : (
-              <Navigate to={ROUTES.AUTH} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.ACCOUNT}
-          element={
-            session?.user ? (
-              <Account key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.AUTH}
-          element={
-            session?.user ? (
-              <Navigate to={`../${ROUTES.PROFILES}`} replace />
-            ) : (
-              <Auth />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.BLOCKED}
-          element={
-            session?.user ? (
-              <Blocked key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.CREDITS}
-          element={
-            session?.user ? (
-              <Credits key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={`${ROUTES.CREDITS}/:result`}
-          element={
-            session?.user ? (
-              <Credits key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.EDIT}
-          element={
-            session?.user ? (
-              <Edit key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={`${ROUTES.MATCH}/:id`}
-          element={
-            session?.user ? (
-              <Match key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.MATCHES}
-          element={
-            session?.user ? (
-              <Matches key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.OTP}
-          element={
-            session?.user ? (
-              <Otp key={session.user.id} session={session} />
-            ) : (
-              <Otp />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.PREFERENCES}
-          element={
-            session?.user ? (
-              <Preferences key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={`${ROUTES.PROFILE}/:id`}
-          element={
-            session?.user ? (
-              <Profile key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-        <Route
-          path={ROUTES.PROFILES}
-          element={
-            session?.user ? (
-              <Profiles key={session.user.id} session={session} />
-            ) : (
-              <Navigate to={`../${ROUTES.AUTH}`} replace />
-            )
-          }
-        />
-      </Routes>
-    );
-  };
-
   return (
     <PaperProvider theme={theme}>
       <StatusBar style="auto" />
@@ -242,13 +105,153 @@ export default function App() {
             <Routes>
               <Route path={ROUTES.ROOT} element={<Home />} />
               <Route path={ROUTES.PRIVACY} element={<Privacy />} />
-              <Route path={`${ROUTES.APP}/*`} element={<AppRoutes />} />
+              <Route
+                path={`${ROUTES.APP}/*`}
+                element={<AppRoutes session={session} />}
+              />
             </Routes>
           ) : (
-            <AppRoutes />
+            <AppRoutes session={session} />
           )}
         </Router>
       </View>
     </PaperProvider>
+  );
+}
+
+function AppRoutes({ session }: { session: Session | null }) {
+  return (
+    <Routes>
+      <Route
+        path={ROUTES.ROOT}
+        element={
+          session?.user ? (
+            <Navigate to={ROUTES.PROFILES} replace />
+          ) : (
+            <Navigate to={ROUTES.AUTH} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.ACCOUNT}
+        element={
+          session?.user ? (
+            <Account key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.AUTH}
+        element={
+          session?.user ? (
+            <Navigate to={`../${ROUTES.PROFILES}`} replace />
+          ) : (
+            <Auth />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.BLOCKED}
+        element={
+          session?.user ? (
+            <Blocked key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.CREDITS}
+        element={
+          session?.user ? (
+            <Credits key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={`${ROUTES.CREDITS}/:result`}
+        element={
+          session?.user ? (
+            <Credits key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.EDIT}
+        element={
+          session?.user ? (
+            <Edit key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={`${ROUTES.MATCH}/:id`}
+        element={
+          session?.user ? (
+            <Match key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.MATCHES}
+        element={
+          session?.user ? (
+            <Matches key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.OTP}
+        element={
+          session?.user ? (
+            <Otp key={session.user.id} session={session} />
+          ) : (
+            <Otp />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.PREFERENCES}
+        element={
+          session?.user ? (
+            <Preferences key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={`${ROUTES.PROFILE}/:id`}
+        element={
+          session?.user ? (
+            <Profile key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+      <Route
+        path={ROUTES.PROFILES}
+        element={
+          session?.user ? (
+            <Profiles key={session.user.id} session={session} />
+          ) : (
+            <Navigate to={`../${ROUTES.AUTH}`} replace />
+          )
+        }
+      />
+    </Routes>
   );
 }
