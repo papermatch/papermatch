@@ -56,11 +56,34 @@ set
     min_age = 25,
     max_age = 35,
     gender = array['male'::gender_type, 'nonbinary'::gender_type],
-    kids = array[
-        'none'::kids_type,
-        'unsure'::kids_type,
-        'want'::kids_type,
-        'have'::kids_type
+    education = array[
+        'high'::education_type,
+        'undergrad'::education_type
+    ],
+    religion = array[
+        'agnostic'::religion_type,
+        'atheist'::religion_type,
+        'buddhist'::religion_type,
+        'christian'::religion_type,
+        'hindu'::religion_type,
+        'jewish'::religion_type,
+        'muslim'::religion_type,
+        'other'::religion_type
+    ],
+    sexuality = array[
+        'straight'::sexuality_type,
+        'gay'::sexuality_type,
+        'lesbian'::sexuality_type,
+        'bi'::sexuality_type,
+        'pan'::sexuality_type,
+        'ace'::sexuality_type,
+        'other'::sexuality_type
+    ],
+    family = array[
+        'none'::family_type,
+        'unsure'::family_type,
+        'want'::family_type,
+        'have'::family_type
     ],
     intention = array[
         'unsure'::intention_type,
@@ -90,7 +113,10 @@ where
 update public.profiles
 set
     gender = 'male'::gender_type,
-    kids = 'none'::kids_type,
+    education = 'undergrad'::education_type,
+    religion = 'agnostic'::religion_type,
+    sexuality = 'straight'::sexuality_type,
+    family = 'none'::family_type,
     intention = 'serious'::intention_type,
     relationship = 'monog'::relationship_type,
     diet = 'omnivore'::diet_type,
@@ -103,7 +129,10 @@ where
 update public.profiles
 set
     gender = 'female'::gender_type,
-    kids = 'more'::kids_type,
+    education = 'postgrad'::education_type,
+    religion = 'catholic'::religion_type,
+    sexuality = 'demi'::sexuality_type,
+    family = 'more'::family_type,
     intention = 'casual'::intention_type,
     relationship = 'enm'::relationship_type,
     diet = 'vegan'::diet_type,
@@ -123,7 +152,7 @@ select
     results_eq (
         'select (profile).id, score from public.search_active_profiles()',
         $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float),
-                 ('33333333-3333-3333-3333-333333333333'::uuid, 2::float),
+                 ('33333333-3333-3333-3333-333333333333'::uuid, 1.75::float),
                  ('44444444-4444-4444-4444-444444444444'::uuid, 1::float)$$
     );
 

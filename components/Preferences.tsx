@@ -22,12 +22,12 @@ import {
   DietData,
   EducationType,
   EducationData,
+  FamilyType,
+  FamilyData,
   GenderType,
   GenderData,
   IntentionType,
   IntentionData,
-  KidsType,
-  KidsData,
   RelationshipType,
   RelationshipData,
   ReligionType,
@@ -49,7 +49,7 @@ export default function Preferences({ session }: { session: Session }) {
   const [sexuality, setSexuality] = useState<SexualityType[]>([]);
   const [intention, setIntention] = useState<IntentionType[]>([]);
   const [relationship, setRelationship] = useState<RelationshipType[]>([]);
-  const [kids, setKids] = useState<KidsType[]>([]);
+  const [family, setFamily] = useState<FamilyType[]>([]);
   const [diet, setDiet] = useState<DietType[]>([]);
   const [radius, setRadius] = useState("");
   const [radiusError, setRadiusError] = useState("");
@@ -86,7 +86,7 @@ export default function Preferences({ session }: { session: Session }) {
         setGender(data.gender ?? []);
         setIntention(data.intention ?? []);
         setRelationship(data.relationship ?? []);
-        setKids(data.kids ?? []);
+        setFamily(data.family ?? []);
         setDiet(data.diet ?? []);
         setRadius(data.radius?.toString() ?? "");
         setKeywords(data.keywords ?? []);
@@ -111,7 +111,7 @@ export default function Preferences({ session }: { session: Session }) {
     sexuality,
     intention,
     relationship,
-    kids,
+    family,
     diet,
     radius,
     keywords,
@@ -124,7 +124,7 @@ export default function Preferences({ session }: { session: Session }) {
     sexuality: SexualityType[];
     intention: IntentionType[];
     relationship: RelationshipType[];
-    kids: KidsType[];
+    family: FamilyType[];
     diet: DietType[];
     radius: string;
     keywords: string[];
@@ -152,7 +152,7 @@ export default function Preferences({ session }: { session: Session }) {
         sexuality: sexuality.length ? sexuality : null,
         intention: intention.length ? intention : null,
         relationship: relationship.length ? relationship : null,
-        kids: kids.length ? kids : null,
+        family: family.length ? family : null,
         diet: diet.length ? diet : null,
         radius: parseFloat(radius),
         keywords: keywords.length ? keywords : null,
@@ -315,9 +315,9 @@ export default function Preferences({ session }: { session: Session }) {
               <Divider style={styles.verticallySpaced} />
               <Checkboxes
                 label="Family plan"
-                data={KidsData}
-                value={kids}
-                onChange={setKids}
+                data={FamilyData}
+                value={family}
+                onChange={setFamily}
               />
               <Divider style={styles.verticallySpaced} />
               <Checkboxes
@@ -402,7 +402,7 @@ export default function Preferences({ session }: { session: Session }) {
                     sexuality,
                     intention,
                     relationship,
-                    kids,
+                    family,
                     diet,
                     radius,
                     keywords,

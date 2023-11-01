@@ -21,7 +21,10 @@ select
             'avatar_urls',
             'birthday',
             'gender',
-            'kids',
+            'education',
+            'religion',
+            'sexuality',
+            'family',
             'intention',
             'relationship',
             'diet',
@@ -47,11 +50,7 @@ select
     );
 
 select
-    indexes_are (
-        'public',
-        'profiles',
-        array['profiles_pkey']
-    );
+    indexes_are ('public', 'profiles', array['profiles_pkey']);
 
 select
     *

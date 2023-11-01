@@ -24,10 +24,10 @@ export type ProfilesData = {
 export type CreditorType = Database["public"]["Enums"]["creditor_type"];
 export type DietType = Database["public"]["Enums"]["diet_type"];
 export type EducationType = Database["public"]["Enums"]["education_type"];
+export type FamilyType = Database["public"]["Enums"]["family_type"];
 export type GenderType = Database["public"]["Enums"]["gender_type"];
 export type IntentionType = Database["public"]["Enums"]["intention_type"];
 export type InteractionType = Database["public"]["Enums"]["interaction_type"];
-export type KidsType = Database["public"]["Enums"]["kids_type"];
 export type RelationshipType = Database["public"]["Enums"]["relationship_type"];
 export type ReligionType = Database["public"]["Enums"]["religion_type"];
 export type SexualityType = Database["public"]["Enums"]["sexuality_type"];
@@ -99,6 +99,33 @@ export const EducationData: AttributeData<EducationType>[] = [
   },
 ];
 
+export const FamilyData: AttributeData<FamilyType>[] = [
+  {
+    value: "none",
+    label: "Don't want kids",
+    icon: "egg-off",
+  },
+  {
+    value: "unsure",
+    label: "Might want kids",
+    icon: "head-question",
+  },
+  {
+    value: "want",
+    label: "Want kids",
+    icon: "baby",
+  },
+  {
+    value: "have",
+    label: "Have kids and don't want more",
+    icon: "baby-carriage-off",
+  },
+  {
+    value: "more",
+    label: "Have kids and want more",
+    icon: "baby-carriage",
+  },
+];
 export const GenderData: AttributeData<GenderType>[] = [
   {
     value: "male",
@@ -142,34 +169,6 @@ export const IntentionData: AttributeData<IntentionType>[] = [
     value: "friends",
     label: "Friendship",
     icon: "account-group",
-  },
-];
-
-export const KidsData: AttributeData<KidsType>[] = [
-  {
-    value: "none",
-    label: "Don't want kids",
-    icon: "egg-off",
-  },
-  {
-    value: "unsure",
-    label: "Might want kids",
-    icon: "head-question",
-  },
-  {
-    value: "want",
-    label: "Want kids",
-    icon: "baby",
-  },
-  {
-    value: "have",
-    label: "Have kids and don't want more",
-    icon: "baby-carriage-off",
-  },
-  {
-    value: "more",
-    label: "Have kids and want more",
-    icon: "baby-carriage",
   },
 ];
 
