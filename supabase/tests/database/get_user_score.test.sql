@@ -1,7 +1,7 @@
 begin;
 
 select
-    plan (31);
+    plan (40);
 
 select
     has_function (
@@ -55,7 +55,10 @@ where
 update public.profiles
 set
     gender = 'male'::gender_type,
-    kids = 'none'::kids_type,
+    education = 'undergrad'::education_type,
+    religion = 'agnostic'::religion_type,
+    sexuality = 'straight'::sexuality_type,
+    family = 'none'::family_type,
     intention = 'serious'::intention_type,
     relationship = 'monog'::relationship_type,
     diet = 'omnivore'::diet_type,
@@ -68,7 +71,10 @@ where
 update public.profiles
 set
     gender = 'female'::gender_type,
-    kids = 'more'::kids_type,
+    education = 'postgrad'::education_type,
+    religion = 'catholic'::religion_type,
+    sexuality = 'demi'::sexuality_type,
+    family = 'more'::family_type,
     intention = 'casual'::intention_type,
     relationship = 'enm'::relationship_type,
     diet = 'vegan'::diet_type,
@@ -188,30 +194,28 @@ select
 update public.preferences
 set
     gender = null,
-    kids = array[
-        'none'::kids_type,
-        'unsure'::kids_type,
-        'want'::kids_type,
-        'have'::kids_type
+    education = array[
+        'high'::education_type,
+        'undergrad'::education_type
     ]
 where
     id = '11111111-1111-1111-1111-111111111111';
 
--- Second user is now compatible because their kids matches
+-- Second user is now compatible because their education matches
 select
     results_eq (
         'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
         $$values (10::float)$$
     );
 
--- Third user is now incompatible because their kids does not match
+-- Third user is now incompatible because their education does not match
 select
     results_eq (
         'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
         $$values (1::float)$$
     );
 
--- Fourth user is still incompatible because their kids is null
+-- Fourth user is still incompatible because their education is null
 select
     results_eq (
         'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
@@ -220,7 +224,113 @@ select
 
 update public.preferences
 set
-    kids = null,
+    education = null,
+    religion = array[
+        'agnostic'::religion_type,
+        'atheist'::religion_type,
+        'buddhist'::religion_type,
+        'christian'::religion_type,
+        'hindu'::religion_type,
+        'jewish'::religion_type,
+        'muslim'::religion_type,
+        'other'::religion_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their religion matches
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (10::float)$$
+    );
+
+-- Third user is now incompatible because their religion does not match
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (1::float)$$
+    );
+
+-- Fourth user is still incompatible because their religion is null
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (1::float)$$
+    );
+
+update public.preferences
+set
+    religion = null,
+    sexuality = array[
+        'straight'::sexuality_type,
+        'gay'::sexuality_type,
+        'lesbian'::sexuality_type,
+        'bi'::sexuality_type,
+        'pan'::sexuality_type,
+        'ace'::sexuality_type,
+        'other'::sexuality_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their sexuality matches
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (10::float)$$
+    );
+
+-- Third user is now incompatible because their sexuality does not match
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (1::float)$$
+    );
+
+-- Fourth user is still incompatible because their sexuality is null
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (1::float)$$
+    );
+
+update public.preferences
+set
+    gender = null,
+    family = array[
+        'none'::family_type,
+        'unsure'::family_type,
+        'want'::family_type,
+        'have'::family_type
+    ]
+where
+    id = '11111111-1111-1111-1111-111111111111';
+
+-- Second user is now compatible because their family matches
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''22222222-2222-2222-2222-222222222222'')',
+        $$values (10::float)$$
+    );
+
+-- Third user is now incompatible because their family does not match
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''33333333-3333-3333-3333-333333333333'')',
+        $$values (1::float)$$
+    );
+
+-- Fourth user is still incompatible because their family is null
+select
+    results_eq (
+        'select public.get_user_score(''11111111-1111-1111-1111-111111111111'', ''44444444-4444-4444-4444-444444444444'')',
+        $$values (1::float)$$
+    );
+
+update public.preferences
+set
+    family = null,
     intention = array[
         'unsure'::intention_type,
         'serious'::intention_type,

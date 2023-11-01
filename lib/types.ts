@@ -23,11 +23,14 @@ export type ProfilesData = {
 
 export type CreditorType = Database["public"]["Enums"]["creditor_type"];
 export type DietType = Database["public"]["Enums"]["diet_type"];
+export type EducationType = Database["public"]["Enums"]["education_type"];
+export type FamilyType = Database["public"]["Enums"]["family_type"];
 export type GenderType = Database["public"]["Enums"]["gender_type"];
 export type IntentionType = Database["public"]["Enums"]["intention_type"];
 export type InteractionType = Database["public"]["Enums"]["interaction_type"];
-export type KidsType = Database["public"]["Enums"]["kids_type"];
 export type RelationshipType = Database["public"]["Enums"]["relationship_type"];
+export type ReligionType = Database["public"]["Enums"]["religion_type"];
+export type SexualityType = Database["public"]["Enums"]["sexuality_type"];
 
 export type AttributeData<T extends Key> = {
   value: T;
@@ -54,7 +57,7 @@ export const DietData: AttributeData<DietType>[] = [
   {
     value: "vegan",
     label: "Vegan",
-    icon: "alpha-v",
+    icon: "leaf",
   },
   {
     value: "kosher",
@@ -78,6 +81,51 @@ export const DietData: AttributeData<DietType>[] = [
   },
 ];
 
+export const EducationData: AttributeData<EducationType>[] = [
+  {
+    value: "high",
+    label: "High school",
+    icon: "school",
+  },
+  {
+    value: "undergrad",
+    label: "Undergrad",
+    icon: "book-education",
+  },
+  {
+    value: "postgrad",
+    label: "Postgrad",
+    icon: "book-multiple",
+  },
+];
+
+export const FamilyData: AttributeData<FamilyType>[] = [
+  {
+    value: "none",
+    label: "Don't want kids",
+    icon: "egg-off",
+  },
+  {
+    value: "unsure",
+    label: "Might want kids",
+    icon: "head-question",
+  },
+  {
+    value: "want",
+    label: "Want kids",
+    icon: "baby",
+  },
+  {
+    value: "have",
+    label: "Have kids and don't want more",
+    icon: "baby-carriage-off",
+  },
+  {
+    value: "more",
+    label: "Have kids and want more",
+    icon: "baby-carriage",
+  },
+];
 export const GenderData: AttributeData<GenderType>[] = [
   {
     value: "male",
@@ -105,7 +153,7 @@ export const IntentionData: AttributeData<IntentionType>[] = [
   {
     value: "casual",
     label: "Casual dating",
-    icon: "heart-half",
+    icon: "heart-half-full",
   },
   {
     value: "serious",
@@ -124,34 +172,6 @@ export const IntentionData: AttributeData<IntentionType>[] = [
   },
 ];
 
-export const KidsData: AttributeData<KidsType>[] = [
-  {
-    value: "none",
-    label: "Don't want kids",
-    icon: "egg-off",
-  },
-  {
-    value: "unsure",
-    label: "Might want kids",
-    icon: "head-question",
-  },
-  {
-    value: "want",
-    label: "Want kids",
-    icon: "baby",
-  },
-  {
-    value: "have",
-    label: "Have kids and don't want more",
-    icon: "baby-carriage-off",
-  },
-  {
-    value: "more",
-    label: "Have kids and want more",
-    icon: "baby-carriage",
-  },
-];
-
 export const RelationshipData: AttributeData<RelationshipType>[] = [
   {
     value: "unsure",
@@ -167,5 +187,101 @@ export const RelationshipData: AttributeData<RelationshipType>[] = [
     value: "enm",
     label: "Ethically non-monogamous",
     icon: "heart-multiple",
+  },
+];
+
+export const ReligionData: AttributeData<ReligionType>[] = [
+  {
+    value: "agnostic",
+    label: "Agnostic",
+    icon: "arrow-all",
+  },
+  {
+    value: "atheist",
+    label: "Atheist",
+    icon: "atom",
+  },
+  {
+    value: "buddhist",
+    label: "Buddhist",
+    icon: "dharmachakra",
+  },
+  {
+    value: "catholic",
+    label: "Catholic",
+    icon: "book-cross",
+  },
+  {
+    value: "christian",
+    label: "Christian",
+    icon: "cross",
+  },
+  {
+    value: "hindu",
+    label: "Hindu",
+    icon: "om",
+  },
+  {
+    value: "jewish",
+    label: "Jewish",
+    icon: "star-david",
+  },
+  {
+    value: "muslim",
+    label: "Muslim",
+    icon: "star-crescent",
+  },
+  {
+    value: "spiritual",
+    label: "Spiritual",
+    icon: "ghost",
+  },
+  {
+    value: "other",
+    label: "Other",
+    icon: "hands-pray",
+  },
+];
+
+export const SexualityData: AttributeData<SexualityType>[] = [
+  {
+    value: "straight",
+    label: "Straight",
+    icon: "human-male-female",
+  },
+  {
+    value: "gay",
+    label: "Gay",
+    icon: "human-male-male",
+  },
+  {
+    value: "lesbian",
+    label: "Lesbian",
+    icon: "human-female-female",
+  },
+  {
+    value: "bi",
+    label: "Bisexual",
+    icon: "gender-male-female",
+  },
+  {
+    value: "pan",
+    label: "Pansexual",
+    icon: "gender-transgender",
+  },
+  {
+    value: "demi",
+    label: "Demisexual",
+    icon: "triangle-outline",
+  },
+  {
+    value: "ace",
+    label: "Asexual",
+    icon: "circle-outline",
+  },
+  {
+    value: "other",
+    label: "Other sexuality",
+    icon: "heart-outline",
   },
 ];

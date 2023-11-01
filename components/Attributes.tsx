@@ -4,10 +4,13 @@ import { ProfileData } from "../lib/types";
 import { calculateAge } from "../lib/utils";
 import {
   DietData,
+  EducationData,
+  FamilyData,
   GenderData,
   IntentionData,
-  KidsData,
   RelationshipData,
+  ReligionData,
+  SexualityData,
 } from "../lib/types";
 
 type AttributesProps = {
@@ -24,13 +27,20 @@ export const Attributes = ({
   loading,
 }: AttributesProps) => {
   const gender = GenderData.find((item) => item.value === profile.gender);
+  const education = EducationData.find(
+    (item) => item.value === profile.education
+  );
+  const religion = ReligionData.find((item) => item.value === profile.religion);
+  const sexuality = SexualityData.find(
+    (item) => item.value === profile.sexuality
+  );
   const intention = IntentionData.find(
     (item) => item.value === profile.intention
   );
   const relationship = RelationshipData.find(
     (item) => item.value === profile.relationship
   );
-  const kids = KidsData.find((item) => item.value === profile.kids);
+  const family = FamilyData.find((item) => item.value === profile.family);
   const diet = DietData.find((item) => item.value === profile.diet);
 
   return (
@@ -55,14 +65,44 @@ export const Attributes = ({
           {gender?.label || ""}
         </Chip>
       )}
-      {profile.kids && (
+      {profile.education && (
         <Chip
           style={{ margin: 4 }}
           textStyle={{ padding: 1 }}
-          icon={kids?.icon || "baby"}
+          icon={education?.icon || "school"}
           disabled={loading}
         >
-          {kids?.label || ""}
+          {education?.label || ""}
+        </Chip>
+      )}
+      {profile.religion && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={religion?.icon || "hands-pray"}
+          disabled={loading}
+        >
+          {religion?.label || ""}
+        </Chip>
+      )}
+      {profile.sexuality && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={sexuality?.icon || "human-male-female"}
+          disabled={loading}
+        >
+          {sexuality?.label || ""}
+        </Chip>
+      )}
+      {profile.family && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={family?.icon || "baby"}
+          disabled={loading}
+        >
+          {family?.label || ""}
         </Chip>
       )}
       {profile.intention && (

@@ -157,47 +157,56 @@ export interface Database {
       preferences: {
         Row: {
           diet: Database["public"]["Enums"]["diet_type"][] | null
+          education: Database["public"]["Enums"]["education_type"][] | null
+          family: Database["public"]["Enums"]["family_type"][] | null
           gender: Database["public"]["Enums"]["gender_type"][] | null
           id: string
           intention: Database["public"]["Enums"]["intention_type"][] | null
           keywords: string[] | null
-          kids: Database["public"]["Enums"]["kids_type"][] | null
           max_age: number | null
           min_age: number | null
           radius: number | null
           relationship:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
+          religion: Database["public"]["Enums"]["religion_type"][] | null
+          sexuality: Database["public"]["Enums"]["sexuality_type"][] | null
           updated_at: string | null
         }
         Insert: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
+          education?: Database["public"]["Enums"]["education_type"][] | null
+          family?: Database["public"]["Enums"]["family_type"][] | null
           gender?: Database["public"]["Enums"]["gender_type"][] | null
           id: string
           intention?: Database["public"]["Enums"]["intention_type"][] | null
           keywords?: string[] | null
-          kids?: Database["public"]["Enums"]["kids_type"][] | null
           max_age?: number | null
           min_age?: number | null
           radius?: number | null
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
+          religion?: Database["public"]["Enums"]["religion_type"][] | null
+          sexuality?: Database["public"]["Enums"]["sexuality_type"][] | null
           updated_at?: string | null
         }
         Update: {
           diet?: Database["public"]["Enums"]["diet_type"][] | null
+          education?: Database["public"]["Enums"]["education_type"][] | null
+          family?: Database["public"]["Enums"]["family_type"][] | null
           gender?: Database["public"]["Enums"]["gender_type"][] | null
           id?: string
           intention?: Database["public"]["Enums"]["intention_type"][] | null
           keywords?: string[] | null
-          kids?: Database["public"]["Enums"]["kids_type"][] | null
           max_age?: number | null
           min_age?: number | null
           radius?: number | null
           relationship?:
             | Database["public"]["Enums"]["relationship_type"][]
             | null
+          religion?: Database["public"]["Enums"]["religion_type"][] | null
+          sexuality?: Database["public"]["Enums"]["sexuality_type"][] | null
           updated_at?: string | null
         }
         Relationships: [
@@ -215,12 +224,15 @@ export interface Database {
           avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
+          education: Database["public"]["Enums"]["education_type"] | null
+          family: Database["public"]["Enums"]["family_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
           intention: Database["public"]["Enums"]["intention_type"] | null
-          kids: Database["public"]["Enums"]["kids_type"] | null
           lnglat: unknown | null
           relationship: Database["public"]["Enums"]["relationship_type"] | null
+          religion: Database["public"]["Enums"]["religion_type"] | null
+          sexuality: Database["public"]["Enums"]["sexuality_type"] | null
           updated_at: string | null
           username: string | null
         }
@@ -229,12 +241,15 @@ export interface Database {
           avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
+          education?: Database["public"]["Enums"]["education_type"] | null
+          family?: Database["public"]["Enums"]["family_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id: string
           intention?: Database["public"]["Enums"]["intention_type"] | null
-          kids?: Database["public"]["Enums"]["kids_type"] | null
           lnglat?: unknown | null
           relationship?: Database["public"]["Enums"]["relationship_type"] | null
+          religion?: Database["public"]["Enums"]["religion_type"] | null
+          sexuality?: Database["public"]["Enums"]["sexuality_type"] | null
           updated_at?: string | null
           username?: string | null
         }
@@ -243,12 +258,15 @@ export interface Database {
           avatar_urls?: string[]
           birthday?: string | null
           diet?: Database["public"]["Enums"]["diet_type"] | null
+          education?: Database["public"]["Enums"]["education_type"] | null
+          family?: Database["public"]["Enums"]["family_type"] | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id?: string
           intention?: Database["public"]["Enums"]["intention_type"] | null
-          kids?: Database["public"]["Enums"]["kids_type"] | null
           lnglat?: unknown | null
           relationship?: Database["public"]["Enums"]["relationship_type"] | null
+          religion?: Database["public"]["Enums"]["religion_type"] | null
+          sexuality?: Database["public"]["Enums"]["sexuality_type"] | null
           updated_at?: string | null
           username?: string | null
         }
@@ -381,12 +399,15 @@ export interface Database {
           avatar_urls: string[]
           birthday: string | null
           diet: Database["public"]["Enums"]["diet_type"] | null
+          education: Database["public"]["Enums"]["education_type"] | null
+          family: Database["public"]["Enums"]["family_type"] | null
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
           intention: Database["public"]["Enums"]["intention_type"] | null
-          kids: Database["public"]["Enums"]["kids_type"] | null
           lnglat: unknown | null
           relationship: Database["public"]["Enums"]["relationship_type"] | null
+          religion: Database["public"]["Enums"]["religion_type"] | null
+          sexuality: Database["public"]["Enums"]["sexuality_type"] | null
           updated_at: string | null
           username: string | null
         }[]
@@ -399,6 +420,10 @@ export interface Database {
           message: unknown
           unread: boolean
         }[]
+      }
+      get_test_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_user_distance: {
         Args: {
@@ -475,11 +500,32 @@ export interface Database {
         | "halal"
         | "gluten"
         | "other"
+      education_type: "high" | "undergrad" | "postgrad"
+      family_type: "none" | "unsure" | "want" | "have" | "more"
       gender_type: "male" | "female" | "nonbinary"
       intention_type: "unsure" | "casual" | "serious" | "marriage" | "friends"
       interaction_type: "none" | "block" | "pass" | "like"
-      kids_type: "none" | "unsure" | "want" | "have" | "more"
       relationship_type: "unsure" | "monog" | "enm"
+      religion_type:
+        | "agnostic"
+        | "atheist"
+        | "buddhist"
+        | "catholic"
+        | "christian"
+        | "hindu"
+        | "jewish"
+        | "muslim"
+        | "spiritual"
+        | "other"
+      sexuality_type:
+        | "straight"
+        | "gay"
+        | "lesbian"
+        | "bi"
+        | "pan"
+        | "demi"
+        | "ace"
+        | "other"
       sort_type: "none" | "distance" | "recent"
     }
     CompositeTypes: {
