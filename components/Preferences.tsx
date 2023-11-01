@@ -20,6 +20,8 @@ import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
+  EducationType,
+  EducationData,
   GenderType,
   GenderData,
   IntentionType,
@@ -28,6 +30,10 @@ import {
   KidsData,
   RelationshipType,
   RelationshipData,
+  ReligionType,
+  ReligionData,
+  SexualityType,
+  SexualityData,
 } from "../lib/types";
 import { Checkboxes } from "./Checkboxes";
 
@@ -38,6 +44,9 @@ export default function Preferences({ session }: { session: Session }) {
   const [maxAge, setMaxAge] = useState("");
   const [maxAgeError, setMaxAgeError] = useState("");
   const [gender, setGender] = useState<GenderType[]>([]);
+  const [education, setEducation] = useState<EducationType[]>([]);
+  const [religion, setReligion] = useState<ReligionType[]>([]);
+  const [sexuality, setSexuality] = useState<SexualityType[]>([]);
   const [intention, setIntention] = useState<IntentionType[]>([]);
   const [relationship, setRelationship] = useState<RelationshipType[]>([]);
   const [kids, setKids] = useState<KidsType[]>([]);
@@ -97,6 +106,9 @@ export default function Preferences({ session }: { session: Session }) {
     minAge,
     maxAge,
     gender,
+    education,
+    religion,
+    sexuality,
     intention,
     relationship,
     kids,
@@ -107,6 +119,9 @@ export default function Preferences({ session }: { session: Session }) {
     minAge: string;
     maxAge: string;
     gender: GenderType[];
+    education: EducationType[];
+    religion: ReligionType[];
+    sexuality: SexualityType[];
     intention: IntentionType[];
     relationship: RelationshipType[];
     kids: KidsType[];
@@ -132,6 +147,9 @@ export default function Preferences({ session }: { session: Session }) {
         min_age: parseInt(minAge),
         max_age: parseInt(maxAge),
         gender: gender.length ? gender : null,
+        education: education.length ? education : null,
+        religion: religion.length ? religion : null,
+        sexuality: sexuality.length ? sexuality : null,
         intention: intention.length ? intention : null,
         relationship: relationship.length ? relationship : null,
         kids: kids.length ? kids : null,
@@ -275,6 +293,27 @@ export default function Preferences({ session }: { session: Session }) {
               />
               <Divider style={styles.verticallySpaced} />
               <Checkboxes
+                label="Education level"
+                data={EducationData}
+                value={education}
+                onChange={setEducation}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Religion"
+                data={ReligionData}
+                value={religion}
+                onChange={setReligion}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
+                label="Sexuality"
+                data={SexualityData}
+                value={sexuality}
+                onChange={setSexuality}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Checkboxes
                 label="Family plan"
                 data={KidsData}
                 value={kids}
@@ -358,6 +397,9 @@ export default function Preferences({ session }: { session: Session }) {
                     minAge,
                     maxAge,
                     gender,
+                    education,
+                    religion,
+                    sexuality,
                     intention,
                     relationship,
                     kids,

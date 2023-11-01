@@ -21,6 +21,8 @@ import { useStyles } from "../lib/styles";
 import {
   DietType,
   DietData,
+  EducationType,
+  EducationData,
   GenderType,
   GenderData,
   IntentionType,
@@ -29,6 +31,10 @@ import {
   KidsData,
   RelationshipType,
   RelationshipData,
+  ReligionType,
+  ReligionData,
+  SexualityType,
+  SexualityData,
 } from "../lib/types";
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
@@ -40,6 +46,9 @@ export default function Edit({ session }: { session: Session }) {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
+  const [education, setEducation] = useState<EducationType | null>(null);
+  const [religion, setReligion] = useState<ReligionType | null>(null);
+  const [sexuality, setSexuality] = useState<SexualityType | null>(null);
   const [intention, setIntention] = useState<IntentionType | null>(null);
   const [relationship, setRelationship] = useState<RelationshipType | null>(
     null
@@ -78,6 +87,9 @@ export default function Edit({ session }: { session: Session }) {
       if (data) {
         setUsername(data.username);
         setGender(data.gender);
+        setEducation(data.education);
+        setReligion(data.religion);
+        setSexuality(data.sexuality);
         setIntention(data.intention);
         setRelationship(data.relationship);
         setKids(data.kids);
@@ -122,6 +134,9 @@ export default function Edit({ session }: { session: Session }) {
   async function updateProfile({
     username,
     gender,
+    education,
+    religion,
+    sexuality,
     intention,
     relationship,
     kids,
@@ -131,6 +146,9 @@ export default function Edit({ session }: { session: Session }) {
   }: {
     username: string;
     gender: GenderType | null;
+    education: EducationType | null;
+    religion: ReligionType | null;
+    sexuality: SexualityType | null;
     intention: IntentionType | null;
     relationship: RelationshipType | null;
     kids: KidsType | null;
@@ -149,6 +167,9 @@ export default function Edit({ session }: { session: Session }) {
       const updates = {
         username: username,
         gender: gender,
+        education: education,
+        religion: religion,
+        sexuality: sexuality,
         intention: intention,
         relationship: relationship,
         kids: kids,
@@ -291,6 +312,27 @@ export default function Edit({ session }: { session: Session }) {
               />
               <Dropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Education level"
+                data={EducationData}
+                value={education}
+                onChange={setEducation}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Religion"
+                data={ReligionData}
+                value={religion}
+                onChange={setReligion}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
+                label="Sexuality"
+                data={SexualityData}
+                value={sexuality}
+                onChange={setSexuality}
+              />
+              <Dropdown
+                style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Family plan"
                 data={KidsData}
                 value={kids}
@@ -356,6 +398,9 @@ export default function Edit({ session }: { session: Session }) {
                   updateProfile({
                     username,
                     gender,
+                    education,
+                    religion,
+                    sexuality,
                     intention,
                     relationship,
                     kids,

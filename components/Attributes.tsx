@@ -4,10 +4,13 @@ import { ProfileData } from "../lib/types";
 import { calculateAge } from "../lib/utils";
 import {
   DietData,
+  EducationData,
   GenderData,
   IntentionData,
   KidsData,
   RelationshipData,
+  ReligionData,
+  SexualityData,
 } from "../lib/types";
 
 type AttributesProps = {
@@ -24,6 +27,13 @@ export const Attributes = ({
   loading,
 }: AttributesProps) => {
   const gender = GenderData.find((item) => item.value === profile.gender);
+  const education = EducationData.find(
+    (item) => item.value === profile.education
+  );
+  const religion = ReligionData.find((item) => item.value === profile.religion);
+  const sexuality = SexualityData.find(
+    (item) => item.value === profile.sexuality
+  );
   const intention = IntentionData.find(
     (item) => item.value === profile.intention
   );
@@ -43,6 +53,36 @@ export const Attributes = ({
           disabled={loading}
         >
           {calculateAge(Date.parse(profile.birthday))}
+        </Chip>
+      )}
+      {profile.education && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={education?.icon || "school"}
+          disabled={loading}
+        >
+          {education?.label || ""}
+        </Chip>
+      )}
+      {profile.religion && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={religion?.icon || "star-of-david"}
+          disabled={loading}
+        >
+          {religion?.label || ""}
+        </Chip>
+      )}
+      {profile.sexuality && (
+        <Chip
+          style={{ margin: 4 }}
+          textStyle={{ padding: 1 }}
+          icon={sexuality?.icon || "heart-half-full"}
+          disabled={loading}
+        >
+          {sexuality?.label || ""}
         </Chip>
       )}
       {profile.gender && (
