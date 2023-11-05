@@ -252,7 +252,7 @@ export default function Account({ session }: { session: Session }) {
         >
           <Menu.Item
             onPress={() => {
-              navigate(ROUTES.ABOUT);
+              navigate(`../${ROUTES.ABOUT}`);
             }}
             title="About"
           />

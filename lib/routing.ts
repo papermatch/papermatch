@@ -20,7 +20,7 @@ import {
 
 export const ROUTES = {
   ROOT: "/",
-  ABOUT: "/about",
+  ABOUT: "about",
   ACCOUNT: "account",
   APP: "app",
   AUTH: "auth",
