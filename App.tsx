@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { View, Platform } from "react-native";
 import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { supabase } from "./lib/supabase";
-import Auth from "./components/Auth";
+import About from "./components/About";
 import Account from "./components/Account";
+import Auth from "./components/Auth";
 import Blocked from "./components/Blocked";
 import Credits from "./components/Credits";
 import Edit from "./components/Edit";
@@ -103,6 +104,7 @@ export default function App() {
         <Router>
           {Platform.OS === "web" ? (
             <Routes>
+              <Route path={ROUTES.ABOUT} element={<About />} />
               <Route path={ROUTES.ROOT} element={<Home />} />
               <Route path={ROUTES.PRIVACY} element={<Privacy />} />
               <Route
@@ -132,6 +134,7 @@ function AppRoutes({ session }: { session: Session | null }) {
           )
         }
       />
+      <Route path={ROUTES.ABOUT} element={<About />} />
       <Route
         path={ROUTES.ACCOUNT}
         element={

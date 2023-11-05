@@ -19,6 +19,7 @@ import {
   Divider,
   Badge,
   Snackbar,
+  Menu,
   useTheme,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
@@ -32,6 +33,7 @@ const MAX_AVATARS = 6;
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
   const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
@@ -238,6 +240,23 @@ export default function Account({ session }: { session: Session }) {
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
         <Appbar.Content titleStyle={styles.appbarTitle} title="Account" />
+        <Menu
+          visible={appbarMenuVisible}
+          onDismiss={() => setAppbarMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="dots-vertical"
+              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              navigate(ROUTES.ABOUT);
+            }}
+            title="About"
+          />
+        </Menu>
       </Appbar.Header>
       {loading ? (
         <View
