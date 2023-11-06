@@ -1,63 +1,57 @@
-import { ReactNode, useState, Key } from "react";
-import { StyleProp, View, ViewStyle } from "react-native";
-import { IconButton, useTheme } from "react-native-paper";
+import { ReactElement, Key, useState } from "react";
+import { StyleProp, View, ViewStyle, FlatList } from "react-native";
+
+const SEPARATOR_SIZE = 12;
 
 type CarouselProps<T extends Key> = {
   data: T[];
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T) => ReactElement;
+  size: number;
   start?: T;
   style?: StyleProp<ViewStyle>;
-  loading?: boolean;
-  vertical?: boolean;
 };
 
 export const Carousel = <T extends Key>({
   data,
   renderItem,
+  size,
   start,
   style,
-  loading,
-  vertical,
 }: CarouselProps<T>) => {
   const [index, setIndex] = useState(
     start && data.includes(start) ? data.indexOf(start) : 0
   );
-  const theme = useTheme();
+  const [width, setWidth] = useState<number>();
 
   return (
     <View
-      style={[
-        style,
-        {
-          flexDirection: vertical ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        },
-      ]}
+      style={[style, { minHeight: size }]}
+      onLayout={(event) => {
+        setWidth(event.nativeEvent.layout.width);
+      }}
     >
-      <IconButton
-        icon={vertical ? "chevron-up" : "chevron-left"}
-        iconColor={
-          index > 0 ? theme.colors.onSurface : theme.colors.onSurfaceDisabled
-        }
-        onPress={() => {
-          setIndex(Math.max(index - 1, 0));
-        }}
-        disabled={loading}
-      />
-      {renderItem(data[index])}
-      <IconButton
-        icon={vertical ? "chevron-down" : "chevron-right"}
-        iconColor={
-          index < data.length - 1
-            ? theme.colors.onSurface
-            : theme.colors.onSurfaceDisabled
-        }
-        onPress={() => {
-          setIndex(Math.min(index + 1, data.length - 1));
-        }}
-        disabled={loading}
-      />
+      {width && (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.toString()}
+          renderItem={({ item }) => renderItem(item)}
+          horizontal={true}
+          snapToInterval={size + SEPARATOR_SIZE}
+          ItemSeparatorComponent={() => (
+            <View style={{ width: SEPARATOR_SIZE, height: SEPARATOR_SIZE }} />
+          )}
+          getItemLayout={(data, index) => ({
+            length: size + SEPARATOR_SIZE,
+            offset: (size + SEPARATOR_SIZE) * index,
+            index,
+          })}
+          initialScrollIndex={index}
+          decelerationRate="fast"
+          contentContainerStyle={{
+            paddingHorizontal: (width - size) / 2,
+          }}
+        />
+      )}
     </View>
   );
 };

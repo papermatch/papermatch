@@ -289,8 +289,8 @@ export default function Account({ session }: { session: Session }) {
                       }}
                     />
                   )}
+                  size={200}
                   start={newAvatarUrl}
-                  loading={loading}
                 />
               </View>
               <Divider style={styles.verticallySpaced} />

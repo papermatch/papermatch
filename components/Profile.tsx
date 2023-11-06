@@ -210,20 +210,21 @@ export default function Profile({ session }: { session: Session }) {
                   data={profile.avatar_urls || [""]}
                   renderItem={(item) => (
                     <Avatar
-                      size={200}
+                      size={300}
                       url={item}
                       onPress={() => {
                         setImageUrl(item);
                       }}
                     />
                   )}
-                  loading={loading}
+                  size={300}
                 />
                 <Attributes
                   style={{
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "center",
+                    marginVertical: 6,
                   }}
                   distance={distance}
                   profile={profile}

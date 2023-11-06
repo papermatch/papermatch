@@ -145,58 +145,41 @@ export default function Profiles({ session }: { session: Session }) {
                 }}
                 style={[styles.verticallySpaced]}
               >
-                <View
-                  style={[
-                    {
-                      flexDirection: "row",
-                      padding: 16,
-                    },
-                  ]}
-                >
-                  <Carousel
-                    data={item.profile.avatar_urls}
-                    renderItem={(avatarUrl) => (
-                      <View style={{ alignSelf: "center" }}>
-                        <Avatar
-                          size={100}
-                          url={avatarUrl}
-                          onPress={() => {
-                            navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
-                          }}
-                        />
-                      </View>
-                    )}
-                    loading={loading}
-                    vertical={true}
-                  />
-
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      marginLeft: 16,
-                    }}
+                <View>
+                  <Text
+                    variant="titleLarge"
+                    style={[styles.verticallySpaced, { textAlign: "center" }]}
                   >
-                    <Text variant="titleLarge">{item.profile.username}</Text>
-                    <Attributes
-                      style={{
-                        flexDirection: "row",
-                        flexWrap: "wrap",
-                      }}
-                      profile={item.profile}
-                      distance={item.distance}
-                    />
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                      }}
-                      pointerEvents="box-only"
-                    />
-                  </View>
+                    {item.profile.username}
+                  </Text>
+                  <Carousel
+                    data={
+                      item.profile.avatar_urls.length
+                        ? item.profile.avatar_urls
+                        : [""]
+                    }
+                    renderItem={(avatarUrl) => (
+                      <Avatar
+                        size={200}
+                        url={avatarUrl}
+                        onPress={() => {
+                          navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
+                        }}
+                      />
+                    )}
+                    size={200}
+                  />
+                  <Attributes
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      marginVertical: 6,
+                    }}
+                    distance={item.distance}
+                    profile={item.profile}
+                    loading={loading}
+                  />
                 </View>
               </Card>
             )}

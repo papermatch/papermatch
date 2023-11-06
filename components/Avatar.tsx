@@ -6,6 +6,7 @@ import {
   Avatar as RNPAvatar,
   ActivityIndicator,
   FAB,
+  useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -27,6 +28,7 @@ export default function Avatar({
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
   const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     setAvatarUrl(url);
@@ -100,7 +102,11 @@ export default function Avatar({
           <Image
             style={[
               styles.verticallySpaced,
-              { width: size, height: size, borderRadius: size / 8 },
+              {
+                width: size,
+                height: size,
+                borderRadius: ((theme.roundness / 7) * size) / 2,
+              },
             ]}
             source={{ uri: avatarUrl }}
             onError={(error) => {
