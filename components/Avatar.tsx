@@ -100,12 +100,14 @@ export default function Avatar({
           <Image
             style={[
               styles.verticallySpaced,
-              { width: size, height: size, borderRadius: size / 2 },
+              { width: size, height: size, borderRadius: size / 8 },
             ]}
             source={{ uri: avatarUrl }}
-            onError={(error) =>
-              console.error(`Image ${avatarUrl} error:`, error)
-            }
+            onError={(error) => {
+              if (error instanceof Error) {
+                console.error(error.message);
+              }
+            }}
           />
           <FAB
             icon="close"

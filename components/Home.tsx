@@ -40,9 +40,11 @@ export default function Home() {
               styles.verticallySpaced,
               { width: 150, height: 150, alignSelf: "center" },
             ]}
-            onError={(error) =>
-              console.error(`Image /papermatch.png error:`, error)
-            }
+            onError={(error) => {
+              if (error instanceof Error) {
+                console.error(error.message);
+              }
+            }}
           />
           <Text style={styles.verticallySpaced}>
             At Paper Match, we believe in dating without hidden fees or costly

@@ -49,10 +49,9 @@ export default function Matches({ session }: { session: Session }) {
               await Image.prefetch(item.profile.avatar_urls[0]);
             }
           } catch (error) {
-            console.error(
-              `Error prefetching ${item.profile.avatar_urls[0]}:`,
-              error
-            );
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         })
       );

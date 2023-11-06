@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -21,7 +16,7 @@ import {
   Menu,
   useTheme,
 } from "react-native-paper";
-import { Image } from 'expo-image';
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -99,23 +94,20 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        await Promise.all(
-          data.avatar_urls.map(async (avatarUrl: string) => {
-            try {
-              await Image.prefetch(avatarUrl);
-            } catch (error) {
-              console.error(`Error prefetching ${avatarUrl}:`, error);
-            }
-          })
-        );
-
+        try {
+          await Image.prefetch(data.avatar_urls);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message);
+          }
+        }
         setProfileOnboarding(!data.updated_at);
         setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
-        setSnackbarMessage("Unable to fetch avatar URLs");
+        setSnackbarMessage("Unable to fetch profile");
         setSnackbarVisible(true);
       }
     }

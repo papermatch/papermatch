@@ -62,7 +62,9 @@ export default function Profile({ session }: { session: Session }) {
           try {
             await Image.prefetch(avatarUrl);
           } catch (error) {
-            console.error(`Error prefetching ${avatarUrl}:`, error);
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         })
       );
@@ -286,9 +288,11 @@ export default function Profile({ session }: { session: Session }) {
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
                 contentFit="contain"
-                onError={(error) =>
-                  console.error(`Image ${imageUrl} error:`, error)
-                }
+                onError={(error) => {
+                  if (error instanceof Error) {
+                    console.error(error.message);
+                  }
+                }}
               />
             </Pressable>
           )}

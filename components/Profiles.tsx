@@ -77,15 +77,15 @@ export default function Profiles({ session }: { session: Session }) {
       }
 
       await Promise.all(
-        nextData.flatMap((item) =>
-          item.profile.avatar_urls.map(async (avatarUrl: string) => {
-            try {
-              await Image.prefetch(avatarUrl);
-            } catch (error) {
-              console.error(`Error prefetching ${avatarUrl}:`, error);
+        nextData.map(async (item) => {
+          try {
+            await Image.prefetch(item.profile.avatar_urls);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.log(error.message);
             }
-          })
-        )
+          }
+        })
       );
 
       if (page === 0) {
