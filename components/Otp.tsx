@@ -108,6 +108,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <TextInput
                 style={styles.verticallySpaced}
                 label="OTP"

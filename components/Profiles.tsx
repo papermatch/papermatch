@@ -133,19 +133,22 @@ export default function Profiles({ session }: { session: Session }) {
           />
         </Menu>
       </Appbar.Header>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingHorizontal: 0 }]}>
         {data.length ? (
           <FlatList
             data={data}
             keyExtractor={(item) => item.profile.id.toString()}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            contentContainerStyle={{ paddingVertical: 12 }}
             renderItem={({ item }) => (
               <Card
+                style={{ marginHorizontal: 12 }}
                 onPress={() => {
                   navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
                 }}
-                style={[styles.verticallySpaced]}
               >
                 <View>
+                  <View style={styles.separator} />
                   <Text
                     variant="titleLarge"
                     style={[styles.verticallySpaced, { textAlign: "center" }]}
@@ -174,12 +177,12 @@ export default function Profiles({ session }: { session: Session }) {
                       flexDirection: "row",
                       flexWrap: "wrap",
                       justifyContent: "center",
-                      marginVertical: 6,
                     }}
                     distance={item.distance}
                     profile={item.profile}
                     loading={loading}
                   />
+                  <View style={styles.separator} />
                 </View>
               </Card>
             )}
@@ -215,7 +218,12 @@ export default function Profiles({ session }: { session: Session }) {
             <ActivityIndicator animating={true} size="large" />
           </View>
         ) : (
-          <Text style={styles.verticallySpaced}>
+          <Text
+            style={[
+              styles.verticallySpaced,
+              { marginTop: 12, paddingHorizontal: 12 },
+            ]}
+          >
             No compatible profiles found, try adjusting your preferences.
           </Text>
         )}

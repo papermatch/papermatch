@@ -282,6 +282,7 @@ export default function Edit({ session }: { session: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <Text style={styles.verticallySpaced}>
                 Edit your profile below. The more information you provide, the
                 better your matches will be!

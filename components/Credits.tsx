@@ -159,6 +159,7 @@ export default function Credits({ session }: { session: Session }) {
           style={{ flex: 1 }}
         >
           <View style={styles.container}>
+            <View style={styles.separator} />
             <Text style={styles.verticallySpaced}>
               You have {credits} credit{credits === 1 ? "" : "s"}. Each match
               costs 1 credit, and your profile will not be searchable if you

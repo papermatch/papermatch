@@ -204,6 +204,7 @@ export default function Profile({ session }: { session: Session }) {
       ) : (
         <ScrollView style={{ flex: 1 }}>
           <View style={styles.container}>
+            <View style={styles.separator} />
             {profile ? (
               <View>
                 <Carousel
@@ -224,12 +225,12 @@ export default function Profile({ session }: { session: Session }) {
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "center",
-                    marginVertical: 6,
                   }}
                   distance={distance}
                   profile={profile}
                   loading={loading}
                 />
+                <View style={styles.separator} />
                 <Divider style={styles.verticallySpaced} />
                 <Text style={styles.verticallySpaced} variant="titleLarge">
                   About

@@ -1,5 +1,6 @@
 import { ReactElement, Key, useState } from "react";
 import { StyleProp, View, ViewStyle, FlatList } from "react-native";
+import { useStyles } from "../lib/styles";
 
 const SEPARATOR_SIZE = 12;
 
@@ -22,6 +23,7 @@ export const Carousel = <T extends Key>({
     start && data.includes(start) ? data.indexOf(start) : 0
   );
   const [width, setWidth] = useState<number>();
+  const styles = useStyles();
 
   return (
     <View
@@ -37,9 +39,7 @@ export const Carousel = <T extends Key>({
           renderItem={({ item }) => renderItem(item)}
           horizontal={true}
           snapToInterval={size + SEPARATOR_SIZE}
-          ItemSeparatorComponent={() => (
-            <View style={{ width: SEPARATOR_SIZE, height: SEPARATOR_SIZE }} />
-          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           getItemLayout={(data, index) => ({
             length: size + SEPARATOR_SIZE,
             offset: (size + SEPARATOR_SIZE) * index,

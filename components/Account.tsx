@@ -263,6 +263,7 @@ export default function Account({ session }: { session: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <Text variant="titleLarge" style={styles.verticallySpaced}>
                 Edit pictures
               </Text>

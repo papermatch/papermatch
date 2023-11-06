@@ -106,7 +106,7 @@ export default function Navigation({ session }: { session: Session }) {
     <Appbar style={styles.bottom}>
       <Appbar.Action
         icon={
-          location.pathname === ROUTES.PROFILES
+          location.pathname === `/${ROUTES.PROFILES}`
             ? "magnify-plus"
             : "magnify-plus-outline"
         }
@@ -123,7 +123,9 @@ export default function Navigation({ session }: { session: Session }) {
           style={{ position: "absolute", top: 10, right: 10 }}
         />
         <Appbar.Action
-          icon={location.pathname === ROUTES.MATCHES ? "chat" : "chat-outline"}
+          icon={
+            location.pathname === `/${ROUTES.MATCHES}` ? "chat" : "chat-outline"
+          }
           size={30}
           onPress={() => {
             navigate(`../${ROUTES.MATCHES}`);
@@ -139,7 +141,7 @@ export default function Navigation({ session }: { session: Session }) {
         />
         <Appbar.Action
           icon={
-            location.pathname === ROUTES.CREDITS
+            location.pathname === `/${ROUTES.CREDITS}`
               ? "credit-card-plus"
               : "credit-card-plus-outline"
           }
@@ -158,7 +160,9 @@ export default function Navigation({ session }: { session: Session }) {
         />
         <Appbar.Action
           icon={
-            location.pathname === ROUTES.ACCOUNT ? "account" : "account-outline"
+            location.pathname === `/${ROUTES.ACCOUNT}`
+              ? "account"
+              : "account-outline"
           }
           size={30}
           onPress={() => {

@@ -34,6 +34,7 @@ export default function Home() {
       </Appbar.Header>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
+          <View style={styles.separator} />
           <Image
             source={{ uri: "/papermatch.png" }}
             style={[

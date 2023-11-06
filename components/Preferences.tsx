@@ -243,6 +243,7 @@ export default function Preferences({ session }: { session: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <Text style={styles.verticallySpaced}>
                 Update your preferences below. The more information you provide,
                 the better your matches will be!

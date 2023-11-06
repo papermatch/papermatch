@@ -111,17 +111,19 @@ export default function Blocked({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingHorizontal: 0 }]}>
           {profiles.length ? (
             <FlatList
               data={profiles}
               keyExtractor={(profile) => profile.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              contentContainerStyle={{ paddingVertical: 12 }}
               renderItem={({ item: profile }) => (
                 <Card
+                  style={{ marginHorizontal: 12 }}
                   onPress={() => {
                     navigate(`../${ROUTES.PROFILE}/${profile.id}`);
                   }}
-                  style={[styles.verticallySpaced]}
                 >
                   <View
                     style={[
@@ -162,7 +164,12 @@ export default function Blocked({ session }: { session: Session }) {
               )}
             />
           ) : (
-            <Text style={styles.verticallySpaced}>
+            <Text
+              style={[
+                styles.verticallySpaced,
+                { marginTop: 12, paddingHorizontal: 12 },
+              ]}
+            >
               No blocked profiles found.
             </Text>
           )}

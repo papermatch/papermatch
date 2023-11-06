@@ -273,22 +273,23 @@ export default function Match({ session }: { session: Session }) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <View style={styles.container}>
+          <View style={[styles.container, { paddingHorizontal: 0 }]}>
             <FlatList
               data={messages}
               keyExtractor={(item) => item.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              contentContainerStyle={{ paddingVertical: 12 }}
               inverted={true}
               renderItem={({ item }) => (
                 <Card
                   style={[
-                    styles.verticallySpaced,
                     {
                       backgroundColor:
                         item.user_id == session.user.id
                           ? theme.colors.elevation.level5
                           : theme.colors.elevation.level1,
-                      marginLeft: item.user_id == session.user.id ? 64 : 0,
-                      marginRight: item.user_id == session.user.id ? 0 : 64,
+                      marginLeft: item.user_id == session.user.id ? 64 : 12,
+                      marginRight: item.user_id == session.user.id ? 12 : 64,
                     },
                   ]}
                 >

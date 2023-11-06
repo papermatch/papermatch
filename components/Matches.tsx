@@ -80,14 +80,16 @@ export default function Matches({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingHorizontal: 0 }]}>
           {data.length ? (
             <FlatList
               data={data}
               keyExtractor={(item) => item.match.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              contentContainerStyle={{ paddingVertical: 12 }}
               renderItem={({ item }) => (
                 <Card
-                  style={styles.verticallySpaced}
+                  style={{ marginHorizontal: 12 }}
                   onPress={() =>
                     navigate(`../${ROUTES.MATCH}/${item.match.id}`)
                   }
@@ -144,7 +146,14 @@ export default function Matches({ session }: { session: Session }) {
               )}
             />
           ) : (
-            <Text style={styles.verticallySpaced}>No matches yet.</Text>
+            <Text
+              style={[
+                styles.verticallySpaced,
+                { marginTop: 12, paddingHorizontal: 12 },
+              ]}
+            >
+              No matches yet.
+            </Text>
           )}
         </View>
       )}

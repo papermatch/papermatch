@@ -105,7 +105,7 @@ export default function Avatar({
               {
                 width: size,
                 height: size,
-                borderRadius: ((theme.roundness / 7) * size) / 2,
+                borderRadius: 3 * theme.roundness,
               },
             ]}
             source={{ uri: avatarUrl }}
