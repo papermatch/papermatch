@@ -4,7 +4,6 @@ import {
   View,
   FlatList,
   ViewToken,
-  Image,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -20,6 +19,7 @@ import {
   Portal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
@@ -322,7 +322,7 @@ export default function Match({ session }: { session: Session }) {
                     <Text
                       style={{
                         flexShrink: 1,
-                          marginHorizontal: 12,
+                        marginHorizontal: 12,
                         alignSelf: "center",
                         padding: 1,
                       }}

@@ -3,7 +3,6 @@ import { supabase } from "../lib/supabase";
 import {
   View,
   ScrollView,
-  Image,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -22,6 +21,7 @@ import {
   Menu,
   useTheme,
 } from "react-native-paper";
+import { Image } from 'expo-image';
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";

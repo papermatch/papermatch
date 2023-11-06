@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Image, Pressable } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import {
   Appbar,
   FAB,
@@ -12,6 +12,7 @@ import {
   Modal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
@@ -284,7 +285,7 @@ export default function Profile({ session }: { session: Session }) {
               <Image
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
-                resizeMode="contain"
+                contentFit="contain"
                 onError={(error) =>
                   console.error(`Image ${imageUrl} error:`, error)
                 }

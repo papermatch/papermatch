@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
@@ -10,11 +10,12 @@ import {
   Portal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { MatchesData, ProfileData } from "../lib/types";
+import { MatchesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 
 export default function Matches({ session }: { session: Session }) {
@@ -88,7 +89,9 @@ export default function Matches({ session }: { session: Session }) {
               renderItem={({ item }) => (
                 <Card
                   style={styles.verticallySpaced}
-                  onPress={() => navigate(`../${ROUTES.MATCH}/${item.match.id}`)}
+                  onPress={() =>
+                    navigate(`../${ROUTES.MATCH}/${item.match.id}`)
+                  }
                 >
                   <View style={{ flexDirection: "row", padding: 16 }}>
                     <Badge

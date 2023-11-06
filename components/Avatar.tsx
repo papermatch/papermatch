@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   FAB,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -96,10 +97,15 @@ export default function Avatar({
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <View>
-          <RNPAvatar.Image
-            style={styles.verticallySpaced}
-            size={size}
+          <Image
+            style={[
+              styles.verticallySpaced,
+              { width: size, height: size, borderRadius: size / 2 },
+            ]}
             source={{ uri: avatarUrl }}
+            onError={(error) =>
+              console.error(`Image ${avatarUrl} error:`, error)
+            }
           />
           <FAB
             icon="close"

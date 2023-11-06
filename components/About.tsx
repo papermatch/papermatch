@@ -1,4 +1,4 @@
-import { View, ScrollView, Linking, TouchableOpacity } from "react-native";
+import { View, ScrollView, Linking, Pressable } from "react-native";
 import { Appbar, Text } from "react-native-paper";
 import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
@@ -22,11 +22,11 @@ export default function Home() {
         <View style={styles.container}>
           <Text style={styles.verticallySpaced}>
             <Text style={{ fontWeight: "500" }}>Contact: </Text>
-            <TouchableOpacity
+            <Pressable
               onPress={() => Linking.openURL("mailto:info@papermat.ch")}
             >
               <Text style={{ color: "blue" }}>info@papermat.ch</Text>
-            </TouchableOpacity>
+            </Pressable>
           </Text>
           <Text style={styles.verticallySpaced}>
             <Text style={{ fontWeight: "500" }}>Version: </Text>

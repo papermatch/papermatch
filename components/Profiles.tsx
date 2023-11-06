@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
@@ -13,6 +13,7 @@ import {
   Snackbar,
   useTheme,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -22,8 +23,7 @@ import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 
-const MAX_USER_SCORE = 10;
-const PROFILES_PER_PAGE = 10;
+const PROFILES_PER_PAGE = 6;
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
