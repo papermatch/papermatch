@@ -86,15 +86,17 @@ export default function Matches({ session }: { session: Session }) {
               data={data}
               keyExtractor={(item) => item.match.id.toString()}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
-              contentContainerStyle={{ paddingVertical: 12 }}
+              contentContainerStyle={{
+                paddingVertical: 12,
+              }}
               renderItem={({ item }) => (
                 <Card
-                  style={{ marginHorizontal: 12 }}
+                  style={{ padding: 12, marginHorizontal: 12 }}
                   onPress={() =>
                     navigate(`../${ROUTES.MATCH}/${item.match.id}`)
                   }
                 >
-                  <View style={{ flexDirection: "row", padding: 16 }}>
+                  <View style={{ flexDirection: "row" }}>
                     <Badge
                       visible={item.unread}
                       size={10}
@@ -122,7 +124,7 @@ export default function Matches({ session }: { session: Session }) {
                       >
                         {item.profile.username}
                       </Text>
-                      <Text style={styles.verticallySpaced}>
+                      <Text>
                         {item.message
                           ? item.message.message
                               .replace(/\n/g, " ")

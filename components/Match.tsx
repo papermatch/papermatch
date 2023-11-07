@@ -284,6 +284,7 @@ export default function Match({ session }: { session: Session }) {
                 <Card
                   style={[
                     {
+                      padding: 6,
                       backgroundColor:
                         item.user_id == session.user.id
                           ? theme.colors.elevation.level5
@@ -300,7 +301,6 @@ export default function Match({ session }: { session: Session }) {
                           item.user_id == session.user.id
                             ? "row-reverse"
                             : "row",
-                        padding: 8,
                       },
                     ]}
                   >
@@ -336,7 +336,7 @@ export default function Match({ session }: { session: Session }) {
               viewabilityConfig={viewabilityConfig}
               onViewableItemsChanged={handleViewableItemsChanged}
             />
-            <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <View style={{ flexDirection: "row" }}>
               <TextInput
                 style={{ flex: 1 }}
                 value={message}

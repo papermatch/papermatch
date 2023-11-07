@@ -101,7 +101,6 @@ export default function Avatar({
         <View>
           <Image
             style={[
-              styles.verticallySpaced,
               {
                 width: size,
                 height: size,

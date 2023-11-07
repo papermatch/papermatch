@@ -371,24 +371,26 @@ export default function Preferences({ session }: { session: Session }) {
                   />
                 }
               />
-              <View
-                style={[
-                  styles.verticallySpaced,
-                  { flexDirection: "row", flexWrap: "wrap" },
-                ]}
-              >
-                {keywords.map((keyword) => (
-                  <Chip
-                    style={{ margin: 8 }}
-                    key={keyword}
-                    onClose={() =>
-                      setKeywords(keywords.filter((k) => k !== keyword))
-                    }
-                  >
-                    {keyword}
-                  </Chip>
-                ))}
-              </View>
+              {keywords.length > 0 && (
+                <View
+                  style={[
+                    styles.verticallySpaced,
+                    { flexDirection: "row", flexWrap: "wrap" },
+                  ]}
+                >
+                  {keywords.map((keyword) => (
+                    <Chip
+                      style={{ margin: 4 }}
+                      key={keyword}
+                      onClose={() =>
+                        setKeywords(keywords.filter((k) => k !== keyword))
+                      }
+                    >
+                      {keyword}
+                    </Chip>
+                  ))}
+                </View>
+              )}
               <Button
                 mode="contained"
                 style={styles.verticallySpaced}

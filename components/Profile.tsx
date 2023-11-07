@@ -32,7 +32,7 @@ export default function Profile({ session }: { session: Session }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
-  const { id } = useParams<{ id: string }>();
+  const { id, index } = useParams<{ id: string; index: string | undefined }>();
 
   useEffect(() => {
     if (id && session) {
@@ -219,7 +219,9 @@ export default function Profile({ session }: { session: Session }) {
                     />
                   )}
                   size={300}
+                  index={index ? parseInt(index) : 0}
                 />
+                <View style={styles.separator} />
                 <Attributes
                   style={{
                     flexDirection: "row",

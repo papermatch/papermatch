@@ -161,17 +161,20 @@ export default function Profiles({ session }: { session: Session }) {
                         ? item.profile.avatar_urls
                         : [""]
                     }
-                    renderItem={(avatarUrl) => (
+                    renderItem={(avatarUrl, index) => (
                       <Avatar
                         size={200}
                         url={avatarUrl}
                         onPress={() => {
-                          navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
+                          navigate(
+                            `../${ROUTES.PROFILE}/${item.profile.id}/${index}`
+                          );
                         }}
                       />
                     )}
                     size={200}
                   />
+                  <View style={styles.separator} />
                   <Attributes
                     style={{
                       flexDirection: "row",

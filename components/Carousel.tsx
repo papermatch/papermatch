@@ -6,9 +6,9 @@ const SEPARATOR_SIZE = 12;
 
 type CarouselProps<T extends Key> = {
   data: T[];
-  renderItem: (item: T) => ReactElement;
+  renderItem: (item: T, index: number) => ReactElement;
   size: number;
-  start?: T;
+  index?: number;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -16,12 +16,9 @@ export const Carousel = <T extends Key>({
   data,
   renderItem,
   size,
-  start,
+  index = 0,
   style,
 }: CarouselProps<T>) => {
-  const [index, setIndex] = useState(
-    start && data.includes(start) ? data.indexOf(start) : 0
-  );
   const [width, setWidth] = useState<number>();
   const styles = useStyles();
 
@@ -36,7 +33,7 @@ export const Carousel = <T extends Key>({
         <FlatList
           data={data}
           keyExtractor={(item) => item.toString()}
-          renderItem={({ item }) => renderItem(item)}
+          renderItem={({ item, index }) => renderItem(item, index)}
           horizontal={true}
           snapToInterval={size + SEPARATOR_SIZE}
           ItemSeparatorComponent={() => <View style={styles.separator} />}

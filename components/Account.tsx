@@ -32,7 +32,7 @@ export default function Account({ session }: { session: Session }) {
   const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
   const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
-  const [newAvatarUrl, setNewAvatarUrl] = useState("");
+  const [newAvatarIndex, setNewAvatarIndex] = useState(0);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -156,7 +156,7 @@ export default function Account({ session }: { session: Session }) {
       }
 
       setAvatarUrls(nextAvatarUrls);
-      setNewAvatarUrl(newUrl);
+      setNewAvatarIndex(index > -1 ? index : 0);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -291,9 +291,10 @@ export default function Account({ session }: { session: Session }) {
                     />
                   )}
                   size={200}
-                  start={newAvatarUrl}
+                  index={newAvatarIndex}
                 />
               </View>
+              <View style={styles.separator} />
               <Divider style={styles.verticallySpaced} />
               <Text variant="titleLarge" style={styles.verticallySpaced}>
                 Profile settings
