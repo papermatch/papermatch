@@ -1,4 +1,5 @@
-import { Platform } from "react-native";
+import { useEffect } from "react";
+import { Platform, BackHandler as RNBackHandler } from "react-native";
 import {
   BrowserRouter,
   Route as BrowserRoute,
@@ -47,3 +48,23 @@ export const useNavigate =
   Platform.OS === "web" ? useNavigateBrowser : useNavigateNative;
 export const useParams =
   Platform.OS === "web" ? useParamsBrowser : useParamsNative;
+
+export const BackHandler = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const backAction = () => {
+      navigate(-1);
+      return true;
+    };
+
+    const backHandler = RNBackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigate]);
+
+  return null;
+};

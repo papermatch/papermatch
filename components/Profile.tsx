@@ -208,7 +208,7 @@ export default function Profile({ session }: { session: Session }) {
             {profile ? (
               <View>
                 <Carousel
-                  data={profile.avatar_urls || [""]}
+                  data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
                   renderItem={(item) => (
                     <Avatar
                       size={300}
@@ -219,7 +219,7 @@ export default function Profile({ session }: { session: Session }) {
                     />
                   )}
                   size={300}
-                  index={index ? parseInt(index) : 0}
+                  index={index ? parseInt(index) || 0 : 0}
                 />
                 <View style={styles.separator} />
                 <Attributes

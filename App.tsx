@@ -19,7 +19,7 @@ import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
-import { ROUTES, Router, Route, Navigate } from "./lib/routing";
+import { ROUTES, Router, Route, Navigate, BackHandler } from "./lib/routing";
 import {
   useFonts,
   EduNSWACTFoundation_400Regular,
@@ -102,6 +102,7 @@ export default function App() {
       <StatusBar style="auto" />
       <View style={styles.appView}>
         <Router>
+          {Platform.OS !== "web" && <BackHandler />}
           <Routes>
             {Platform.OS === "web" ? (
               <Route path={ROUTES.ROOT} element={<Home />} />
