@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { View, ScrollView, FlatList, Linking, Image } from "react-native";
+import { View, ScrollView, FlatList, Linking } from "react-native";
 import { Button, Appbar, Text, Divider, Menu } from "react-native-paper";
+import { Image } from "expo-image";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 
@@ -33,12 +34,18 @@ export default function Home() {
       </Appbar.Header>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
+          <View style={styles.separator} />
           <Image
             source={{ uri: "/papermatch.png" }}
             style={[
               styles.verticallySpaced,
               { width: 150, height: 150, alignSelf: "center" },
             ]}
+            onError={(error) => {
+              if (error instanceof Error) {
+                console.error(error.message);
+              }
+            }}
           />
           <Text style={styles.verticallySpaced}>
             At Paper Match, we believe in dating without hidden fees or costly

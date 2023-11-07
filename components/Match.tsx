@@ -4,7 +4,6 @@ import {
   View,
   FlatList,
   ViewToken,
-  Image,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -20,6 +19,7 @@ import {
   Portal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
@@ -273,22 +273,24 @@ export default function Match({ session }: { session: Session }) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <View style={styles.container}>
+          <View style={[styles.container, { paddingHorizontal: 0 }]}>
             <FlatList
               data={messages}
               keyExtractor={(item) => item.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              contentContainerStyle={{ paddingVertical: 12 }}
               inverted={true}
               renderItem={({ item }) => (
                 <Card
                   style={[
-                    styles.verticallySpaced,
                     {
+                      padding: 6,
                       backgroundColor:
                         item.user_id == session.user.id
                           ? theme.colors.elevation.level5
                           : theme.colors.elevation.level1,
-                      marginLeft: item.user_id == session.user.id ? 64 : 0,
-                      marginRight: item.user_id == session.user.id ? 0 : 64,
+                      marginLeft: item.user_id == session.user.id ? 64 : 12,
+                      marginRight: item.user_id == session.user.id ? 12 : 64,
                     },
                   ]}
                 >
@@ -299,7 +301,6 @@ export default function Match({ session }: { session: Session }) {
                           item.user_id == session.user.id
                             ? "row-reverse"
                             : "row",
-                        padding: 8,
                       },
                     ]}
                   >
@@ -322,7 +323,7 @@ export default function Match({ session }: { session: Session }) {
                     <Text
                       style={{
                         flexShrink: 1,
-                          marginHorizontal: 12,
+                        marginHorizontal: 12,
                         alignSelf: "center",
                         padding: 1,
                       }}
@@ -335,7 +336,7 @@ export default function Match({ session }: { session: Session }) {
               viewabilityConfig={viewabilityConfig}
               onViewableItemsChanged={handleViewableItemsChanged}
             />
-            <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <View style={{ flexDirection: "row" }}>
               <TextInput
                 style={{ flex: 1 }}
                 value={message}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Image, Pressable } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import {
   Appbar,
   FAB,
@@ -12,6 +12,7 @@ import {
   Modal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
@@ -31,7 +32,7 @@ export default function Profile({ session }: { session: Session }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
-  const { id } = useParams<{ id: string }>();
+  const { id, index } = useParams<{ id: string; index: string | undefined }>();
 
   useEffect(() => {
     if (id && session) {
@@ -61,7 +62,9 @@ export default function Profile({ session }: { session: Session }) {
           try {
             await Image.prefetch(avatarUrl);
           } catch (error) {
-            console.error(`Error prefetching ${avatarUrl}:`, error);
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         })
       );
@@ -201,21 +204,24 @@ export default function Profile({ session }: { session: Session }) {
       ) : (
         <ScrollView style={{ flex: 1 }}>
           <View style={styles.container}>
+            <View style={styles.separator} />
             {profile ? (
               <View>
                 <Carousel
-                  data={profile.avatar_urls || [""]}
+                  data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
                   renderItem={(item) => (
                     <Avatar
-                      size={200}
+                      size={300}
                       url={item}
                       onPress={() => {
                         setImageUrl(item);
                       }}
                     />
                   )}
-                  loading={loading}
+                  size={300}
+                  index={index ? parseInt(index) || 0 : 0}
                 />
+                <View style={styles.separator} />
                 <Attributes
                   style={{
                     flexDirection: "row",
@@ -226,6 +232,7 @@ export default function Profile({ session }: { session: Session }) {
                   profile={profile}
                   loading={loading}
                 />
+                <View style={styles.separator} />
                 <Divider style={styles.verticallySpaced} />
                 <Text style={styles.verticallySpaced} variant="titleLarge">
                   About
@@ -284,10 +291,12 @@ export default function Profile({ session }: { session: Session }) {
               <Image
                 source={{ uri: imageUrl }}
                 style={{ flex: 1 }}
-                resizeMode="contain"
-                onError={(error) =>
-                  console.error(`Image ${imageUrl} error:`, error)
-                }
+                contentFit="contain"
+                onError={(error) => {
+                  if (error instanceof Error) {
+                    console.error(error.message);
+                  }
+                }}
               />
             </Pressable>
           )}

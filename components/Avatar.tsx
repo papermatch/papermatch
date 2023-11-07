@@ -6,7 +6,9 @@ import {
   Avatar as RNPAvatar,
   ActivityIndicator,
   FAB,
+  useTheme,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +28,7 @@ export default function Avatar({
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>("");
   const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     setAvatarUrl(url);
@@ -96,10 +99,20 @@ export default function Avatar({
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl ? (
         <View>
-          <RNPAvatar.Image
-            style={styles.verticallySpaced}
-            size={size}
+          <Image
+            style={[
+              {
+                width: size,
+                height: size,
+                borderRadius: 3 * theme.roundness,
+              },
+            ]}
             source={{ uri: avatarUrl }}
+            onError={(error) => {
+              if (error instanceof Error) {
+                console.error(error.message);
+              }
+            }}
           />
           <FAB
             icon="close"

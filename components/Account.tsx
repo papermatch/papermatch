@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  View,
-  ScrollView,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -22,6 +16,7 @@ import {
   Menu,
   useTheme,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -37,7 +32,7 @@ export default function Account({ session }: { session: Session }) {
   const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
   const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
-  const [newAvatarUrl, setNewAvatarUrl] = useState("");
+  const [newAvatarIndex, setNewAvatarIndex] = useState(0);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -99,23 +94,20 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        await Promise.all(
-          data.avatar_urls.map(async (avatarUrl: string) => {
-            try {
-              await Image.prefetch(avatarUrl);
-            } catch (error) {
-              console.error(`Error prefetching ${avatarUrl}:`, error);
-            }
-          })
-        );
-
+        try {
+          await Image.prefetch(data.avatar_urls);
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message);
+          }
+        }
         setProfileOnboarding(!data.updated_at);
         setAvatarUrls(data.avatar_urls);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
-        setSnackbarMessage("Unable to fetch avatar URLs");
+        setSnackbarMessage("Unable to fetch profile");
         setSnackbarVisible(true);
       }
     }
@@ -164,7 +156,7 @@ export default function Account({ session }: { session: Session }) {
       }
 
       setAvatarUrls(nextAvatarUrls);
-      setNewAvatarUrl(newUrl);
+      setNewAvatarIndex(index > -1 ? index : 0);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -271,6 +263,7 @@ export default function Account({ session }: { session: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <Text variant="titleLarge" style={styles.verticallySpaced}>
                 Edit pictures
               </Text>
@@ -297,10 +290,11 @@ export default function Account({ session }: { session: Session }) {
                       }}
                     />
                   )}
-                  start={newAvatarUrl}
-                  loading={loading}
+                  size={200}
+                  index={newAvatarIndex}
                 />
               </View>
+              <View style={styles.separator} />
               <Divider style={styles.verticallySpaced} />
               <Text variant="titleLarge" style={styles.verticallySpaced}>
                 Profile settings

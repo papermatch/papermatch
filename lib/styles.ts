@@ -40,8 +40,7 @@ export const useStyles = () => {
       flex: 1,
     },
     verticallySpaced: {
-      marginTop: 6,
-      marginBottom: 6,
+      marginBottom: 12,
     },
     bottom: {
       height: 60,
@@ -84,6 +83,10 @@ export const useStyles = () => {
       padding: 26,
       borderRadius: 21,
       backgroundColor: theme.colors.tertiaryContainer,
+    },
+    separator: {
+      height: 12,
+      width: 12,
     },
   });
 };

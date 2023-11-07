@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
@@ -13,6 +13,7 @@ import {
   Snackbar,
   useTheme,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
@@ -22,8 +23,7 @@ import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 
-const MAX_USER_SCORE = 10;
-const PROFILES_PER_PAGE = 10;
+const PROFILES_PER_PAGE = 6;
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -77,15 +77,15 @@ export default function Profiles({ session }: { session: Session }) {
       }
 
       await Promise.all(
-        nextData.flatMap((item) =>
-          item.profile.avatar_urls.map(async (avatarUrl: string) => {
-            try {
-              await Image.prefetch(avatarUrl);
-            } catch (error) {
-              console.error(`Error prefetching ${avatarUrl}:`, error);
+        nextData.map(async (item) => {
+          try {
+            await Image.prefetch(item.profile.avatar_urls);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.log(error.message);
             }
-          })
-        )
+          }
+        })
       );
 
       if (page === 0) {
@@ -133,70 +133,59 @@ export default function Profiles({ session }: { session: Session }) {
           />
         </Menu>
       </Appbar.Header>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingHorizontal: 0 }]}>
         {data.length ? (
           <FlatList
             data={data}
             keyExtractor={(item) => item.profile.id.toString()}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            contentContainerStyle={{ paddingVertical: 12 }}
             renderItem={({ item }) => (
               <Card
+                style={{ marginHorizontal: 12 }}
                 onPress={() => {
                   navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
                 }}
-                style={[styles.verticallySpaced]}
               >
-                <View
-                  style={[
-                    {
-                      flexDirection: "row",
-                      padding: 16,
-                    },
-                  ]}
-                >
-                  <Carousel
-                    data={item.profile.avatar_urls}
-                    renderItem={(avatarUrl) => (
-                      <View style={{ alignSelf: "center" }}>
-                        <Avatar
-                          size={100}
-                          url={avatarUrl}
-                          onPress={() => {
-                            navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
-                          }}
-                        />
-                      </View>
-                    )}
-                    loading={loading}
-                    vertical={true}
-                  />
-
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      marginLeft: 16,
-                    }}
+                <View>
+                  <View style={styles.separator} />
+                  <Text
+                    variant="titleLarge"
+                    style={[styles.verticallySpaced, { textAlign: "center" }]}
                   >
-                    <Text variant="titleLarge">{item.profile.username}</Text>
-                    <Attributes
-                      style={{
-                        flexDirection: "row",
-                        flexWrap: "wrap",
-                      }}
-                      profile={item.profile}
-                      distance={item.distance}
-                    />
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                      }}
-                      pointerEvents="box-only"
-                    />
-                  </View>
+                    {item.profile.username}
+                  </Text>
+                  <Carousel
+                    data={
+                      item.profile.avatar_urls.length
+                        ? item.profile.avatar_urls
+                        : [""]
+                    }
+                    renderItem={(avatarUrl, index) => (
+                      <Avatar
+                        size={200}
+                        url={avatarUrl}
+                        onPress={() => {
+                          navigate(
+                            `../${ROUTES.PROFILE}/${item.profile.id}/${index}`
+                          );
+                        }}
+                      />
+                    )}
+                    size={200}
+                  />
+                  <View style={styles.separator} />
+                  <Attributes
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                    }}
+                    distance={item.distance}
+                    profile={item.profile}
+                    loading={loading}
+                  />
+                  <View style={styles.separator} />
                 </View>
               </Card>
             )}
@@ -232,7 +221,12 @@ export default function Profiles({ session }: { session: Session }) {
             <ActivityIndicator animating={true} size="large" />
           </View>
         ) : (
-          <Text style={styles.verticallySpaced}>
+          <Text
+            style={[
+              styles.verticallySpaced,
+              { marginTop: 12, paddingHorizontal: 12 },
+            ]}
+          >
             No compatible profiles found, try adjusting your preferences.
           </Text>
         )}

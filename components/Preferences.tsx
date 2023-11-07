@@ -243,6 +243,7 @@ export default function Preferences({ session }: { session: Session }) {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <Text style={styles.verticallySpaced}>
                 Update your preferences below. The more information you provide,
                 the better your matches will be!
@@ -370,24 +371,26 @@ export default function Preferences({ session }: { session: Session }) {
                   />
                 }
               />
-              <View
-                style={[
-                  styles.verticallySpaced,
-                  { flexDirection: "row", flexWrap: "wrap" },
-                ]}
-              >
-                {keywords.map((keyword) => (
-                  <Chip
-                    style={{ margin: 8 }}
-                    key={keyword}
-                    onClose={() =>
-                      setKeywords(keywords.filter((k) => k !== keyword))
-                    }
-                  >
-                    {keyword}
-                  </Chip>
-                ))}
-              </View>
+              {keywords.length > 0 && (
+                <View
+                  style={[
+                    styles.verticallySpaced,
+                    { flexDirection: "row", flexWrap: "wrap" },
+                  ]}
+                >
+                  {keywords.map((keyword) => (
+                    <Chip
+                      style={{ margin: 4 }}
+                      key={keyword}
+                      onClose={() =>
+                        setKeywords(keywords.filter((k) => k !== keyword))
+                      }
+                    >
+                      {keyword}
+                    </Chip>
+                  ))}
+                </View>
+              )}
               <Button
                 mode="contained"
                 style={styles.verticallySpaced}

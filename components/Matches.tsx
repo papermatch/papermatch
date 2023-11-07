@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
@@ -10,11 +10,12 @@ import {
   Portal,
   Snackbar,
 } from "react-native-paper";
+import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "./Avatar";
 import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
-import { MatchesData, ProfileData } from "../lib/types";
+import { MatchesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 
 export default function Matches({ session }: { session: Session }) {
@@ -48,10 +49,9 @@ export default function Matches({ session }: { session: Session }) {
               await Image.prefetch(item.profile.avatar_urls[0]);
             }
           } catch (error) {
-            console.error(
-              `Error prefetching ${item.profile.avatar_urls[0]}:`,
-              error
-            );
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         })
       );
@@ -80,17 +80,23 @@ export default function Matches({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingHorizontal: 0 }]}>
           {data.length ? (
             <FlatList
               data={data}
               keyExtractor={(item) => item.match.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              contentContainerStyle={{
+                paddingVertical: 12,
+              }}
               renderItem={({ item }) => (
                 <Card
-                  style={styles.verticallySpaced}
-                  onPress={() => navigate(`../${ROUTES.MATCH}/${item.match.id}`)}
+                  style={{ padding: 12, marginHorizontal: 12 }}
+                  onPress={() =>
+                    navigate(`../${ROUTES.MATCH}/${item.match.id}`)
+                  }
                 >
-                  <View style={{ flexDirection: "row", padding: 16 }}>
+                  <View style={{ flexDirection: "row" }}>
                     <Badge
                       visible={item.unread}
                       size={10}
@@ -118,7 +124,7 @@ export default function Matches({ session }: { session: Session }) {
                       >
                         {item.profile.username}
                       </Text>
-                      <Text style={styles.verticallySpaced}>
+                      <Text>
                         {item.message
                           ? item.message.message
                               .replace(/\n/g, " ")
@@ -142,7 +148,14 @@ export default function Matches({ session }: { session: Session }) {
               )}
             />
           ) : (
-            <Text style={styles.verticallySpaced}>No matches yet.</Text>
+            <Text
+              style={[
+                styles.verticallySpaced,
+                { marginTop: 12, paddingHorizontal: 12 },
+              ]}
+            >
+              No matches yet.
+            </Text>
           )}
         </View>
       )}

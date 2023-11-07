@@ -19,6 +19,7 @@ export default function Privacy() {
       </Appbar.Header>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
+          <View style={styles.separator} />
           <Text style={styles.verticallySpaced}>
             Last updated: October 27th, 2023
           </Text>

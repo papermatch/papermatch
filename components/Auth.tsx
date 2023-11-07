@@ -150,6 +150,7 @@ export default function Auth() {
         >
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
+              <View style={styles.separator} />
               <SegmentedButtons
                 style={styles.verticallySpaced}
                 value={mode}
