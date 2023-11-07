@@ -18,7 +18,7 @@ const fontFamilyMedium = Platform.select({
 const fontConfig = {
   default: {
     fontFamily: fontFamilyRegular,
-    fontSize: 14 * FONT_SCALE,
+    fontSize: 16 * FONT_SCALE,
     fontWeight: "400" as const,
     letterSpacing: 0,
     lineHeight: 20 * FONT_SCALE,

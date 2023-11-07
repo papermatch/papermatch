@@ -84,6 +84,9 @@ export default function Preferences({ session }: { session: Session }) {
         setMinAge(data.min_age?.toString() ?? "");
         setMaxAge(data.max_age?.toString() ?? "");
         setGender(data.gender ?? []);
+        setEducation(data.education ?? []);
+        setReligion(data.religion ?? []);
+        setSexuality(data.sexuality ?? []);
         setIntention(data.intention ?? []);
         setRelationship(data.relationship ?? []);
         setFamily(data.family ?? []);

@@ -11,6 +11,7 @@ import {
   Portal,
   Modal,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
@@ -32,6 +33,7 @@ export default function Profile({ session }: { session: Session }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
+  const theme = useTheme();
   const { id, index } = useParams<{ id: string; index: string | undefined }>();
 
   useEffect(() => {
@@ -142,7 +144,7 @@ export default function Profile({ session }: { session: Session }) {
         throw error;
       }
 
-      if (type == "block") {
+      if (type == "pass" || type == "block") {
         navigate(-1);
       } else {
         getInteraction();
@@ -255,9 +257,9 @@ export default function Profile({ session }: { session: Session }) {
       {session?.user.id != id && profile && (
         <View style={styles.fabContainer}>
           <FAB
-            icon="thumb-down"
+            icon={interaction == "pass" ? "close-circle" : "close"}
             style={{ position: "absolute", margin: 16, left: 0, bottom: 0 }}
-            color={interaction == "pass" ? "red" : "grey"}
+            color="black"
             size="medium"
             onPress={() =>
               interaction == "pass"
@@ -267,9 +269,9 @@ export default function Profile({ session }: { session: Session }) {
             disabled={loading}
           />
           <FAB
-            icon="thumb-up"
+            icon={interaction == "like" ? "heart" : "heart-outline"}
             style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
-            color={interaction == "like" ? "green" : "grey"}
+            color={theme.colors.secondary}
             size="medium"
             onPress={() =>
               interaction == "like"
