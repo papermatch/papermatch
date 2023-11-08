@@ -123,8 +123,6 @@ export default function Match({ session }: { session: Session }) {
 
   async function getMessages() {
     try {
-      setLoading(true);
-
       const { data, error } = await supabase
         .from("messages")
         .select("*")
@@ -142,8 +140,6 @@ export default function Match({ session }: { session: Session }) {
         setSnackbarMessage("Unable to get messages");
         setSnackbarVisible(true);
       }
-    } finally {
-      setLoading(false);
     }
   }
 

@@ -121,10 +121,9 @@ export default function Account({ session }: { session: Session }) {
     oldUrl: string;
   }) {
     try {
-      setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
-      const nextAvatarUrls = avatarUrls || [];
+      const nextAvatarUrls = [...avatarUrls] || [];
       const index = nextAvatarUrls.indexOf(oldUrl);
       if (newUrl) {
         // Replace the old URL with the new one
@@ -156,15 +155,13 @@ export default function Account({ session }: { session: Session }) {
       }
 
       setAvatarUrls(nextAvatarUrls);
-      setNewAvatarIndex(index > -1 ? index : 0);
+      setNewAvatarIndex(index > -1 ? index : nextAvatarUrls.length - 1);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
         setSnackbarMessage("Unable to update avatar URL");
         setSnackbarVisible(true);
       }
-    } finally {
-      setLoading(false);
     }
   }
 

@@ -25,8 +25,10 @@ export default function Avatar({
   onUpload?: (newUrl: string) => void;
   onPress?: () => void;
 }) {
+  const [loading, setLoading] = useState(!!url);
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
+  const [error, setError] = useState(false);
   const styles = useStyles();
   const theme = useTheme();
 
@@ -97,13 +99,14 @@ export default function Avatar({
 
   return (
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
-      {avatarUrl ? (
+      {avatarUrl && !error ? (
         <View>
+          {loading && <ActivityIndicator animating={true} size={size} />}
           <Image
             style={[
               {
-                width: size,
-                height: size,
+                width: loading ? 0 : size,
+                height: loading ? 0 : size,
                 borderRadius: 3 * theme.roundness,
               },
             ]}
@@ -112,7 +115,9 @@ export default function Avatar({
               if (error instanceof Error) {
                 console.error(error.message);
               }
+              setError(true);
             }}
+            onLoadEnd={() => setLoading(false)}
           />
           <FAB
             icon="close"
