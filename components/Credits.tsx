@@ -169,23 +169,25 @@ export default function Credits({ session }: { session: Session }) {
             <Text style={styles.verticallySpaced} variant="titleLarge">
               Purchase credits
             </Text>
-            <TextInput
-              style={styles.verticallySpaced}
-              label="Credits"
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={(text) => {
-                setQuantity(text);
-                validateQuantity(text);
-              }}
-              placeholder="Enter Quantity"
-              error={!!quantityError}
-            />
-            {quantityError ? (
-              <HelperText type="error" visible={!!quantityError}>
-                {quantityError}
-              </HelperText>
-            ) : null}
+            <View style={styles.verticallySpaced}>
+              <TextInput
+                style={styles.textInput}
+                label="Credits"
+                keyboardType="numeric"
+                value={quantity}
+                onChangeText={(text) => {
+                  setQuantity(text);
+                  validateQuantity(text);
+                }}
+                placeholder="Enter Quantity"
+                error={!!quantityError}
+              />
+              {quantityError ? (
+                <HelperText type="error" visible={!!quantityError}>
+                  {quantityError}
+                </HelperText>
+              ) : null}
+            </View>
             <Button
               mode="contained"
               labelStyle={styles.buttonLabel}

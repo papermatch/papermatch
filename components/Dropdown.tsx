@@ -2,6 +2,7 @@ import { useState, Key } from "react";
 import { StyleProp, View, ViewStyle, Pressable } from "react-native";
 import { TextInput, Menu } from "react-native-paper";
 import { AttributeData } from "../lib/types";
+import { useStyles } from "../lib/styles";
 
 type DropdownProps<T extends Key> = {
   label: string;
@@ -21,6 +22,7 @@ export const Dropdown = <T extends Key>({
   loading,
 }: DropdownProps<T>) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const styles = useStyles();
 
   return (
     <View style={style}>
@@ -30,6 +32,7 @@ export const Dropdown = <T extends Key>({
         anchor={
           <Pressable onPress={() => setMenuVisible(!menuVisible)}>
             <TextInput
+              style={styles.textInput}
               label={label}
               value={data.find((item) => item.value === value)?.label || ""}
               left={

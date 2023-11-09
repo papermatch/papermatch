@@ -47,12 +47,8 @@ export const useStyles = () => {
       justifyContent: "space-between",
       padding: 12,
     },
-    buttonLabel: {
-      padding: 1,
-    },
-    appbarTitle: {
-      padding: 1,
-    },
+    buttonLabel: {},
+    appbarTitle: {},
     dialog: {
       maxWidth: Math.min(600, dimensions.window.width - 24),
       width: "100%",
@@ -87,6 +83,10 @@ export const useStyles = () => {
     separator: {
       height: 12,
       width: 12,
+    },
+    textInput: {
+      fontSize: theme.fonts.bodyLarge.fontSize,
+      lineHeight: theme.fonts.bodyLarge.lineHeight,
     },
   });
 };

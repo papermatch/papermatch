@@ -2,7 +2,7 @@
   "expo": {
     "name": "Paper Match",
     "slug": "papermatch",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "bundler": "metro",
@@ -41,19 +41,14 @@
           "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
         }
       ],
-      [
-        "expo-router"
-      ],
+      ["expo-router"],
       [
         "onesignal-expo-plugin",
         {
           "mode": "development"
         }
       ],
-      [
-        "./scripts/withDrawableAssets",
-        "./assets/onesignal"
-      ]
+      ["./scripts/withDrawableAssets", "./assets/onesignal"]
     ],
     "sdkVersion": "49.0.0",
     "extra": {

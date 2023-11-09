@@ -17,6 +17,7 @@ import Preferences from "./components/Preferences";
 import Privacy from "./components/Privacy";
 import Profile from "./components/Profile";
 import Profiles from "./components/Profiles";
+import Report from "./components/Report";
 import { Session } from "@supabase/supabase-js";
 import { Routes } from "react-router-dom";
 import { ROUTES, Router, Route, Navigate, BackHandler } from "./lib/routing";
@@ -245,6 +246,16 @@ export default function App() {
               element={
                 session?.user ? (
                   <Profiles key={session.user.id} session={session} />
+                ) : (
+                  <Navigate to={`../${ROUTES.AUTH}`} replace />
+                )
+              }
+            />
+            <Route
+              path={`${ROUTES.REPORT}/:id`}
+              element={
+                session?.user ? (
+                  <Report key={session.user.id} session={session} />
                 ) : (
                   <Navigate to={`../${ROUTES.AUTH}`} replace />
                 )

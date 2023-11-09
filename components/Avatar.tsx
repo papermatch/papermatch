@@ -12,7 +12,6 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
-import { useStyles } from "../lib/styles";
 
 export default function Avatar({
   url,
@@ -25,9 +24,10 @@ export default function Avatar({
   onUpload?: (newUrl: string) => void;
   onPress?: () => void;
 }) {
+  const [loading, setLoading] = useState(!!url);
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>("");
-  const styles = useStyles();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
+  const [error, setError] = useState(false);
   const theme = useTheme();
 
   useEffect(() => {
@@ -97,21 +97,37 @@ export default function Avatar({
 
   return (
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
-      {avatarUrl ? (
+      {avatarUrl && !error ? (
         <View>
-          <Image
-            style={[
-              {
+          {loading && (
+            <ActivityIndicator
+              animating={true}
+              size={0.8 * size}
+              style={{
+                zIndex: 1,
+                position: "absolute",
                 width: size,
                 height: size,
                 borderRadius: 3 * theme.roundness,
-              },
-            ]}
+                backgroundColor: theme.colors.surface,
+              }}
+            />
+          )}
+          <Image
+            style={{
+              width: size,
+              height: size,
+              borderRadius: 3 * theme.roundness,
+            }}
             source={{ uri: avatarUrl }}
             onError={(error) => {
               if (error instanceof Error) {
                 console.error(error.message);
               }
+              setError(true);
+            }}
+            onLoadEnd={() => {
+              setLoading(false);
             }}
           />
           <FAB
@@ -123,11 +139,7 @@ export default function Avatar({
           />
         </View>
       ) : (
-        <RNPAvatar.Icon
-          style={styles.verticallySpaced}
-          size={size}
-          icon={onPress ? "account" : "plus"}
-        />
+        <RNPAvatar.Icon size={size} icon={onPress ? "account" : "plus"} />
       )}
     </Pressable>
   );

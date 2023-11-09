@@ -121,10 +121,9 @@ export default function Account({ session }: { session: Session }) {
     oldUrl: string;
   }) {
     try {
-      setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
-      const nextAvatarUrls = avatarUrls || [];
+      const nextAvatarUrls = [...avatarUrls] || [];
       const index = nextAvatarUrls.indexOf(oldUrl);
       if (newUrl) {
         // Replace the old URL with the new one
@@ -156,15 +155,13 @@ export default function Account({ session }: { session: Session }) {
       }
 
       setAvatarUrls(nextAvatarUrls);
-      setNewAvatarIndex(index > -1 ? index : 0);
+      setNewAvatarIndex(index > -1 ? index : nextAvatarUrls.length - 1);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
         setSnackbarMessage("Unable to update avatar URL");
         setSnackbarVisible(true);
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -195,7 +192,7 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function deleteUser() {
+  async function handleDeleteUser() {
     try {
       setLoading(true);
       const { error } = await supabase.rpc("delete_current_user");
@@ -302,6 +299,7 @@ export default function Account({ session }: { session: Session }) {
               <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
                 <View style={{ flex: 1, flexDirection: "column" }}>
                   <TextInput
+                    style={styles.textInput}
                     label="Update email"
                     onChangeText={(text) => {
                       setEmail(text);
@@ -401,7 +399,7 @@ export default function Account({ session }: { session: Session }) {
         >
           <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium" style={styles.dialogText}>
+            <Text variant="bodyLarge" style={styles.dialogText}>
               Deleting your account will permanently remove all of your matches
               and remaining credits! Click "Ok" below to confirm.
             </Text>
@@ -419,7 +417,7 @@ export default function Account({ session }: { session: Session }) {
               textColor={theme.colors.onTertiaryContainer}
               mode="text"
               labelStyle={styles.buttonLabel}
-              onPress={() => deleteUser()}
+              onPress={() => handleDeleteUser()}
             >
               Ok
             </Button>
