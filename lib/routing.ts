@@ -35,6 +35,7 @@ export const ROUTES = {
   PRIVACY: "privacy",
   PROFILE: "profile",
   PROFILES: "profiles",
+  REPORT: "report",
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;

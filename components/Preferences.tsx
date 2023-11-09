@@ -416,7 +416,7 @@ export default function Preferences({ session }: { session: Session }) {
                 }
                 disabled={loading}
               >
-                {loading ? "Loading ..." : "Update"}
+                {loading ? "Loading..." : "Update"}
               </Button>
             </View>
           </ScrollView>

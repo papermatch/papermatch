@@ -60,6 +60,7 @@ export const useStyles = () => {
       backgroundColor: theme.colors.tertiaryContainer,
     },
     dialogText: {
+      padding: 1,
       color: theme.colors.onTertiaryContainer,
     },
     snackbar: {

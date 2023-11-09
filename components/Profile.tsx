@@ -188,12 +188,20 @@ export default function Profile({ session }: { session: Session }) {
               title="Edit"
             />
           ) : (
-            <Menu.Item
-              onPress={() => {
-                handleInteraction(interaction == "block" ? "none" : "block");
-              }}
-              title={interaction == "block" ? "Unblock" : "Block"}
-            />
+            <View>
+              <Menu.Item
+                onPress={() => {
+                  handleInteraction(interaction == "block" ? "none" : "block");
+                }}
+                title={interaction == "block" ? "Unblock" : "Block"}
+              />
+              <Menu.Item
+                onPress={() => {
+                  navigate(`../${ROUTES.REPORT}/${id}`);
+                }}
+                title="Report"
+              />
+            </View>
           )}
         </Menu>
       </Appbar.Header>

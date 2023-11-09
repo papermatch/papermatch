@@ -30,6 +30,7 @@ export type IntentionType = Database["public"]["Enums"]["intention_type"];
 export type InteractionType = Database["public"]["Enums"]["interaction_type"];
 export type RelationshipType = Database["public"]["Enums"]["relationship_type"];
 export type ReligionType = Database["public"]["Enums"]["religion_type"];
+export type ReasonType = Database["public"]["Enums"]["reason_type"];
 export type SexualityType = Database["public"]["Enums"]["sexuality_type"];
 
 export type AttributeData<T extends Key> = {
@@ -283,5 +284,43 @@ export const SexualityData: AttributeData<SexualityType>[] = [
     value: "other",
     label: "Other sexuality",
     icon: "heart-outline",
+  },
+];
+
+export const ReasonData: AttributeData<ReasonType>[] = [
+  {
+    value: "contact",
+    label: "Contact information",
+    icon: "phone-off",
+  },
+  {
+    value: "fake",
+    label: "Fake profile",
+    icon: "incognito-off",
+  },
+  {
+    value: "harassment",
+    label: "Harassing behavior",
+    icon: "account-voice-off",
+  },
+  {
+    value: "inappropriate",
+    label: "Inappropriate content",
+    icon: "sausage-off",
+  },
+  {
+    value: "selling",
+    label: "Selling something",
+    icon: "currency-usd-off",
+  },
+  {
+    value: "underage",
+    label: "Underage user",
+    icon: "candy-off",
+  },
+  {
+    value: "other",
+    label: "Other reason",
+    icon: "account-off",
   },
 ];

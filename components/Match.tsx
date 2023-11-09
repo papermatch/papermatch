@@ -283,6 +283,12 @@ export default function Match({ session }: { session: Session }) {
             }}
             title="Profile"
           />
+          <Menu.Item
+            onPress={() => {
+              navigate(`../${ROUTES.REPORT}/${profile?.id}`);
+            }}
+            title="Report"
+          />
         </Menu>
       </Appbar.Header>
       {loading ? (

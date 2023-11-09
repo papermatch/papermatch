@@ -279,6 +279,46 @@ export interface Database {
           }
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: Database["public"]["Enums"]["reason_type"]
+          reporter_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: Database["public"]["Enums"]["reason_type"]
+          reporter_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: Database["public"]["Enums"]["reason_type"]
+          reporter_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       active: {
@@ -505,6 +545,14 @@ export interface Database {
       gender_type: "male" | "female" | "nonbinary"
       intention_type: "unsure" | "casual" | "serious" | "marriage" | "friends"
       interaction_type: "none" | "block" | "pass" | "like"
+      reason_type:
+        | "contact"
+        | "fake"
+        | "harassment"
+        | "inappropriate"
+        | "selling"
+        | "underage"
+        | "other"
       relationship_type: "unsure" | "monog" | "enm"
       religion_type:
         | "agnostic"
