@@ -48,7 +48,6 @@ export const Attributes = ({
       {profile.birthday && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon="cake-variant"
           disabled={loading}
         >
@@ -58,7 +57,6 @@ export const Attributes = ({
       {profile.gender && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={gender?.icon || "gender-transgender"}
           disabled={loading}
         >
@@ -68,7 +66,6 @@ export const Attributes = ({
       {profile.education && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={education?.icon || "school"}
           disabled={loading}
         >
@@ -78,7 +75,6 @@ export const Attributes = ({
       {profile.religion && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={religion?.icon || "hands-pray"}
           disabled={loading}
         >
@@ -88,7 +84,6 @@ export const Attributes = ({
       {profile.sexuality && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={sexuality?.icon || "human-male-female"}
           disabled={loading}
         >
@@ -98,7 +93,6 @@ export const Attributes = ({
       {profile.family && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={family?.icon || "baby"}
           disabled={loading}
         >
@@ -108,7 +102,6 @@ export const Attributes = ({
       {profile.intention && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={intention?.icon || "heart"}
           disabled={loading}
         >
@@ -118,7 +111,6 @@ export const Attributes = ({
       {profile.relationship && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={relationship?.icon || "heart-broken"}
           disabled={loading}
         >
@@ -128,7 +120,6 @@ export const Attributes = ({
       {profile.diet && (
         <Chip
           style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
           icon={diet?.icon || "food-apple"}
           disabled={loading}
         >
@@ -136,12 +127,7 @@ export const Attributes = ({
         </Chip>
       )}
       {distance !== null && (
-        <Chip
-          style={{ margin: 4 }}
-          textStyle={{ padding: 1 }}
-          icon="map-marker"
-          disabled={loading}
-        >
+        <Chip style={{ margin: 4 }} icon="map-marker" disabled={loading}>
           {Math.round(distance)} miles
         </Chip>
       )}

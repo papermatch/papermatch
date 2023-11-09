@@ -144,20 +144,22 @@ export default function Report({ session }: { session: Session }) {
                   <Text variant="titleLarge" style={styles.verticallySpaced}>
                     Report {profile?.username ?? "profile"}
                   </Text>
-                  <Dropdown
-                    style={[styles.verticallySpaced, { flex: 1 }]}
-                    label="Reason"
-                    data={ReasonData}
-                    value={reason}
-                    onChange={setReason}
-                  />
-                  {reasonError ? (
-                    <HelperText type="error" visible={!!reasonError}>
-                      {reasonError}
-                    </HelperText>
-                  ) : null}
+                  <View style={styles.verticallySpaced}>
+                    <Dropdown
+                      style={{ flex: 1 }}
+                      label="Reason"
+                      data={ReasonData}
+                      value={reason}
+                      onChange={setReason}
+                    />
+                    {reasonError ? (
+                      <HelperText type="error" visible={!!reasonError}>
+                        {reasonError}
+                      </HelperText>
+                    ) : null}
+                  </View>
                   <TextInput
-                    style={[styles.verticallySpaced]}
+                    style={[styles.verticallySpaced, styles.textInput]}
                     label="Details"
                     value={details}
                     onChangeText={(text) => setDetails(text)}

@@ -109,24 +109,26 @@ export default function Otp({ session = undefined }: { session?: Session }) {
           <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
               <View style={styles.separator} />
-              <TextInput
-                style={styles.verticallySpaced}
-                label="OTP"
-                onChangeText={(text) => {
-                  setOtp(text);
-                  validateOtp(text);
-                }}
-                onSubmitEditing={handleOtp}
-                value={otp}
-                keyboardType="numeric"
-                placeholder="Enter your OTP"
-                error={!!otpError}
-              />
-              {otpError ? (
-                <HelperText type="error" visible={!!otpError}>
-                  {otpError}
-                </HelperText>
-              ) : null}
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="OTP"
+                  onChangeText={(text) => {
+                    setOtp(text);
+                    validateOtp(text);
+                  }}
+                  onSubmitEditing={handleOtp}
+                  value={otp}
+                  keyboardType="numeric"
+                  placeholder="Enter your OTP"
+                  error={!!otpError}
+                />
+                {otpError ? (
+                  <HelperText type="error" visible={!!otpError}>
+                    {otpError}
+                  </HelperText>
+                ) : null}
+              </View>
               <Button
                 mode="contained"
                 style={styles.verticallySpaced}

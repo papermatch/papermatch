@@ -92,8 +92,8 @@ export default function Auth() {
   };
 
   const validateUsername = (username: string) => {
-    if (username.trim() === "") {
-      setUsernameError("Username cannot be empty");
+    if (username.trim().length < 3) {
+      setUsernameError("Username must be at least 3 characters");
       return false;
     }
     setUsernameError("");
@@ -159,58 +159,60 @@ export default function Auth() {
                   {
                     value: "signUp",
                     label: "Sign Up",
-                    labelStyle: { padding: 1 },
                   },
                   {
                     value: "signIn",
                     label: "Sign In",
-                    labelStyle: { padding: 1 },
                   },
                 ]}
               />
-              <TextInput
-                style={styles.verticallySpaced}
-                label="Email"
-                onChangeText={(text) => {
-                  setEmail(text);
-                  validateEmail(text);
-                }}
-                onSubmitEditing={() => mode === "signIn" && handleAuth()}
-                value={email}
-                placeholder="user@example.com"
-                autoCapitalize={"none"}
-                error={!!emailError}
-              />
-              {emailError ? (
-                <HelperText type="error" visible={!!emailError}>
-                  {emailError}
-                </HelperText>
-              ) : null}
-
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="Email"
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    validateEmail(text);
+                  }}
+                  onSubmitEditing={() => mode === "signIn" && handleAuth()}
+                  value={email}
+                  placeholder="user@example.com"
+                  autoCapitalize={"none"}
+                  error={!!emailError}
+                />
+                {emailError ? (
+                  <HelperText type="error" visible={!!emailError}>
+                    {emailError}
+                  </HelperText>
+                ) : null}
+              </View>
               {mode === "signUp" && (
                 <View>
-                  <TextInput
-                    style={styles.verticallySpaced}
-                    label="Username (your first name is fine)"
-                    value={username || ""}
-                    onChangeText={(text) => {
-                      setUsername(text);
-                      validateUsername(text);
-                    }}
-                    maxLength={50}
-                    error={!!usernameError}
-                  />
-                  {usernameError ? (
-                    <HelperText type="error" visible={!!usernameError}>
-                      {usernameError}
-                    </HelperText>
-                  ) : null}
+                  <View style={styles.verticallySpaced}>
+                    <TextInput
+                      style={styles.textInput}
+                      label="Username (your first name is fine)"
+                      value={username || ""}
+                      onChangeText={(text) => {
+                        setUsername(text);
+                        validateUsername(text);
+                      }}
+                      maxLength={50}
+                      error={!!usernameError}
+                    />
+                    {usernameError ? (
+                      <HelperText type="error" visible={!!usernameError}>
+                        {usernameError}
+                      </HelperText>
+                    ) : null}
+                  </View>
                   <View
                     style={(styles.verticallySpaced, { flexDirection: "row" })}
                   >
                     <View style={[styles.verticallySpaced, { flex: 1 }]}>
                       <Pressable onPress={() => setDatePickerVisible(true)}>
                         <TextInput
+                          style={styles.textInput}
                           label="Birthday"
                           value={birthday}
                           error={!!birthdayError}

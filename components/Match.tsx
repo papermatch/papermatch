@@ -367,7 +367,6 @@ export default function Match({ session }: { session: Session }) {
                             flexShrink: 1,
                             marginHorizontal: 12,
                             alignSelf: "center",
-                            padding: 1,
                           }}
                         >
                           {item.message}
@@ -394,7 +393,7 @@ export default function Match({ session }: { session: Session }) {
             />
             <View style={{ flexDirection: "row" }}>
               <TextInput
-                style={{ flex: 1 }}
+                style={[styles.textInput, { flex: 1 }]}
                 value={message}
                 onChangeText={setMessage}
                 onSubmitEditing={handleMessage}
@@ -420,10 +419,9 @@ export default function Match({ session }: { session: Session }) {
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
         >
-          <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyLarge" style={styles.dialogText}>
-              Are you sure you want to delete this message?
+              Would you like to delete this message?
             </Text>
           </Dialog.Content>
           <Dialog.Actions>

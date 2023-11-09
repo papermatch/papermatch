@@ -220,8 +220,8 @@ export default function Edit({ session }: { session: Session }) {
   };
 
   const validateUsername = (username: string) => {
-    if (username.trim() === "") {
-      setUsernameError("Username cannot be empty");
+    if (username.trim().length < 3) {
+      setUsernameError("Username must be at least 3 characters");
       return false;
     }
     setUsernameError("");
@@ -288,22 +288,24 @@ export default function Edit({ session }: { session: Session }) {
                 better your matches will be!
               </Text>
               <Divider style={styles.verticallySpaced} />
-              <TextInput
-                style={styles.verticallySpaced}
-                label="Username (your first name is fine)"
-                value={username}
-                onChangeText={(text) => {
-                  setUsername(text);
-                  validateUsername(text);
-                }}
-                maxLength={50}
-                error={!!usernameError}
-              />
-              {usernameError ? (
-                <HelperText type="error" visible={!!usernameError}>
-                  {usernameError}
-                </HelperText>
-              ) : null}
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="Username (your first name is fine)"
+                  value={username}
+                  onChangeText={(text) => {
+                    setUsername(text);
+                    validateUsername(text);
+                  }}
+                  maxLength={50}
+                  error={!!usernameError}
+                />
+                {usernameError ? (
+                  <HelperText type="error" visible={!!usernameError}>
+                    {usernameError}
+                  </HelperText>
+                ) : null}
+              </View>
               <Dropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Gender"
@@ -360,30 +362,32 @@ export default function Edit({ session }: { session: Session }) {
                 value={diet}
                 onChange={setDiet}
               />
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="Location (lng,lat)"
+                  value={lnglat}
+                  onChangeText={(text) => {
+                    setLnglat(text);
+                    validateLnglat(text);
+                  }}
+                  right={
+                    <TextInput.Icon
+                      icon="crosshairs-gps"
+                      onPress={updateLocation}
+                    />
+                  }
+                  error={!!lnglatError}
+                  editable={Platform.OS === "web"}
+                />
+                {lnglatError ? (
+                  <HelperText type="error" visible={!!lnglatError}>
+                    {lnglatError}
+                  </HelperText>
+                ) : null}
+              </View>
               <TextInput
-                style={styles.verticallySpaced}
-                label="Location (lng,lat)"
-                value={lnglat}
-                onChangeText={(text) => {
-                  setLnglat(text);
-                  validateLnglat(text);
-                }}
-                right={
-                  <TextInput.Icon
-                    icon="crosshairs-gps"
-                    onPress={updateLocation}
-                  />
-                }
-                error={!!lnglatError}
-                editable={Platform.OS === "web"}
-              />
-              {lnglatError ? (
-                <HelperText type="error" visible={!!lnglatError}>
-                  {lnglatError}
-                </HelperText>
-              ) : null}
-              <TextInput
-                style={[styles.verticallySpaced]}
+                style={[styles.verticallySpaced, styles.textInput]}
                 label="About"
                 value={about}
                 onChangeText={(text) => setAbout(text)}

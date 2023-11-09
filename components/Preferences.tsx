@@ -255,6 +255,7 @@ export default function Preferences({ session }: { session: Session }) {
               <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
                 <View style={{ flex: 1, marginRight: 8 }}>
                   <TextInput
+                    style={styles.textInput}
                     label="Minimum age"
                     value={minAge}
                     onChangeText={(text) => {
@@ -272,6 +273,7 @@ export default function Preferences({ session }: { session: Session }) {
                 </View>
                 <View style={{ flex: 1, marginLeft: 8 }}>
                   <TextInput
+                    style={styles.textInput}
                     label="Maximum age"
                     value={maxAge}
                     onChangeText={(text) => {
@@ -345,24 +347,26 @@ export default function Preferences({ session }: { session: Session }) {
                 onChange={setDiet}
               />
               <Divider style={styles.verticallySpaced} />
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="Maximum distance (miles)"
+                  value={radius}
+                  onChangeText={(text) => {
+                    setRadius(text);
+                    validateRadius(text);
+                  }}
+                  keyboardType="numeric"
+                  error={!!radiusError}
+                />
+                {radiusError ? (
+                  <HelperText type="error" visible={!!radiusError}>
+                    {radiusError}
+                  </HelperText>
+                ) : null}
+              </View>
               <TextInput
-                style={styles.verticallySpaced}
-                label="Maximum distance (miles)"
-                value={radius}
-                onChangeText={(text) => {
-                  setRadius(text);
-                  validateRadius(text);
-                }}
-                keyboardType="numeric"
-                error={!!radiusError}
-              />
-              {radiusError ? (
-                <HelperText type="error" visible={!!radiusError}>
-                  {radiusError}
-                </HelperText>
-              ) : null}
-              <TextInput
-                style={styles.verticallySpaced}
+                style={[styles.verticallySpaced, styles.textInput]}
                 label="Keywords"
                 value={keyword}
                 onChangeText={(text) => setKeyword(text)}
