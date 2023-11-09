@@ -12,7 +12,6 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
-import { useStyles } from "../lib/styles";
 
 export default function Avatar({
   url,
@@ -29,7 +28,6 @@ export default function Avatar({
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
   const [error, setError] = useState(false);
-  const styles = useStyles();
   const theme = useTheme();
 
   useEffect(() => {
@@ -101,15 +99,26 @@ export default function Avatar({
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl && !error ? (
         <View>
-          {loading && <ActivityIndicator animating={true} size={size} />}
-          <Image
-            style={[
-              {
-                width: loading ? 0 : size,
-                height: loading ? 0 : size,
+          {loading && (
+            <ActivityIndicator
+              animating={true}
+              size={0.8 * size}
+              style={{
+                zIndex: 1,
+                position: "absolute",
+                width: size,
+                height: size,
                 borderRadius: 3 * theme.roundness,
-              },
-            ]}
+                backgroundColor: theme.colors.surface,
+              }}
+            />
+          )}
+          <Image
+            style={{
+              width: size,
+              height: size,
+              borderRadius: 3 * theme.roundness,
+            }}
             source={{ uri: avatarUrl }}
             onError={(error) => {
               if (error instanceof Error) {
@@ -117,7 +126,9 @@ export default function Avatar({
               }
               setError(true);
             }}
-            onLoadEnd={() => setLoading(false)}
+            onLoadEnd={() => {
+              setLoading(false);
+            }}
           />
           <FAB
             icon="close"
@@ -128,11 +139,7 @@ export default function Avatar({
           />
         </View>
       ) : (
-        <RNPAvatar.Icon
-          style={styles.verticallySpaced}
-          size={size}
-          icon={onPress ? "account" : "plus"}
-        />
+        <RNPAvatar.Icon size={size} icon={onPress ? "account" : "plus"} />
       )}
     </Pressable>
   );

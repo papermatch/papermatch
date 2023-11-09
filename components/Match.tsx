@@ -6,6 +6,7 @@ import {
   ViewToken,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from "react-native";
 import {
   Card,
@@ -16,7 +17,10 @@ import {
   useTheme,
   Menu,
   Badge,
+  HelperText,
   Portal,
+  Dialog,
+  Button,
   Snackbar,
 } from "react-native-paper";
 import { Image } from "expo-image";
@@ -33,6 +37,8 @@ export default function Match({ session }: { session: Session }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [message, setMessage] = useState("");
+  const [deleteMessageID, setDeleteMessageID] = useState("");
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
@@ -228,6 +234,27 @@ export default function Match({ session }: { session: Session }) {
     []
   );
 
+  async function handleDeleteMessage() {
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", deleteMessageID);
+
+      if (error) {
+        throw error;
+      }
+
+      setDeleteMessageID("");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setSnackbarMessage("Unable to update interaction");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned">
@@ -277,57 +304,84 @@ export default function Match({ session }: { session: Session }) {
               contentContainerStyle={{ paddingVertical: 12 }}
               inverted={true}
               renderItem={({ item }) => (
-                <Card
-                  style={[
-                    {
-                      padding: 6,
-                      backgroundColor:
-                        item.user_id == session.user.id
-                          ? theme.colors.elevation.level5
-                          : theme.colors.elevation.level1,
-                      marginLeft: item.user_id == session.user.id ? 64 : 12,
-                      marginRight: item.user_id == session.user.id ? 12 : 64,
-                    },
-                  ]}
+                <View
+                  style={{
+                    marginLeft: item.user_id == session.user.id ? 64 : 12,
+                    marginRight: item.user_id == session.user.id ? 12 : 64,
+                  }}
                 >
-                  <View
-                    style={[
-                      {
-                        flexDirection:
-                          item.user_id == session.user.id
-                            ? "row-reverse"
-                            : "row",
-                      },
-                    ]}
+                  <Pressable
+                    disabled={item.user_id != session.user.id}
+                    onLongPress={() => {
+                      setDeleteMessageID(item.id);
+                      setDeleteDialogVisible(true);
+                    }}
                   >
-                    <Badge
-                      visible={!item.is_read && item.user_id != session.user.id}
-                      size={10}
-                      style={{ position: "absolute", top: 10, right: 10 }}
-                    />
-                    {item.user_id != session.user.id && (
-                      <View style={{ alignSelf: "flex-start" }}>
-                        <Avatar
-                          size={50}
-                          url={profile?.avatar_urls[0] || null}
-                          onPress={() =>
-                            navigate(`../${ROUTES.PROFILE}/${profile?.id}`)
-                          }
-                        />
-                      </View>
-                    )}
-                    <Text
-                      style={{
-                        flexShrink: 1,
-                        marginHorizontal: 12,
-                        alignSelf: "center",
-                        padding: 1,
-                      }}
+                    <Card
+                      style={[
+                        {
+                          padding: 6,
+                          backgroundColor:
+                            item.user_id == session.user.id
+                              ? theme.colors.elevation.level5
+                              : theme.colors.elevation.level1,
+                        },
+                      ]}
                     >
-                      {item.message}
-                    </Text>
+                      <View
+                        style={[
+                          {
+                            flexDirection:
+                              item.user_id == session.user.id
+                                ? "row-reverse"
+                                : "row",
+                          },
+                        ]}
+                      >
+                        <Badge
+                          visible={
+                            !item.is_read && item.user_id != session.user.id
+                          }
+                          size={10}
+                          style={{ position: "absolute", top: 10, right: 10 }}
+                        />
+                        {item.user_id != session.user.id && (
+                          <View style={{ alignSelf: "flex-start" }}>
+                            <Avatar
+                              size={50}
+                              url={profile?.avatar_urls[0] || null}
+                              onPress={() =>
+                                navigate(`../${ROUTES.PROFILE}/${profile?.id}`)
+                              }
+                            />
+                          </View>
+                        )}
+                        <Text
+                          style={{
+                            flexShrink: 1,
+                            marginHorizontal: 12,
+                            alignSelf: "center",
+                            padding: 1,
+                          }}
+                        >
+                          {item.message}
+                        </Text>
+                      </View>
+                    </Card>
+                  </Pressable>
+                  <View
+                    style={{
+                      flexDirection:
+                        item.user_id == session.user.id ? "row-reverse" : "row",
+                    }}
+                  >
+                    <HelperText type="info" visible={true}>
+                      {new Date(item.created_at).toLocaleString("EN-CA", {
+                        hour12: false,
+                      })}
+                    </HelperText>
                   </View>
-                </Card>
+                </View>
               )}
               viewabilityConfig={viewabilityConfig}
               onViewableItemsChanged={handleViewableItemsChanged}
@@ -354,6 +408,41 @@ export default function Match({ session }: { session: Session }) {
           </View>
         </KeyboardAvoidingView>
       )}
+      <Portal>
+        <Dialog
+          style={styles.dialog}
+          visible={deleteDialogVisible}
+          onDismiss={() => setDeleteDialogVisible(false)}
+        >
+          <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyLarge" style={styles.dialogText}>
+              Are you sure you want to delete this message?
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button
+              textColor={theme.colors.onTertiaryContainer}
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => setDeleteDialogVisible(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              textColor={theme.colors.onTertiaryContainer}
+              mode="text"
+              labelStyle={styles.buttonLabel}
+              onPress={() => {
+                handleDeleteMessage();
+                setDeleteDialogVisible(false);
+              }}
+            >
+              Ok
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <Portal>
         <Snackbar
           style={styles.snackbar}

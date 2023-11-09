@@ -98,7 +98,7 @@ export default function Matches({ session }: { session: Session }) {
                 >
                   <View style={{ flexDirection: "row" }}>
                     <Badge
-                      visible={item.unread}
+                      visible={item.message === null || item.unread}
                       size={10}
                       style={{ position: "absolute", top: 10, right: 10 }}
                     />

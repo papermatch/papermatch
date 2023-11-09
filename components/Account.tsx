@@ -192,7 +192,7 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function deleteUser() {
+  async function handleDeleteUser() {
     try {
       setLoading(true);
       const { error } = await supabase.rpc("delete_current_user");
@@ -398,7 +398,7 @@ export default function Account({ session }: { session: Session }) {
         >
           <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium" style={styles.dialogText}>
+            <Text variant="bodyLarge" style={styles.dialogText}>
               Deleting your account will permanently remove all of your matches
               and remaining credits! Click "Ok" below to confirm.
             </Text>
@@ -416,7 +416,7 @@ export default function Account({ session }: { session: Session }) {
               textColor={theme.colors.onTertiaryContainer}
               mode="text"
               labelStyle={styles.buttonLabel}
-              onPress={() => deleteUser()}
+              onPress={() => handleDeleteUser()}
             >
               Ok
             </Button>
