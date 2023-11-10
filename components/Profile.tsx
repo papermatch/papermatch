@@ -291,33 +291,26 @@ export default function Profile({ session }: { session: Session }) {
         </View>
       )}
       <Portal>
-        {!!imageUrl && (
-          <View style={styles.container}>
-            <Modal
-              visible={!!imageUrl}
-              onDismiss={() => setImageUrl(null)}
-              contentContainerStyle={{ flex: 1 }}
-            >
-              {!!imageUrl && (
-                <Pressable
-                  style={{ flex: 1 }}
-                  onPress={() => setImageUrl(null)}
-                >
-                  <Image
-                    source={{ uri: imageUrl }}
-                    style={{ flex: 1 }}
-                    contentFit="contain"
-                    onError={(error) => {
-                      if (error instanceof Error) {
-                        console.error(error.message);
-                      }
-                    }}
-                  />
-                </Pressable>
-              )}
-            </Modal>
-          </View>
-        )}
+        <Modal
+          visible={!!imageUrl}
+          onDismiss={() => setImageUrl(null)}
+          contentContainerStyle={{ flex: 1 }}
+        >
+          {!!imageUrl && (
+            <Pressable style={{ flex: 1 }} onPress={() => setImageUrl(null)}>
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ flex: 1 }}
+                contentFit="contain"
+                onError={(error) => {
+                  if (error instanceof Error) {
+                    console.error(error.message);
+                  }
+                }}
+              />
+            </Pressable>
+          )}
+        </Modal>
       </Portal>
       <Portal>
         <Snackbar

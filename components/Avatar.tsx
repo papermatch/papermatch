@@ -12,6 +12,8 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Avatar({
   url,
@@ -29,6 +31,7 @@ export default function Avatar({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
   const [error, setError] = useState(false);
   const theme = useTheme();
+  const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
   useEffect(() => {
     setAvatarUrl(url);
@@ -99,37 +102,38 @@ export default function Avatar({
     <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
       {avatarUrl && !error ? (
         <View>
-          {loading && (
-            <ActivityIndicator
-              animating={true}
-              size={0.8 * size}
-              style={{
-                zIndex: 1,
-                position: "absolute",
-                width: size,
-                height: size,
-                borderRadius: 3 * theme.roundness,
-                backgroundColor: theme.colors.surface,
-              }}
-            />
-          )}
-          <Image
+          <ShimmerPlaceholder
             style={{
               width: size,
               height: size,
               borderRadius: 3 * theme.roundness,
+              backgroundColor: theme.colors.elevation.level1,
             }}
-            source={{ uri: avatarUrl }}
-            onError={(error) => {
-              if (error instanceof Error) {
-                console.error(error.message);
-              }
-              setError(true);
-            }}
-            onLoadEnd={() => {
-              setLoading(false);
-            }}
-          />
+            shimmerColors={[
+              theme.colors.elevation.level2,
+              theme.colors.elevation.level3,
+              theme.colors.elevation.level4,
+            ]}
+            visible={!loading}
+          >
+            <Image
+              style={{
+                width: size,
+                height: size,
+                borderRadius: 3 * theme.roundness,
+              }}
+              source={{ uri: avatarUrl }}
+              onError={(error) => {
+                if (error instanceof Error) {
+                  console.error(error.message);
+                }
+                setError(true);
+              }}
+              onLoadEnd={() => {
+                setLoading(false);
+              }}
+            />
+          </ShimmerPlaceholder>
           <FAB
             icon="close"
             style={{ position: "absolute", margin: 12, right: 0, top: 0 }}
