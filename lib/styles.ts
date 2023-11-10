@@ -81,12 +81,5 @@ export const useStyles = () => {
       fontSize: theme.fonts.bodyLarge.fontSize,
       lineHeight: theme.fonts.bodyLarge.lineHeight,
     },
-    centeredPortal: {
-      maxWidth: 600,
-      width: "100%",
-      marginHorizontal: "auto",
-      marginVertical: "auto",
-      alignContent: "center",
-    },
   });
 };

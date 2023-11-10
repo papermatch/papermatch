@@ -232,31 +232,33 @@ export default function Profiles({ session }: { session: Session }) {
         )}
       </View>
       <Portal>
-        <View style={styles.centeredPortal}>
-          <Modal
-            contentContainerStyle={styles.modal}
-            visible={settingsVisible}
-            onDismiss={() => setHideSettings(false)}
-          >
-            <View style={styles.verticallySpaced}>
-              <Text variant="titleLarge">Settings</Text>
-              <Checkbox.Item
-                labelStyle={{ color: theme.colors.onTertiaryContainer }}
-                label="Hide profiles you've already liked/passed"
-                status={hideInteractions ? "checked" : "unchecked"}
-                onPress={() => setHideInteractions(!hideInteractions)}
-                disabled={loading}
-              />
-              <Checkbox.Item
-                labelStyle={{ color: theme.colors.onTertiaryContainer }}
-                label="Hide profiles that don't meet all of your preferences"
-                status={hidePreferences ? "checked" : "unchecked"}
-                onPress={() => setHidePreferences(!hidePreferences)}
-                disabled={loading}
-              />
-            </View>
-          </Modal>
-        </View>
+        {settingsVisible && (
+          <View style={styles.container}>
+            <Modal
+              contentContainerStyle={styles.modal}
+              visible={settingsVisible}
+              onDismiss={() => setHideSettings(false)}
+            >
+              <View style={styles.verticallySpaced}>
+                <Text variant="titleLarge">Settings</Text>
+                <Checkbox.Item
+                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  label="Hide profiles you've already liked/passed"
+                  status={hideInteractions ? "checked" : "unchecked"}
+                  onPress={() => setHideInteractions(!hideInteractions)}
+                  disabled={loading}
+                />
+                <Checkbox.Item
+                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  label="Hide profiles that don't meet all of your preferences"
+                  status={hidePreferences ? "checked" : "unchecked"}
+                  onPress={() => setHidePreferences(!hidePreferences)}
+                  disabled={loading}
+                />
+              </View>
+            </Modal>
+          </View>
+        )}
       </Portal>
       <Portal>
         <Snackbar
