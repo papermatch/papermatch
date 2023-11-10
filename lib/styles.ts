@@ -50,21 +50,17 @@ export const useStyles = () => {
     buttonLabel: {},
     appbarTitle: {},
     dialog: {
-      maxWidth: Math.min(600, dimensions.window.width - 24),
-      width: "100%",
-      alignSelf: "center",
+      marginHorizontal: 12,
       backgroundColor: theme.colors.tertiaryContainer,
     },
     dialogText: {
       color: theme.colors.onTertiaryContainer,
     },
     snackbar: {
-      maxWidth: Math.min(600, dimensions.window.width - 24),
-      width: "100%",
-      alignSelf: "center",
+      marginHorizontal: 12,
     },
     aboveNav: {
-      marginBottom: 60,
+      marginBottom: 72,
     },
     fabContainer: {
       maxWidth: 600,
@@ -72,10 +68,7 @@ export const useStyles = () => {
       alignSelf: "center",
     },
     modal: {
-      maxWidth: Math.min(600, dimensions.window.width - 24),
-      width: "100%",
       marginHorizontal: 12,
-      alignSelf: "center",
       padding: 26,
       borderRadius: 21,
       backgroundColor: theme.colors.tertiaryContainer,
@@ -87,6 +80,13 @@ export const useStyles = () => {
     textInput: {
       fontSize: theme.fonts.bodyLarge.fontSize,
       lineHeight: theme.fonts.bodyLarge.lineHeight,
+    },
+    centeredPortal: {
+      maxWidth: 600,
+      width: "100%",
+      marginHorizontal: "auto",
+      marginVertical: "auto",
+      alignContent: "center",
     },
   });
 };

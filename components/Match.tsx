@@ -414,38 +414,40 @@ export default function Match({ session }: { session: Session }) {
         </KeyboardAvoidingView>
       )}
       <Portal>
-        <Dialog
-          style={styles.dialog}
-          visible={deleteDialogVisible}
-          onDismiss={() => setDeleteDialogVisible(false)}
-        >
-          <Dialog.Content>
-            <Text variant="bodyLarge" style={styles.dialogText}>
-              Would you like to delete this message?
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => setDeleteDialogVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => {
-                handleDeleteMessage();
-                setDeleteDialogVisible(false);
-              }}
-            >
-              Ok
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <View style={styles.centeredPortal}>
+          <Dialog
+            style={styles.dialog}
+            visible={deleteDialogVisible}
+            onDismiss={() => setDeleteDialogVisible(false)}
+          >
+            <Dialog.Content>
+              <Text variant="bodyLarge" style={styles.dialogText}>
+                Would you like to delete this message?
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                textColor={theme.colors.onTertiaryContainer}
+                mode="text"
+                labelStyle={styles.buttonLabel}
+                onPress={() => setDeleteDialogVisible(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                textColor={theme.colors.onTertiaryContainer}
+                mode="text"
+                labelStyle={styles.buttonLabel}
+                onPress={() => {
+                  handleDeleteMessage();
+                  setDeleteDialogVisible(false);
+                }}
+              >
+                Ok
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </View>
       </Portal>
       <Portal>
         <Snackbar

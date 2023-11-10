@@ -392,37 +392,39 @@ export default function Account({ session }: { session: Session }) {
       )}
       <Navigation key={session.user.id} session={session} />
       <Portal>
-        <Dialog
-          style={styles.dialog}
-          visible={deleteDialogVisible}
-          onDismiss={() => setDeleteDialogVisible(false)}
-        >
-          <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyLarge" style={styles.dialogText}>
-              Deleting your account will permanently remove all of your matches
-              and remaining credits! Click "Ok" below to confirm.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => setDeleteDialogVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => handleDeleteUser()}
-            >
-              Ok
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <View style={styles.centeredPortal}>
+          <Dialog
+            style={styles.dialog}
+            visible={deleteDialogVisible}
+            onDismiss={() => setDeleteDialogVisible(false)}
+          >
+            <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyLarge" style={styles.dialogText}>
+                Deleting your account will permanently remove all of your
+                matches and remaining credits! Click "Ok" below to confirm.
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                textColor={theme.colors.onTertiaryContainer}
+                mode="text"
+                labelStyle={styles.buttonLabel}
+                onPress={() => setDeleteDialogVisible(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                textColor={theme.colors.onTertiaryContainer}
+                mode="text"
+                labelStyle={styles.buttonLabel}
+                onPress={() => handleDeleteUser()}
+              >
+                Ok
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </View>
       </Portal>
       <Portal>
         <Snackbar

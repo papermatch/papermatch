@@ -177,7 +177,7 @@ export default function Blocked({ session }: { session: Session }) {
       )}
       <Portal>
         <Snackbar
-          style={[styles.snackbar, styles.aboveNav]}
+          style={styles.snackbar}
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
           action={{
