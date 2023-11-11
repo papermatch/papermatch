@@ -120,7 +120,7 @@ export default function Blocked({ session }: { session: Session }) {
               contentContainerStyle={{ paddingVertical: 12 }}
               renderItem={({ item: profile }) => (
                 <Card
-                  style={{ marginHorizontal: 12 }}
+                  style={{ marginHorizontal: 6 }}
                   onPress={() => {
                     navigate(`../${ROUTES.PROFILE}/${profile.id}`);
                   }}

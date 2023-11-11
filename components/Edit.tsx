@@ -435,34 +435,36 @@ export default function Edit({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      {Platform.OS !== "web" && mapVisible ? (
-        <Portal>
-          <StatusBar hidden={true} />
+      <Portal>
+        {Platform.OS !== "web" && mapVisible && (
           <View style={{ flex: 1 }}>
-            <MapView
-              style={{ width: "100%", height: "100%" }}
-              initialRegion={{
-                ...toLatLng({ lnglat }),
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              onRegionChangeComplete={(event) => {
-                setLnglat(toLngLat(event));
-              }}
-              provider={PROVIDER_GOOGLE}
-            >
-              <Marker coordinate={toLatLng({ lnglat })} />
-            </MapView>
+            <StatusBar hidden={true} />
+            <View style={{ flex: 1 }}>
+              <MapView
+                style={{ width: "100%", height: "100%" }}
+                initialRegion={{
+                  ...toLatLng({ lnglat }),
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                onRegionChangeComplete={(event) => {
+                  setLnglat(toLngLat(event));
+                }}
+                provider={PROVIDER_GOOGLE}
+              >
+                <Marker coordinate={toLatLng({ lnglat })} />
+              </MapView>
+            </View>
+            <FAB
+              icon="keyboard-backspace"
+              style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
+              size="medium"
+              onPress={() => setMapVisible(false)}
+              disabled={loading}
+            />
           </View>
-          <FAB
-            icon="keyboard-backspace"
-            style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
-            size="medium"
-            onPress={() => setMapVisible(false)}
-            disabled={loading}
-          />
-        </Portal>
-      ) : null}
+        )}
+      </Portal>
     </View>
   );
 }
