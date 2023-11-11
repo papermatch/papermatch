@@ -9,7 +9,6 @@ import {
   Text,
   ActivityIndicator,
   Portal,
-  Modal,
   Snackbar,
   useTheme,
 } from "react-native-paper";
@@ -291,26 +290,29 @@ export default function Profile({ session }: { session: Session }) {
         </View>
       )}
       <Portal>
-        <Modal
-          visible={!!imageUrl}
-          onDismiss={() => setImageUrl(null)}
-          contentContainerStyle={{ flex: 1 }}
-        >
-          {!!imageUrl && (
-            <Pressable style={{ flex: 1 }} onPress={() => setImageUrl(null)}>
-              <Image
-                source={{ uri: imageUrl }}
-                style={{ flex: 1 }}
-                contentFit="contain"
-                onError={(error) => {
-                  if (error instanceof Error) {
-                    console.error(error.message);
-                  }
-                }}
-              />
-            </Pressable>
-          )}
-        </Modal>
+        {!!imageUrl && (
+          <Pressable
+            style={{ flex: 1, width: "100%" }}
+            onPress={() => setImageUrl(null)}
+          >
+            <Image
+              source={{ uri: imageUrl }}
+              style={{
+                flex: 1,
+                width: "100%",
+              }}
+              contentFit="contain"
+              onError={(error) => {
+                if (error instanceof Error) {
+                  console.error(error.message);
+                  setSnackbarMessage("Unable to load image");
+                  setSnackbarVisible(true);
+                }
+                setImageUrl(null);
+              }}
+            />
+          </Pressable>
+        )}
       </Portal>
       <Portal>
         <Snackbar

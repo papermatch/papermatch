@@ -1,6 +1,6 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
-import { SafeAreaView, Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import About from "./components/About";
@@ -92,18 +92,16 @@ export default function App() {
 
   if (loading || (!fontsLoaded && !fontError)) {
     return (
-      <SafeAreaView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator animating={true} size="large" />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
     <PaperProvider theme={theme}>
-      <StatusBar style="auto" />
-      <SafeAreaView style={styles.appView}>
+      <View style={styles.appView}>
+        <StatusBar style="auto" />
         <Router>
           {Platform.OS !== "web" && <BackHandler />}
           <Routes>
@@ -265,7 +263,7 @@ export default function App() {
             />
           </Routes>
         </Router>
-      </SafeAreaView>
+      </View>
     </PaperProvider>
   );
 }
