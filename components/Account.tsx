@@ -410,7 +410,7 @@ export default function Account({ session }: { session: Session }) {
                   textColor={theme.colors.onTertiaryContainer}
                   mode="text"
                   labelStyle={styles.buttonLabel}
-                  onPress={() => handleDeleteUser()}
+                  onPress={handleDeleteUser}
                 >
                   Ok
                 </Button>

@@ -14,6 +14,7 @@ export default function Home() {
       <Appbar backAction={true} title="About" />
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
+          <View style={styles.separator} />
           <Text style={styles.verticallySpaced}>
             <Text style={{ fontWeight: "500" }}>Contact: </Text>
             <Pressable

@@ -1,4 +1,13 @@
-import { memo, useState, useEffect, useCallback } from "react";
+import {
+  memo,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, Pressable } from "react-native";
 import {
@@ -22,6 +31,12 @@ import { Appbar } from "./Appbar";
 
 const AvatarCarousel = memo(Carousel<string>);
 
+const createOnPressHandler =
+  (url: string | null, setImageUrl: Dispatch<SetStateAction<string | null>>) =>
+  () => {
+    setImageUrl(url);
+  };
+
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -34,12 +49,33 @@ export default function Profile({ session }: { session: Session }) {
   const styles = useStyles();
   const theme = useTheme();
   const { id, index } = useParams<{ id: string; index: string | undefined }>();
+  const onPressHandlers = useRef(new Map());
+  const avatarUrls = useMemo(() => {
+    return profile?.avatar_urls?.length ? profile.avatar_urls : [""];
+  }, [profile?.avatar_urls]);
 
   useEffect(() => {
     if (id && session) {
       getData();
     }
   }, [id, session]);
+
+  useEffect(() => {
+    avatarUrls.forEach((url) => {
+      if (!onPressHandlers.current.has(url)) {
+        onPressHandlers.current.set(
+          url,
+          createOnPressHandler(url, setImageUrl)
+        );
+      }
+    });
+
+    setImageUrl(index ? avatarUrls[parseInt(index) || 0] : null);
+
+    return () => {
+      onPressHandlers.current.clear();
+    };
+  }, [profile?.avatar_urls]);
 
   async function getData() {
     setLoading(true);
@@ -206,14 +242,12 @@ export default function Profile({ session }: { session: Session }) {
             {profile ? (
               <View>
                 <AvatarCarousel
-                  data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
+                  data={avatarUrls}
                   renderItem={(item) => (
                     <Avatar
                       size={300}
                       url={item}
-                      onPress={() => {
-                        setImageUrl(item);
-                      }}
+                      onPress={onPressHandlers.current.get(item)}
                     />
                   )}
                   size={300}
@@ -281,15 +315,23 @@ export default function Profile({ session }: { session: Session }) {
       <Portal>
         {!!imageUrl && (
           <Pressable
-            style={{ flex: 1, backgroundColor: theme.colors.backdrop }}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.colors.backdrop,
+              padding: 12,
+            }}
             onPress={() => setImageUrl(null)}
           >
             <Image
               source={{ uri: imageUrl }}
               style={{
-                flex: 1,
+                width: "100%",
+                height: "100%",
+                borderRadius: 3 * theme.roundness,
               }}
-              contentFit="contain"
+              contentFit="scale-down"
               onError={(error) => {
                 if (error instanceof Error) {
                   console.error(error.message);

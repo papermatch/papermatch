@@ -15,18 +15,15 @@ import { v4 as uuidv4 } from "uuid";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
 
+type AvatarProps = {
+  url: string | null;
+  size?: number;
+  onUpload?: (newUrl: string) => void;
+  onPress?: () => void;
+};
+
 export const Avatar = memo(
-  ({
-    url,
-    size = 150,
-    onUpload,
-    onPress,
-  }: {
-    url: string | null;
-    size: number;
-    onUpload?: (newUrl: string) => void;
-    onPress?: () => void;
-  }) => {
+  ({ url, size = 150, onUpload, onPress }: AvatarProps) => {
     const [loading, setLoading] = useState(!!url);
     const [uploading, setUploading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(url);

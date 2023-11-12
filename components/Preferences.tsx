@@ -1,6 +1,5 @@
-import { memo, useState, useEffect, SetStateAction } from "react";
+import { memo, Dispatch, SetStateAction, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Dispatch } from "react";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
