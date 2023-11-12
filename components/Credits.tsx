@@ -14,7 +14,7 @@ import {
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
-import Navigation from "./Navigation";
+import { Navigation } from "./Navigation";
 import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";

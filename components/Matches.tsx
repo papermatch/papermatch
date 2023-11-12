@@ -11,8 +11,8 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { MatchesData } from "../lib/types";
 import { useStyles } from "../lib/styles";

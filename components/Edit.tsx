@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -39,9 +39,17 @@ import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { Appbar } from "./Appbar";
 
+const GenderDropdown = memo(Dropdown<GenderType>);
+const EducationDropdown = memo(Dropdown<EducationType>);
+const ReligionDropdown = memo(Dropdown<ReligionType>);
+const SexualityDropdown = memo(Dropdown<SexualityType>);
+const IntentionDropdown = memo(Dropdown<IntentionType>);
+const RelationshipDropdown = memo(Dropdown<RelationshipType>);
+const FamilyDropdown = memo(Dropdown<FamilyType>);
+const DietDropdown = memo(Dropdown<DietType>);
+
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
@@ -292,56 +300,56 @@ export default function Edit({ session }: { session: Session }) {
                   </HelperText>
                 ) : null}
               </View>
-              <Dropdown
+              <GenderDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Gender"
                 data={GenderData}
                 value={gender}
                 onChange={setGender}
               />
-              <Dropdown
+              <EducationDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Education level"
                 data={EducationData}
                 value={education}
                 onChange={setEducation}
               />
-              <Dropdown
+              <ReligionDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Religion"
                 data={ReligionData}
                 value={religion}
                 onChange={setReligion}
               />
-              <Dropdown
+              <SexualityDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Sexuality"
                 data={SexualityData}
                 value={sexuality}
                 onChange={setSexuality}
               />
-              <Dropdown
+              <FamilyDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Family plan"
                 data={FamilyData}
                 value={family}
                 onChange={setFamily}
               />
-              <Dropdown
+              <IntentionDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Dating intention"
                 data={IntentionData}
                 value={intention}
                 onChange={setIntention}
               />
-              <Dropdown
+              <RelationshipDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Relationship style"
                 data={RelationshipData}
                 value={relationship}
                 onChange={setRelationship}
               />
-              <Dropdown
+              <DietDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Diet"
                 data={DietData}

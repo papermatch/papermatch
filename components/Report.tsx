@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, Platform, KeyboardAvoidingView } from "react-native";
 import {
@@ -11,11 +11,13 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { useParams, useNavigate } from "../lib/routing";
+import { useParams } from "../lib/routing";
 import { Dropdown } from "./Dropdown";
 import { ProfileData, ReasonType, ReasonData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+
+const ReasonDropdown = memo(Dropdown<ReasonType>);
 
 export default function Report({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,6 @@ export default function Report({ session }: { session: Session }) {
   const [details, setDetails] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const navigate = useNavigate();
   const styles = useStyles();
   const { id } = useParams<{ id: string }>();
 
@@ -93,7 +94,9 @@ export default function Report({ session }: { session: Session }) {
 
       setReason(null);
       setDetails("");
-      setSnackbarMessage("Report sent!");
+      setSnackbarMessage(
+        "Thanks for submitting a report, we'll look into it and take appropriate action."
+      );
       setSnackbarVisible(true);
     } catch (error) {
       if (error instanceof Error) {
@@ -138,7 +141,7 @@ export default function Report({ session }: { session: Session }) {
                     Report {profile?.username ?? "profile"}
                   </Text>
                   <View style={styles.verticallySpaced}>
-                    <Dropdown
+                    <ReasonDropdown
                       style={{ flex: 1 }}
                       label="Reason"
                       data={ReasonData}

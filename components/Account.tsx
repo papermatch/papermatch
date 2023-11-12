@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -12,13 +12,12 @@ import {
   Divider,
   Badge,
   Snackbar,
-  Menu,
   useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Carousel } from "./Carousel";
@@ -26,9 +25,10 @@ import { Appbar } from "./Appbar";
 
 const MAX_AVATARS = 6;
 
+const AvatarCarousel = memo(Carousel<string>);
+
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
   const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
@@ -261,7 +261,7 @@ export default function Account({ session }: { session: Session }) {
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
                 />
-                <Carousel
+                <AvatarCarousel
                   data={
                     avatarUrls
                       ? avatarUrls.length < MAX_AVATARS

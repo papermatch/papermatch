@@ -23,7 +23,7 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";

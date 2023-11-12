@@ -12,7 +12,7 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
@@ -20,8 +20,7 @@ import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 import { Appbar } from "./Appbar";
 
-const MemorizedAvatar = memo(Avatar);
-const MemorizedCarousel = memo(Carousel<string>);
+const AvatarCarousel = memo(Carousel<string>);
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -206,10 +205,10 @@ export default function Profile({ session }: { session: Session }) {
             <View style={styles.separator} />
             {profile ? (
               <View>
-                <MemorizedCarousel
+                <AvatarCarousel
                   data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
                   renderItem={(item) => (
-                    <MemorizedAvatar
+                    <Avatar
                       size={300}
                       url={item}
                       onPress={() => {

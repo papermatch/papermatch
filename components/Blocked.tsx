@@ -10,7 +10,7 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { View } from "react-native";
@@ -7,7 +7,7 @@ import { ROUTES, useNavigate, useLocation } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { MatchesData } from "../lib/types";
 
-export default function Navigation({ session }: { session: Session }) {
+export const Navigation = memo(({ session }: { session: Session }) => {
   const [active, setActive] = useState(true);
   const [newOrUnread, setNewOrUnread] = useState(false);
   const [onboarding, setOnboarding] = useState(false);
@@ -183,4 +183,4 @@ export default function Navigation({ session }: { session: Session }) {
       </Appbar>
     </View>
   );
-}
+});

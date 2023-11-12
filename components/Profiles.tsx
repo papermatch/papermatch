@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
   ActivityIndicator,
-  Menu,
   Checkbox,
   Portal,
   Modal,
@@ -14,8 +13,8 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
@@ -25,9 +24,10 @@ import { Appbar } from "./Appbar";
 
 const PROFILES_PER_PAGE = 6;
 
+const AvatarCarousel = memo(Carousel<string>);
+
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState<ProfilesData[]>([]);
@@ -145,7 +145,7 @@ export default function Profiles({ session }: { session: Session }) {
                   >
                     {item.profile.username}
                   </Text>
-                  <Carousel
+                  <AvatarCarousel
                     data={
                       item.profile.avatar_urls.length
                         ? item.profile.avatar_urls
