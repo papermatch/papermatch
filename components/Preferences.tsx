@@ -5,7 +5,6 @@ import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Portal,
   Snackbar,
   ActivityIndicator,
@@ -36,6 +35,7 @@ import {
   SexualityData,
 } from "../lib/types";
 import { Checkboxes } from "./Checkboxes";
+import { Appbar } from "./Appbar";
 
 export default function Preferences({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -225,14 +225,7 @@ export default function Preferences({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Preferences" />
-      </Appbar.Header>
+      <Appbar backAction={true} title="Preferences" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

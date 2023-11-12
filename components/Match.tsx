@@ -12,16 +12,14 @@ import {
   Card,
   Text,
   TextInput,
-  Appbar,
   ActivityIndicator,
-  useTheme,
-  Menu,
   Badge,
   HelperText,
   Portal,
   Dialog,
   Button,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
@@ -29,10 +27,10 @@ import Avatar from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [match, setMatch] = useState<MatchData | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -257,40 +255,24 @@ export default function Match({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content
-          titleStyle={styles.appbarTitle}
-          title={profile?.username || "Match"}
-        />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
+      <Appbar
+        backAction={true}
+        title="Match"
+        menuItems={[
+          {
+            title: "Profile",
+            onPress: () => {
               navigate(`../${ROUTES.PROFILE}/${profile?.id}`);
-            }}
-            title="Profile"
-          />
-          <Menu.Item
-            onPress={() => {
+            },
+          },
+          {
+            title: "Report",
+            onPress: () => {
               navigate(`../${ROUTES.REPORT}/${profile?.id}`);
-            }}
-            title="Report"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -415,7 +397,7 @@ export default function Match({ session }: { session: Session }) {
       )}
       <Portal>
         {deleteDialogVisible && (
-          <View style={styles.container}>
+          <View style={styles.portalContainer}>
             <Dialog
               style={styles.dialog}
               visible={deleteDialogVisible}

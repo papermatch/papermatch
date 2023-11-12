@@ -13,7 +13,6 @@ import {
   SegmentedButtons,
   HelperText,
   ActivityIndicator,
-  Appbar,
   Portal,
   Snackbar,
 } from "react-native-paper";
@@ -21,6 +20,8 @@ import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { calculateAge } from "../lib/utils";
+import { Appbar } from "./Appbar";
+import App from "../App";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -131,12 +132,7 @@ export default function Auth() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content
-          titleStyle={styles.appbarTitle}
-          title="Authentication"
-        />
-      </Appbar.Header>
+      <Appbar title="Authentication" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

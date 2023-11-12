@@ -4,7 +4,6 @@ import { Platform, View, KeyboardAvoidingView } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Text,
   ActivityIndicator,
   HelperText,
@@ -18,6 +17,7 @@ import { StatusBar } from "expo-status-bar";
 import Navigation from "./Navigation";
 import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
@@ -142,9 +142,7 @@ export default function Credits({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Credits" />
-      </Appbar.Header>
+      <Appbar title="Credits" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

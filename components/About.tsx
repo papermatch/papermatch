@@ -1,8 +1,9 @@
 import { View, ScrollView, Linking, Pressable } from "react-native";
-import { Appbar, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import Constants from "expo-constants";
+import { Appbar } from "./Appbar";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -10,14 +11,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="About" />
-      </Appbar.Header>
+      <Appbar backAction={true} title="About" />
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
           <Text style={styles.verticallySpaced}>

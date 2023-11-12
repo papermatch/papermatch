@@ -4,7 +4,6 @@ import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
-  Appbar,
   ActivityIndicator,
   Menu,
   Checkbox,
@@ -22,6 +21,7 @@ import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
 
 const PROFILES_PER_PAGE = 6;
 
@@ -106,33 +106,23 @@ export default function Profiles({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Profiles" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
-              setAppbarMenuVisible(false);
+      <Appbar
+        title="Profiles"
+        menuItems={[
+          {
+            title: "Settings",
+            onPress: () => {
               setHideSettings(!settingsVisible);
-            }}
-            title="Settings"
-          />
-          <Menu.Item
-            onPress={() => {
+            },
+          },
+          {
+            title: "Preferences",
+            onPress: () => {
               navigate(`../${ROUTES.PREFERENCES}`);
-            }}
-            title="Preferences"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       <View style={[styles.container, { paddingHorizontal: 0 }]}>
         {data.length ? (
           <FlatList
@@ -233,7 +223,7 @@ export default function Profiles({ session }: { session: Session }) {
       </View>
       <Portal>
         {settingsVisible && (
-          <View style={styles.container}>
+          <View style={styles.portalContainer}>
             <Modal
               contentContainerStyle={styles.modal}
               visible={settingsVisible}

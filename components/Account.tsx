@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   Button,
   TextInput,
-  Appbar,
   Dialog,
   Portal,
   Text,
@@ -23,6 +22,7 @@ import Navigation from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
 
 const MAX_AVATARS = 6;
 
@@ -227,26 +227,17 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Account" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
+      <Appbar
+        title="Account"
+        menuItems={[
+          {
+            title: "About",
+            onPress: () => {
               navigate(`../${ROUTES.ABOUT}`);
-            }}
-            title="About"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -393,7 +384,7 @@ export default function Account({ session }: { session: Session }) {
       <Navigation key={session.user.id} session={session} />
       <Portal>
         {deleteDialogVisible && (
-          <View style={styles.container}>
+          <View style={styles.portalContainer}>
             <Dialog
               style={styles.dialog}
               visible={deleteDialogVisible}

@@ -4,10 +4,8 @@ import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Portal,
   Snackbar,
-  Menu,
   ActivityIndicator,
   HelperText,
   Text,
@@ -39,6 +37,7 @@ import {
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Appbar } from "./Appbar";
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -244,31 +243,18 @@ export default function Edit({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Edit" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
+      <Appbar
+        backAction={true}
+        title="Edit"
+        menuItems={[
+          {
+            title: "View",
+            onPress: () => {
               navigate(`../${ROUTES.PROFILE}/${session.user.id}`);
-            }}
-            title="View"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

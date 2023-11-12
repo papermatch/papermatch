@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, Pressable } from "react-native";
 import {
-  Appbar,
   FAB,
-  Menu,
   Divider,
   Text,
   ActivityIndicator,
@@ -20,13 +18,16 @@ import { ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
+
+const MemorizedAvatar = memo(Avatar);
+const MemorizedCarousel = memo(Carousel<string>);
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -128,82 +129,71 @@ export default function Profile({ session }: { session: Session }) {
     }
   }
 
-  async function handleInteraction(type: string) {
-    try {
-      const { error } = await supabase.from("interactions").upsert([
-        {
-          user_id: session?.user.id,
-          target_id: id,
-          interaction: type,
-          updated_at: new Date(),
-        },
-      ]);
+  const handleInteraction = useCallback(
+    async (type: string) => {
+      try {
+        const { error } = await supabase.from("interactions").upsert([
+          {
+            user_id: session?.user.id,
+            target_id: id,
+            interaction: type,
+            updated_at: new Date(),
+          },
+        ]);
 
-      if (error) {
-        throw error;
-      }
+        if (error) {
+          throw error;
+        }
 
-      if (type == "pass" || type == "block") {
-        navigate(-1);
-      } else {
-        getInteraction();
+        if (type == "pass" || type == "block") {
+          navigate(-1);
+        } else {
+          getInteraction();
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          setSnackbarMessage("Unable to update interaction");
+          setSnackbarVisible(true);
+        }
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to update interaction");
-        setSnackbarVisible(true);
-      }
-    }
-  }
+    },
+    [session, id, navigate, getInteraction]
+  );
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content
-          titleStyle={styles.appbarTitle}
-          title={profile?.username ?? "Profile"}
-        />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          {session?.user.id == id ? (
-            <Menu.Item
-              onPress={() => {
-                navigate(`../${ROUTES.EDIT}`);
-              }}
-              title="Edit"
-            />
-          ) : (
-            <View>
-              <Menu.Item
-                onPress={() => {
-                  handleInteraction(interaction == "block" ? "none" : "block");
-                }}
-                title={interaction == "block" ? "Unblock" : "Block"}
-              />
-              <Menu.Item
-                onPress={() => {
-                  navigate(`../${ROUTES.REPORT}/${id}`);
-                }}
-                title="Report"
-              />
-            </View>
-          )}
-        </Menu>
-      </Appbar.Header>
+      <Appbar
+        backAction={true}
+        title={profile?.username || "Profile"}
+        menuItems={
+          session?.user.id == id
+            ? [
+                {
+                  title: "Edit",
+                  onPress: () => {
+                    navigate(`../${ROUTES.EDIT}`);
+                  },
+                },
+              ]
+            : [
+                {
+                  title: "Block",
+                  onPress: () => {
+                    handleInteraction(
+                      interaction == "block" ? "none" : "block"
+                    );
+                  },
+                },
+                {
+                  title: "Report",
+                  onPress: () => {
+                    navigate(`../${ROUTES.REPORT}/${id}`);
+                  },
+                },
+              ]
+        }
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -216,10 +206,10 @@ export default function Profile({ session }: { session: Session }) {
             <View style={styles.separator} />
             {profile ? (
               <View>
-                <Carousel
+                <MemorizedCarousel
                   data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
                   renderItem={(item) => (
-                    <Avatar
+                    <MemorizedAvatar
                       size={300}
                       url={item}
                       onPress={() => {
@@ -292,14 +282,13 @@ export default function Profile({ session }: { session: Session }) {
       <Portal>
         {!!imageUrl && (
           <Pressable
-            style={{ flex: 1, width: "100%" }}
+            style={{ flex: 1, backgroundColor: theme.colors.backdrop }}
             onPress={() => setImageUrl(null)}
           >
             <Image
               source={{ uri: imageUrl }}
               style={{
                 flex: 1,
-                width: "100%",
               }}
               contentFit="contain"
               onError={(error) => {

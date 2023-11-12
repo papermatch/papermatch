@@ -81,5 +81,10 @@ export const useStyles = () => {
       fontSize: theme.fonts.bodyLarge.fontSize,
       lineHeight: theme.fonts.bodyLarge.lineHeight,
     },
+    portalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
   });
 };
