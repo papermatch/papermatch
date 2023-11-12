@@ -4,18 +4,17 @@ import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
-  Appbar,
   ActivityIndicator,
   IconButton,
   Portal,
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Blocked({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -101,9 +100,7 @@ export default function Blocked({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Blocked" />
-      </Appbar.Header>
+      <Appbar backAction={true} title="Blocked" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -129,7 +126,7 @@ export default function Blocked({ session }: { session: Session }) {
                     style={[
                       {
                         flexDirection: "row",
-                        padding: 16,
+                        padding: 6,
                       },
                     ]}
                   >
@@ -177,7 +174,7 @@ export default function Blocked({ session }: { session: Session }) {
       )}
       <Portal>
         <Snackbar
-          style={[styles.snackbar, styles.aboveNav]}
+          style={styles.snackbar}
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
           action={{
@@ -188,7 +185,6 @@ export default function Blocked({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      <Navigation key={session.user.id} session={session} />
     </View>
   );
 }

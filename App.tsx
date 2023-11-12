@@ -100,8 +100,8 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <StatusBar style="auto" />
       <View style={styles.appView}>
+        <StatusBar style="auto" />
         <Router>
           {Platform.OS !== "web" && <BackHandler />}
           <Routes>

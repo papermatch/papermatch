@@ -4,7 +4,6 @@ import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
-  Appbar,
   ActivityIndicator,
   Badge,
   Portal,
@@ -12,11 +11,12 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { MatchesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -70,9 +70,7 @@ export default function Matches({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Matches" />
-      </Appbar.Header>
+      <Appbar title="Matches" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

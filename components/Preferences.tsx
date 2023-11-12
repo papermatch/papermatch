@@ -1,11 +1,9 @@
-import { useState, useEffect, SetStateAction } from "react";
+import { memo, Dispatch, SetStateAction, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Dispatch } from "react";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Portal,
   Snackbar,
   ActivityIndicator,
@@ -15,7 +13,6 @@ import {
   Text,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import {
   DietType,
@@ -36,6 +33,16 @@ import {
   SexualityData,
 } from "../lib/types";
 import { Checkboxes } from "./Checkboxes";
+import { Appbar } from "./Appbar";
+
+const GenderCheckboxes = memo(Checkboxes<GenderType>);
+const EducationCheckboxes = memo(Checkboxes<EducationType>);
+const ReligionCheckboxes = memo(Checkboxes<ReligionType>);
+const SexualityCheckboxes = memo(Checkboxes<SexualityType>);
+const IntentionCheckboxes = memo(Checkboxes<IntentionType>);
+const RelationshipCheckboxes = memo(Checkboxes<RelationshipType>);
+const FamilyCheckboxes = memo(Checkboxes<FamilyType>);
+const DietCheckboxes = memo(Checkboxes<DietType>);
 
 export default function Preferences({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -57,7 +64,6 @@ export default function Preferences({ session }: { session: Session }) {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const navigate = useNavigate();
   const styles = useStyles();
 
   useEffect(() => {
@@ -225,14 +231,7 @@ export default function Preferences({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Preferences" />
-      </Appbar.Header>
+      <Appbar backAction={true} title="Preferences" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -291,56 +290,56 @@ export default function Preferences({ session }: { session: Session }) {
                 </View>
               </View>
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <GenderCheckboxes
                 label="Gender"
                 data={GenderData}
                 value={gender}
                 onChange={setGender}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <EducationCheckboxes
                 label="Education level"
                 data={EducationData}
                 value={education}
                 onChange={setEducation}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <ReligionCheckboxes
                 label="Religion"
                 data={ReligionData}
                 value={religion}
                 onChange={setReligion}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <SexualityCheckboxes
                 label="Sexuality"
                 data={SexualityData}
                 value={sexuality}
                 onChange={setSexuality}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <FamilyCheckboxes
                 label="Family plan"
                 data={FamilyData}
                 value={family}
                 onChange={setFamily}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <IntentionCheckboxes
                 label="Dating intention"
                 data={IntentionData}
                 value={intention}
                 onChange={setIntention}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <RelationshipCheckboxes
                 label="Relationship style"
                 data={RelationshipData}
                 value={relationship}
                 onChange={setRelationship}
               />
               <Divider style={styles.verticallySpaced} />
-              <Checkboxes
+              <DietCheckboxes
                 label="Diet"
                 data={DietData}
                 value={diet}

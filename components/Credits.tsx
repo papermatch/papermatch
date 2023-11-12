@@ -4,7 +4,6 @@ import { Platform, View, KeyboardAvoidingView } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Text,
   ActivityIndicator,
   HelperText,
@@ -15,15 +14,14 @@ import {
 import { Session } from "@supabase/supabase-js";
 import { WebView, WebViewNavigation } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
-import Navigation from "./Navigation";
-import { ROUTES, useParams } from "../lib/routing";
+import { Navigation } from "./Navigation";
+import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin =
-    Platform.OS === "web"
-      ? window.location.origin + "/" + ROUTES.APP
-      : "https://www.papermat.ch";
+    Platform.OS === "web" ? window.location.origin : "https://www.papermat.ch";
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
@@ -144,9 +142,7 @@ export default function Credits({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Credits" />
-      </Appbar.Header>
+      <Appbar title="Credits" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

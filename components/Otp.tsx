@@ -6,13 +6,13 @@ import {
   TextInput,
   ActivityIndicator,
   HelperText,
-  Appbar,
   Portal,
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
 import { ROUTES, useLocation, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Otp({ session = undefined }: { session?: Session }) {
   const location = useLocation();
@@ -84,17 +84,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content
-          titleStyle={styles.appbarTitle}
-          title="One-time password"
-        />
-      </Appbar.Header>
+      <Appbar backAction={true} title="One-time password" />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

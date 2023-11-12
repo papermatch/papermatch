@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { View } from "react-native";
-import { Appbar, Badge } from "react-native-paper";
+import { Appbar, Badge, useTheme } from "react-native-paper";
 import { ROUTES, useNavigate, useLocation } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { MatchesData } from "../lib/types";
 
-export default function Navigation({ session }: { session: Session }) {
+export const Navigation = memo(({ session }: { session: Session }) => {
   const [active, setActive] = useState(true);
   const [newOrUnread, setNewOrUnread] = useState(false);
   const [onboarding, setOnboarding] = useState(false);
@@ -15,6 +15,7 @@ export default function Navigation({ session }: { session: Session }) {
   const navigate = useNavigate();
   const location = useLocation();
   const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     if (session) {
@@ -103,74 +104,83 @@ export default function Navigation({ session }: { session: Session }) {
   }
 
   return (
-    <Appbar style={styles.bottom}>
-      <Appbar.Action
-        icon={
-          location.pathname === `/${ROUTES.PROFILES}`
-            ? "magnify-plus"
-            : "magnify-plus-outline"
-        }
-        size={30}
-        onPress={() => {
-          navigate(`../${ROUTES.PROFILES}`);
-        }}
-        animated={false}
-      />
-      <View>
-        <Badge
-          visible={!loading && newOrUnread}
-          size={10}
-          style={{ position: "absolute", top: 10, right: 10 }}
-        />
+    <View
+      style={{
+        paddingHorizontal: 12,
+        backgroundColor: theme.colors.surface,
+      }}
+    >
+      <Appbar style={styles.bottom}>
         <Appbar.Action
           icon={
-            location.pathname === `/${ROUTES.MATCHES}` ? "chat" : "chat-outline"
+            location.pathname === `/${ROUTES.PROFILES}`
+              ? "magnify-plus"
+              : "magnify-plus-outline"
           }
           size={30}
           onPress={() => {
-            navigate(`../${ROUTES.MATCHES}`);
+            navigate(`../${ROUTES.PROFILES}`);
           }}
           animated={false}
         />
-      </View>
-      <View>
-        <Badge
-          visible={!loading && !active}
-          size={10}
-          style={{ position: "absolute", top: 10, right: 10 }}
-        />
-        <Appbar.Action
-          icon={
-            location.pathname === `/${ROUTES.CREDITS}`
-              ? "credit-card-plus"
-              : "credit-card-plus-outline"
-          }
-          size={30}
-          onPress={() => {
-            navigate(`../${ROUTES.CREDITS}`);
-          }}
-          animated={false}
-        />
-      </View>
-      <View>
-        <Badge
-          visible={!loading && onboarding}
-          size={10}
-          style={{ position: "absolute", top: 10, right: 10 }}
-        />
-        <Appbar.Action
-          icon={
-            location.pathname === `/${ROUTES.ACCOUNT}`
-              ? "account"
-              : "account-outline"
-          }
-          size={30}
-          onPress={() => {
-            navigate(`../${ROUTES.ACCOUNT}`);
-          }}
-          animated={false}
-        />
-      </View>
-    </Appbar>
+        <View>
+          <Badge
+            visible={!loading && newOrUnread}
+            size={10}
+            style={{ position: "absolute", top: 10, right: 10 }}
+          />
+          <Appbar.Action
+            icon={
+              location.pathname === `/${ROUTES.MATCHES}`
+                ? "chat"
+                : "chat-outline"
+            }
+            size={30}
+            onPress={() => {
+              navigate(`../${ROUTES.MATCHES}`);
+            }}
+            animated={false}
+          />
+        </View>
+        <View>
+          <Badge
+            visible={!loading && !active}
+            size={10}
+            style={{ position: "absolute", top: 10, right: 10 }}
+          />
+          <Appbar.Action
+            icon={
+              location.pathname === `/${ROUTES.CREDITS}`
+                ? "credit-card-plus"
+                : "credit-card-plus-outline"
+            }
+            size={30}
+            onPress={() => {
+              navigate(`../${ROUTES.CREDITS}`);
+            }}
+            animated={false}
+          />
+        </View>
+        <View>
+          <Badge
+            visible={!loading && onboarding}
+            size={10}
+            style={{ position: "absolute", top: 10, right: 10 }}
+          />
+          <Appbar.Action
+            icon={
+              location.pathname === `/${ROUTES.ACCOUNT}`
+                ? "account"
+                : "account-outline"
+            }
+            size={30}
+            onPress={() => {
+              navigate(`../${ROUTES.ACCOUNT}`);
+            }}
+            animated={false}
+          />
+        </View>
+      </Appbar>
+    </View>
   );
-}
+});

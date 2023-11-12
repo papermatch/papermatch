@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   ActivityIndicator,
   Button,
   TextInput,
-  Appbar,
   Dialog,
   Portal,
   Text,
@@ -13,22 +12,23 @@ import {
   Divider,
   Badge,
   Snackbar,
-  Menu,
   useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
 
 const MAX_AVATARS = 6;
 
+const AvatarCarousel = memo(Carousel<string>);
+
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [preferencesOnboarding, setPreferencesOnboarding] = useState(false);
   const [profileOnboarding, setProfileOnboarding] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<string[]>([]);
@@ -227,26 +227,17 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Account" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
+      <Appbar
+        title="Account"
+        menuItems={[
+          {
+            title: "About",
+            onPress: () => {
               navigate(`../${ROUTES.ABOUT}`);
-            }}
-            title="About"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -270,7 +261,7 @@ export default function Account({ session }: { session: Session }) {
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
                 />
-                <Carousel
+                <AvatarCarousel
                   data={
                     avatarUrls
                       ? avatarUrls.length < MAX_AVATARS
@@ -392,37 +383,41 @@ export default function Account({ session }: { session: Session }) {
       )}
       <Navigation key={session.user.id} session={session} />
       <Portal>
-        <Dialog
-          style={styles.dialog}
-          visible={deleteDialogVisible}
-          onDismiss={() => setDeleteDialogVisible(false)}
-        >
-          <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyLarge" style={styles.dialogText}>
-              Deleting your account will permanently remove all of your matches
-              and remaining credits! Click "Ok" below to confirm.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => setDeleteDialogVisible(false)}
+        {deleteDialogVisible && (
+          <View style={styles.portalContainer}>
+            <Dialog
+              style={styles.dialog}
+              visible={deleteDialogVisible}
+              onDismiss={() => setDeleteDialogVisible(false)}
             >
-              Cancel
-            </Button>
-            <Button
-              textColor={theme.colors.onTertiaryContainer}
-              mode="text"
-              labelStyle={styles.buttonLabel}
-              onPress={() => handleDeleteUser()}
-            >
-              Ok
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+              <Dialog.Title style={styles.dialogText}>Warning</Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyLarge" style={styles.dialogText}>
+                  Deleting your account will permanently remove all of your
+                  matches and remaining credits! Click "Ok" below to confirm.
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  textColor={theme.colors.onTertiaryContainer}
+                  mode="text"
+                  labelStyle={styles.buttonLabel}
+                  onPress={() => setDeleteDialogVisible(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  textColor={theme.colors.onTertiaryContainer}
+                  mode="text"
+                  labelStyle={styles.buttonLabel}
+                  onPress={handleDeleteUser}
+                >
+                  Ok
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </View>
+        )}
       </Portal>
       <Portal>
         <Snackbar

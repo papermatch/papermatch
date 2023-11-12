@@ -1,7 +1,8 @@
 import { View, ScrollView, FlatList } from "react-native";
-import { Appbar, Text, Divider } from "react-native-paper";
+import { Text, Divider } from "react-native-paper";
 import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Privacy() {
   const navigate = useNavigate();
@@ -9,14 +10,7 @@ export default function Privacy() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Privacy" />
-      </Appbar.Header>
+      <Appbar backAction={true} title="Privacy" />
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={styles.separator} />

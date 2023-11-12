@@ -1,37 +1,27 @@
-import { useState } from "react";
 import { View, ScrollView, FlatList, Linking } from "react-native";
-import { Button, Appbar, Text, Divider, Menu } from "react-native-paper";
+import { Button, Text, Divider } from "react-native-paper";
 import { Image } from "expo-image";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
+import { Appbar } from "./Appbar";
 
 export default function Home() {
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const navigate = useNavigate();
   const styles = useStyles();
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Paper Match" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
-              navigate(ROUTES.ABOUT);
-            }}
-            title="About"
-          />
-        </Menu>
-      </Appbar.Header>
+      <Appbar
+        title="Paper Match"
+        menuItems={[
+          {
+            title: "About",
+            onPress: () => {
+              navigate(`../${ROUTES.ABOUT}`);
+            },
+          },
+        ]}
+      />
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={styles.separator} />

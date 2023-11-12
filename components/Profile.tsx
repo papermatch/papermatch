@@ -1,33 +1,47 @@
-import { useState, useEffect } from "react";
+import {
+  memo,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, Pressable } from "react-native";
 import {
-  Appbar,
   FAB,
-  Menu,
   Divider,
   Text,
   ActivityIndicator,
   Portal,
-  Modal,
   Snackbar,
   useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { ROUTES, useParams, useNavigate } from "../lib/routing";
 import { ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
+
+const AvatarCarousel = memo(Carousel<string>);
+
+const createOnPressHandler =
+  (url: string | null, setImageUrl: Dispatch<SetStateAction<string | null>>) =>
+  () => {
+    setImageUrl(url);
+  };
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -35,12 +49,33 @@ export default function Profile({ session }: { session: Session }) {
   const styles = useStyles();
   const theme = useTheme();
   const { id, index } = useParams<{ id: string; index: string | undefined }>();
+  const onPressHandlers = useRef(new Map());
+  const avatarUrls = useMemo(() => {
+    return profile?.avatar_urls?.length ? profile.avatar_urls : [""];
+  }, [profile?.avatar_urls]);
 
   useEffect(() => {
     if (id && session) {
       getData();
     }
   }, [id, session]);
+
+  useEffect(() => {
+    avatarUrls.forEach((url) => {
+      if (!onPressHandlers.current.has(url)) {
+        onPressHandlers.current.set(
+          url,
+          createOnPressHandler(url, setImageUrl)
+        );
+      }
+    });
+
+    setImageUrl(index ? avatarUrls[parseInt(index) || 0] : null);
+
+    return () => {
+      onPressHandlers.current.clear();
+    };
+  }, [profile?.avatar_urls]);
 
   async function getData() {
     setLoading(true);
@@ -129,82 +164,71 @@ export default function Profile({ session }: { session: Session }) {
     }
   }
 
-  async function handleInteraction(type: string) {
-    try {
-      const { error } = await supabase.from("interactions").upsert([
-        {
-          user_id: session?.user.id,
-          target_id: id,
-          interaction: type,
-          updated_at: new Date(),
-        },
-      ]);
+  const handleInteraction = useCallback(
+    async (type: string) => {
+      try {
+        const { error } = await supabase.from("interactions").upsert([
+          {
+            user_id: session?.user.id,
+            target_id: id,
+            interaction: type,
+            updated_at: new Date(),
+          },
+        ]);
 
-      if (error) {
-        throw error;
-      }
+        if (error) {
+          throw error;
+        }
 
-      if (type == "pass" || type == "block") {
-        navigate(-1);
-      } else {
-        getInteraction();
+        if (type == "pass" || type == "block") {
+          navigate(-1);
+        } else {
+          getInteraction();
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          setSnackbarMessage("Unable to update interaction");
+          setSnackbarVisible(true);
+        }
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to update interaction");
-        setSnackbarVisible(true);
-      }
-    }
-  }
+    },
+    [session, id, navigate, getInteraction]
+  );
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content
-          titleStyle={styles.appbarTitle}
-          title={profile?.username ?? "Profile"}
-        />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          {session?.user.id == id ? (
-            <Menu.Item
-              onPress={() => {
-                navigate(`../${ROUTES.EDIT}`);
-              }}
-              title="Edit"
-            />
-          ) : (
-            <View>
-              <Menu.Item
-                onPress={() => {
-                  handleInteraction(interaction == "block" ? "none" : "block");
-                }}
-                title={interaction == "block" ? "Unblock" : "Block"}
-              />
-              <Menu.Item
-                onPress={() => {
-                  navigate(`../${ROUTES.REPORT}/${id}`);
-                }}
-                title="Report"
-              />
-            </View>
-          )}
-        </Menu>
-      </Appbar.Header>
+      <Appbar
+        backAction={true}
+        title={profile?.username || "Profile"}
+        menuItems={
+          session?.user.id == id
+            ? [
+                {
+                  title: "Edit",
+                  onPress: () => {
+                    navigate(`../${ROUTES.EDIT}`);
+                  },
+                },
+              ]
+            : [
+                {
+                  title: "Block",
+                  onPress: () => {
+                    handleInteraction(
+                      interaction == "block" ? "none" : "block"
+                    );
+                  },
+                },
+                {
+                  title: "Report",
+                  onPress: () => {
+                    navigate(`../${ROUTES.REPORT}/${id}`);
+                  },
+                },
+              ]
+        }
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -217,15 +241,13 @@ export default function Profile({ session }: { session: Session }) {
             <View style={styles.separator} />
             {profile ? (
               <View>
-                <Carousel
-                  data={profile.avatar_urls.length ? profile.avatar_urls : [""]}
+                <AvatarCarousel
+                  data={avatarUrls}
                   renderItem={(item) => (
                     <Avatar
                       size={300}
                       url={item}
-                      onPress={() => {
-                        setImageUrl(item);
-                      }}
+                      onPress={onPressHandlers.current.get(item)}
                     />
                   )}
                   size={300}
@@ -291,26 +313,36 @@ export default function Profile({ session }: { session: Session }) {
         </View>
       )}
       <Portal>
-        <Modal
-          visible={!!imageUrl}
-          onDismiss={() => setImageUrl(null)}
-          contentContainerStyle={{ flex: 1 }}
-        >
-          {!!imageUrl && (
-            <Pressable style={{ flex: 1 }} onPress={() => setImageUrl(null)}>
-              <Image
-                source={{ uri: imageUrl }}
-                style={{ flex: 1 }}
-                contentFit="contain"
-                onError={(error) => {
-                  if (error instanceof Error) {
-                    console.error(error.message);
-                  }
-                }}
-              />
-            </Pressable>
-          )}
-        </Modal>
+        {!!imageUrl && (
+          <Pressable
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.colors.backdrop,
+              padding: 12,
+            }}
+            onPress={() => setImageUrl(null)}
+          >
+            <Image
+              source={{ uri: imageUrl }}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 3 * theme.roundness,
+              }}
+              contentFit="scale-down"
+              onError={(error) => {
+                if (error instanceof Error) {
+                  console.error(error.message);
+                  setSnackbarMessage("Unable to load image");
+                  setSnackbarVisible(true);
+                }
+                setImageUrl(null);
+              }}
+            />
+          </Pressable>
+        )}
       </Portal>
       <Portal>
         <Snackbar

@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, FlatList } from "react-native";
 import {
   Card,
   Text,
-  Appbar,
   ActivityIndicator,
-  Menu,
   Checkbox,
   Portal,
   Modal,
@@ -15,19 +13,21 @@ import {
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
-import Navigation from "./Navigation";
+import { Avatar } from "./Avatar";
+import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
+import { Appbar } from "./Appbar";
 
 const PROFILES_PER_PAGE = 6;
 
+const AvatarCarousel = memo(Carousel<string>);
+
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [data, setData] = useState<ProfilesData[]>([]);
@@ -106,33 +106,23 @@ export default function Profiles({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Profiles" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
-              setAppbarMenuVisible(false);
+      <Appbar
+        title="Profiles"
+        menuItems={[
+          {
+            title: "Settings",
+            onPress: () => {
               setHideSettings(!settingsVisible);
-            }}
-            title="Settings"
-          />
-          <Menu.Item
-            onPress={() => {
+            },
+          },
+          {
+            title: "Preferences",
+            onPress: () => {
               navigate(`../${ROUTES.PREFERENCES}`);
-            }}
-            title="Preferences"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       <View style={[styles.container, { paddingHorizontal: 0 }]}>
         {data.length ? (
           <FlatList
@@ -155,7 +145,7 @@ export default function Profiles({ session }: { session: Session }) {
                   >
                     {item.profile.username}
                   </Text>
-                  <Carousel
+                  <AvatarCarousel
                     data={
                       item.profile.avatar_urls.length
                         ? item.profile.avatar_urls
@@ -232,29 +222,33 @@ export default function Profiles({ session }: { session: Session }) {
         )}
       </View>
       <Portal>
-        <Modal
-          contentContainerStyle={styles.modal}
-          visible={settingsVisible}
-          onDismiss={() => setHideSettings(false)}
-        >
-          <View style={styles.verticallySpaced}>
-            <Text variant="titleLarge">Settings</Text>
-            <Checkbox.Item
-              labelStyle={{ color: theme.colors.onTertiaryContainer }}
-              label="Hide profiles you've already liked/passed"
-              status={hideInteractions ? "checked" : "unchecked"}
-              onPress={() => setHideInteractions(!hideInteractions)}
-              disabled={loading}
-            />
-            <Checkbox.Item
-              labelStyle={{ color: theme.colors.onTertiaryContainer }}
-              label="Hide profiles that don't meet all of your preferences"
-              status={hidePreferences ? "checked" : "unchecked"}
-              onPress={() => setHidePreferences(!hidePreferences)}
-              disabled={loading}
-            />
+        {settingsVisible && (
+          <View style={styles.portalContainer}>
+            <Modal
+              contentContainerStyle={styles.modal}
+              visible={settingsVisible}
+              onDismiss={() => setHideSettings(false)}
+            >
+              <View style={styles.verticallySpaced}>
+                <Text variant="titleLarge">Settings</Text>
+                <Checkbox.Item
+                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  label="Hide profiles you've already liked/passed"
+                  status={hideInteractions ? "checked" : "unchecked"}
+                  onPress={() => setHideInteractions(!hideInteractions)}
+                  disabled={loading}
+                />
+                <Checkbox.Item
+                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  label="Hide profiles that don't meet all of your preferences"
+                  status={hidePreferences ? "checked" : "unchecked"}
+                  onPress={() => setHidePreferences(!hidePreferences)}
+                  disabled={loading}
+                />
+              </View>
+            </Modal>
           </View>
-        </Modal>
+        )}
       </Portal>
       <Portal>
         <Snackbar

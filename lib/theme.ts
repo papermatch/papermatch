@@ -5,14 +5,10 @@ const FONT_SIZE_SCALE = 1.0;
 const LINE_HEIGHT_SCALE = 1.618;
 
 const fontFamilyRegular = Platform.select({
-  web: "EduNSWACTFoundation_400Regular",
-  ios: "System",
   default: "EduNSWACTFoundation_400Regular",
 });
 
 const fontFamilyMedium = Platform.select({
-  web: "EduNSWACTFoundation_500Medium",
-  ios: "System",
   default: "EduNSWACTFoundation_500Medium",
 });
 

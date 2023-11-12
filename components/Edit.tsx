@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
   Button,
   TextInput,
-  Appbar,
   Portal,
   Snackbar,
-  Menu,
   ActivityIndicator,
   HelperText,
   Text,
@@ -39,10 +37,19 @@ import {
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Appbar } from "./Appbar";
+
+const GenderDropdown = memo(Dropdown<GenderType>);
+const EducationDropdown = memo(Dropdown<EducationType>);
+const ReligionDropdown = memo(Dropdown<ReligionType>);
+const SexualityDropdown = memo(Dropdown<SexualityType>);
+const IntentionDropdown = memo(Dropdown<IntentionType>);
+const RelationshipDropdown = memo(Dropdown<RelationshipType>);
+const FamilyDropdown = memo(Dropdown<FamilyType>);
+const DietDropdown = memo(Dropdown<DietType>);
 
 export default function Edit({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [appbarMenuVisible, setAppbarMenuVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [gender, setGender] = useState<GenderType | null>(null);
@@ -244,31 +251,18 @@ export default function Edit({ session }: { session: Session }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header mode="center-aligned">
-        <Appbar.BackAction
-          onPress={() => {
-            navigate(-1);
-          }}
-        />
-        <Appbar.Content titleStyle={styles.appbarTitle} title="Edit" />
-        <Menu
-          visible={appbarMenuVisible}
-          onDismiss={() => setAppbarMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setAppbarMenuVisible(!appbarMenuVisible)}
-            />
-          }
-        >
-          <Menu.Item
-            onPress={() => {
+      <Appbar
+        backAction={true}
+        title="Edit"
+        menuItems={[
+          {
+            title: "View",
+            onPress: () => {
               navigate(`../${ROUTES.PROFILE}/${session.user.id}`);
-            }}
-            title="View"
-          />
-        </Menu>
-      </Appbar.Header>
+            },
+          },
+        ]}
+      />
       {loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -306,56 +300,56 @@ export default function Edit({ session }: { session: Session }) {
                   </HelperText>
                 ) : null}
               </View>
-              <Dropdown
+              <GenderDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Gender"
                 data={GenderData}
                 value={gender}
                 onChange={setGender}
               />
-              <Dropdown
+              <EducationDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Education level"
                 data={EducationData}
                 value={education}
                 onChange={setEducation}
               />
-              <Dropdown
+              <ReligionDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Religion"
                 data={ReligionData}
                 value={religion}
                 onChange={setReligion}
               />
-              <Dropdown
+              <SexualityDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Sexuality"
                 data={SexualityData}
                 value={sexuality}
                 onChange={setSexuality}
               />
-              <Dropdown
+              <FamilyDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Family plan"
                 data={FamilyData}
                 value={family}
                 onChange={setFamily}
               />
-              <Dropdown
+              <IntentionDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Dating intention"
                 data={IntentionData}
                 value={intention}
                 onChange={setIntention}
               />
-              <Dropdown
+              <RelationshipDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Relationship style"
                 data={RelationshipData}
                 value={relationship}
                 onChange={setRelationship}
               />
-              <Dropdown
+              <DietDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Diet"
                 data={DietData}
@@ -435,34 +429,36 @@ export default function Edit({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      {Platform.OS !== "web" && mapVisible ? (
-        <Portal>
-          <StatusBar hidden={true} />
+      <Portal>
+        {Platform.OS !== "web" && mapVisible && (
           <View style={{ flex: 1 }}>
-            <MapView
-              style={{ width: "100%", height: "100%" }}
-              initialRegion={{
-                ...toLatLng({ lnglat }),
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              onRegionChangeComplete={(event) => {
-                setLnglat(toLngLat(event));
-              }}
-              provider={PROVIDER_GOOGLE}
-            >
-              <Marker coordinate={toLatLng({ lnglat })} />
-            </MapView>
+            <StatusBar hidden={true} />
+            <View style={{ flex: 1 }}>
+              <MapView
+                style={{ width: "100%", height: "100%" }}
+                initialRegion={{
+                  ...toLatLng({ lnglat }),
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                onRegionChangeComplete={(event) => {
+                  setLnglat(toLngLat(event));
+                }}
+                provider={PROVIDER_GOOGLE}
+              >
+                <Marker coordinate={toLatLng({ lnglat })} />
+              </MapView>
+            </View>
+            <FAB
+              icon="keyboard-backspace"
+              style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
+              size="medium"
+              onPress={() => setMapVisible(false)}
+              disabled={loading}
+            />
           </View>
-          <FAB
-            icon="keyboard-backspace"
-            style={{ position: "absolute", margin: 16, left: 0, top: 0 }}
-            size="medium"
-            onPress={() => setMapVisible(false)}
-            disabled={loading}
-          />
-        </Portal>
-      ) : null}
+        )}
+      </Portal>
     </View>
   );
 }
