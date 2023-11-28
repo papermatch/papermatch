@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Platform, View, KeyboardAvoidingView } from "react-native";
+import { View } from "react-native";
 import {
   Button,
   TextInput,
@@ -12,14 +12,13 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { WebView, WebViewNavigation } from "react-native-webview";
-import { StatusBar } from "expo-status-bar";
 import { Navigation } from "./Navigation";
+import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 
 export default function Credits({ session }: { session: Session }) {
-  const currentOrigin = "https://www.papermat.ch";
+  const currentOrigin = window.location.origin;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
@@ -28,12 +27,30 @@ export default function Credits({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const styles = useStyles();
+  const { result } = useParams<{ result: string }>();
+
+  useEffect(() => {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    }
+  }, [checkoutUrl]);
 
   useEffect(() => {
     if (session) {
       getCredits();
     }
   }, [session]);
+
+  useEffect(() => {
+    if (result) {
+      setSnackbarMessage(
+        result === "success"
+          ? "Payment successful!"
+          : "Payment unsuccessful, you have not been charged."
+      );
+      setSnackbarVisible(true);
+    }
+  }, []);
 
   async function getCredits() {
     try {
@@ -98,18 +115,6 @@ export default function Credits({ session }: { session: Session }) {
     }
   };
 
-  const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    if (navState.url === `${currentOrigin}/credits/success`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Payment successful!");
-      setSnackbarVisible(true);
-    } else if (navState.url === `${currentOrigin}/credits/cancel`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Payment unsuccessful, you have not been charged.");
-      setSnackbarVisible(true);
-    }
-  };
-
   const validateQuantity = (quantity: string) => {
     const regex = /^[0-9]+$/;
     if (!regex.test(quantity)) {
@@ -130,51 +135,46 @@ export default function Credits({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <View style={styles.container}>
-            <View style={styles.separator} />
-            <Text style={styles.verticallySpaced}>
-              You have {credits} credit{credits === 1 ? "" : "s"}. Each match
-              costs 1 credit, and your profile will not be searchable if you
-              have 0 credits.
-            </Text>
-            <Divider style={styles.verticallySpaced} />
-            <Text style={styles.verticallySpaced} variant="titleLarge">
-              Purchase credits
-            </Text>
-            <View style={styles.verticallySpaced}>
-              <TextInput
-                style={styles.textInput}
-                label="Credits"
-                keyboardType="numeric"
-                value={quantity}
-                onChangeText={(text) => {
-                  setQuantity(text);
-                  validateQuantity(text);
-                }}
-                placeholder="Enter Quantity"
-                error={!!quantityError}
-              />
-              {quantityError ? (
-                <HelperText type="error" visible={!!quantityError}>
-                  {quantityError}
-                </HelperText>
-              ) : null}
-            </View>
-            <Button
-              mode="contained"
-              labelStyle={styles.buttonLabel}
-              style={styles.verticallySpaced}
-              onPress={fetchCheckoutUrl}
-              disabled={loading}
-            >
-              Checkout
-            </Button>
+        <View style={styles.container}>
+          <View style={styles.separator} />
+          <Text style={styles.verticallySpaced}>
+            You have {credits} credit{credits === 1 ? "" : "s"}. Each match
+            costs 1 credit, and your profile will not be searchable if you have
+            0 credits.
+          </Text>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Purchase credits
+          </Text>
+          <View style={styles.verticallySpaced}>
+            <TextInput
+              style={styles.textInput}
+              label="Credits"
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={(text) => {
+                setQuantity(text);
+                validateQuantity(text);
+              }}
+              placeholder="Enter Quantity"
+              error={!!quantityError}
+            />
+            {quantityError ? (
+              <HelperText type="error" visible={!!quantityError}>
+                {quantityError}
+              </HelperText>
+            ) : null}
           </View>
-        </KeyboardAvoidingView>
+          <Button
+            mode="contained"
+            labelStyle={styles.buttonLabel}
+            style={styles.verticallySpaced}
+            onPress={fetchCheckoutUrl}
+            disabled={loading}
+          >
+            Checkout
+          </Button>
+        </View>
       )}
       <Portal>
         <Snackbar
@@ -189,16 +189,6 @@ export default function Credits({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      {Platform.OS !== "web" && checkoutUrl ? (
-        <Portal>
-          <StatusBar hidden={true} />
-          <WebView
-            style={{ flex: 1 }}
-            source={{ uri: checkoutUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-          />
-        </Portal>
-      ) : null}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

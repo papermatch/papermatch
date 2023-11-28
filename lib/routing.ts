@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Platform, BackHandler as RNBackHandler } from "react-native";
 import {
   BrowserRouter,
+  Routes as BrowserRoutes,
   Route as BrowserRoute,
   Navigate as BrowserNavigate,
   Link as BrowserLink,
@@ -11,6 +12,7 @@ import {
 } from "react-router-dom";
 import {
   NativeRouter,
+  Routes as NativeRoutes,
   Route as NativeRoute,
   Navigate as NativeNavigate,
   Link as NativeLink,
@@ -39,6 +41,7 @@ export const ROUTES = {
 };
 
 export const Router = Platform.OS === "web" ? BrowserRouter : NativeRouter;
+export const Routes = Platform.OS === "web" ? BrowserRoutes : NativeRoutes;
 export const Route = Platform.OS === "web" ? BrowserRoute : NativeRoute;
 export const Navigate =
   Platform.OS === "web" ? BrowserNavigate : NativeNavigate;
@@ -69,3 +72,4 @@ export const BackHandler = () => {
 
   return null;
 };
+
