@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Platform, View, KeyboardAvoidingView } from "react-native";
+import { Platform, View, KeyboardAvoidingView, FlatList } from "react-native";
 import {
   Button,
   TextInput,
@@ -17,10 +17,15 @@ import { StatusBar } from "expo-status-bar";
 import { Navigation } from "./Navigation";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+import Purchases, {
+  PurchasesOfferings,
+  PurchasesPackage,
+} from "react-native-purchases";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = "https://www.papermat.ch";
   const [loading, setLoading] = useState(true);
+  const [offerings, setOfferings] = useState<PurchasesOfferings>();
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [quantityError, setQuantityError] = useState<string>("");
@@ -31,13 +36,18 @@ export default function Credits({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getCredits();
+      getData();
     }
   }, [session]);
 
+  async function getData() {
+    setLoading(true);
+    await Promise.all([getCredits(), getOfferings()]);
+    setLoading(false);
+  }
+
   async function getCredits() {
     try {
-      setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       const { data, error, status } = await supabase
@@ -57,8 +67,33 @@ export default function Credits({ session }: { session: Session }) {
         setSnackbarMessage("Unable to fetch credits");
         setSnackbarVisible(true);
       }
-    } finally {
-      setLoading(false);
+    }
+  }
+
+  async function getOfferings() {
+    console.log("getOfferings");
+    try {
+      const offerings = await Purchases.getOfferings();
+      setOfferings(offerings);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setSnackbarMessage("Unable to fetch offerings");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  async function purchasePackage(purchasesPackage: PurchasesPackage) {
+    try {
+      const purchaseMade = await Purchases.purchasePackage(purchasesPackage);
+      console.log(purchaseMade);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setSnackbarMessage("Unable to purchase package");
+        setSnackbarVisible(true);
+      }
     }
   }
 
@@ -145,34 +180,59 @@ export default function Credits({ session }: { session: Session }) {
             <Text style={styles.verticallySpaced} variant="titleLarge">
               Purchase credits
             </Text>
-            <View style={styles.verticallySpaced}>
-              <TextInput
-                style={styles.textInput}
-                label="Credits"
-                keyboardType="numeric"
-                value={quantity}
-                onChangeText={(text) => {
-                  setQuantity(text);
-                  validateQuantity(text);
-                }}
-                placeholder="Enter Quantity"
-                error={!!quantityError}
+            {offerings?.current ? (
+              <FlatList
+                data={offerings.current.availablePackages}
+                keyExtractor={(item) => item.identifier}
+                renderItem={({ item }) => (
+                  <View style={styles.verticallySpaced}>
+                    <Text style={styles.verticallySpaced}>
+                      {item.product.description}
+                    </Text>
+                    <Button
+                      mode="contained"
+                      labelStyle={styles.buttonLabel}
+                      style={styles.verticallySpaced}
+                      onPress={() => purchasePackage(item)}
+                      disabled={loading}
+                    >
+                      Purchase
+                    </Button>
+                  </View>
+                )}
               />
-              {quantityError ? (
-                <HelperText type="error" visible={!!quantityError}>
-                  {quantityError}
-                </HelperText>
-              ) : null}
-            </View>
-            <Button
-              mode="contained"
-              labelStyle={styles.buttonLabel}
-              style={styles.verticallySpaced}
-              onPress={fetchCheckoutUrl}
-              disabled={loading}
-            >
-              Checkout
-            </Button>
+            ) : (
+              <View>
+                <View style={styles.verticallySpaced}>
+                  <TextInput
+                    style={styles.textInput}
+                    label="Credits"
+                    keyboardType="numeric"
+                    value={quantity}
+                    onChangeText={(text) => {
+                      setQuantity(text);
+                      validateQuantity(text);
+                    }}
+                    placeholder="Enter Quantity"
+                    error={!!quantityError}
+                  />
+                  {quantityError ? (
+                    <HelperText type="error" visible={!!quantityError}>
+                      {quantityError}
+                    </HelperText>
+                  ) : null}
+                </View>
+                <Button
+                  mode="contained"
+                  labelStyle={styles.buttonLabel}
+                  style={styles.verticallySpaced}
+                  onPress={fetchCheckoutUrl}
+                  disabled={loading}
+                >
+                  Checkout
+                </Button>
+              </View>
+            )}
           </View>
         </KeyboardAvoidingView>
       )}

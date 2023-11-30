@@ -2,7 +2,7 @@
   "expo": {
     "name": "Paper Match Dating",
     "slug": "papermatch",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch",
-      "versionCode": 6
+      "versionCode": 7
     },
     "web": {
       "bundler": "metro",
@@ -48,7 +48,6 @@
           "mode": "development"
         }
       ],
-      ["react-native-iap"],
       ["./scripts/withDrawableAssets", "./assets/onesignal"]
     ],
     "sdkVersion": "49.0.0",
