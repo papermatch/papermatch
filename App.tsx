@@ -1,6 +1,6 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { supabase } from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -15,6 +15,8 @@ import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
 import { LogLevel, OneSignal } from "react-native-onesignal";
 import Constants, { ExecutionEnvironment } from "expo-constants";
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import { REVENUECAT_ANDROID_SDK_KEY, REVENUECAT_IOS_SDK_KEY } from "@env";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -46,20 +48,28 @@ export default function App() {
           setSession(session);
           break;
       }
-
-      if (Constants.executionEnvironment === ExecutionEnvironment.Standalone) {
-        OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-        OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
-        // TODO(drw): use OneSignal.Notifications.addEventListener to handle notifications when app in focus
-        // OneSignal.Notifications.addEventListener(
-        //   "foregroundWillDisplay",
-        //   (event) => {
-        //     event.preventDefault();
-        //     event.getNotification().display();
-        //   }
-        // );
-      }
     });
+
+    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone) {
+      OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+      OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
+      // TODO(drw): use OneSignal.Notifications.addEventListener to handle notifications when app in focus
+      // OneSignal.Notifications.addEventListener(
+      //   "foregroundWillDisplay",
+      //   (event) => {
+      //     event.preventDefault();
+      //     event.getNotification().display();
+      //   }
+      // );
+    }
+
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+    if (Platform.OS === "android") {
+      Purchases.configure({ apiKey: REVENUECAT_ANDROID_SDK_KEY });
+    } else if (Platform.OS === "ios") {
+      Purchases.configure({ apiKey: REVENUECAT_IOS_SDK_KEY });
+    }
   }, []);
 
   useEffect(() => {
@@ -71,6 +81,19 @@ export default function App() {
         OneSignal.logout();
       }
     }
+
+    (async () => {
+      const isConfigured = await Purchases.isConfigured();
+      if (isConfigured) {
+        if (session?.user.id) {
+          const { customerInfo, created } = await Purchases.logIn(
+            session.user.id
+          );
+        } else {
+          await Purchases.logOut();
+        }
+      }
+    })();
   }, [session?.user.id]);
 
   if (loading || (!fontsLoaded && !fontError)) {
