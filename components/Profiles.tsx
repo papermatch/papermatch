@@ -82,7 +82,7 @@ export default function Profiles({ session }: { session: Session }) {
             await Image.prefetch(item.profile.avatar_urls);
           } catch (error) {
             if (error instanceof Error) {
-              console.log(error.message);
+              console.error(error.message);
             }
           }
         })

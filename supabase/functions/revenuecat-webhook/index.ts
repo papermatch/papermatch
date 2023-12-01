@@ -29,7 +29,6 @@ serve(async (req) => {
 
   // TODO(drw): Add authentication?
   const body = await req.json();
-  console.log(body);
 
   // Handle the event
   const event = body.event;

@@ -71,7 +71,6 @@ export default function Credits({ session }: { session: Session }) {
   }
 
   async function getOfferings() {
-    console.log("getOfferings");
     try {
       const offerings = await Purchases.getOfferings();
       setOfferings(offerings);
@@ -87,7 +86,6 @@ export default function Credits({ session }: { session: Session }) {
   async function purchasePackage(purchasesPackage: PurchasesPackage) {
     try {
       const purchaseMade = await Purchases.purchasePackage(purchasesPackage);
-      console.log(purchaseMade);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);

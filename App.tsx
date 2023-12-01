@@ -89,7 +89,6 @@ export default function App() {
           const { customerInfo, created } = await Purchases.logIn(
             session.user.id
           );
-          console.log(customerInfo, created);
         } else {
           await Purchases.logOut();
         }
