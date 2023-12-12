@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 import {
   View,
@@ -24,13 +24,23 @@ import {
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
 import { Avatar } from "./Avatar";
-import { ROUTES, useParams, useNavigate } from "../lib/routing";
+import {
+  ROUTES,
+  useParams,
+  useNavigate,
+  NavigateFunction,
+} from "../lib/routing";
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 
+const createOnPressHandler = (id: string, navigate: NavigateFunction) => () => {
+  navigate(`../${ROUTES.PROFILE}/${id}`);
+};
+
 export default function Match({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const [match, setMatch] = useState<MatchData | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -43,6 +53,10 @@ export default function Match({ session }: { session: Session }) {
   const styles = useStyles();
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
+  const onPressHandler = useRef(() => {});
+  const avatarUrl = useMemo(() => {
+    return profile?.avatar_urls?.length ? profile.avatar_urls[0] : null;
+  }, [profile?.avatar_urls]);
 
   useEffect(() => {
     if (id && session) {
@@ -92,6 +106,16 @@ export default function Match({ session }: { session: Session }) {
       supabase.removeChannel(messagesChannel);
     };
   }, [id, session]);
+
+  useEffect(() => {
+    if (profile) {
+      onPressHandler.current = createOnPressHandler(profile.id, navigate);
+    }
+
+    return () => {
+      onPressHandler.current = () => {};
+    };
+  }, [profile]);
 
   async function getData() {
     setLoading(true);
@@ -178,6 +202,8 @@ export default function Match({ session }: { session: Session }) {
     }
 
     try {
+      setSending(true);
+
       const { error } = await supabase.from("messages").insert({
         match_id: id,
         user_id: session.user.id,
@@ -195,6 +221,8 @@ export default function Match({ session }: { session: Session }) {
         setSnackbarMessage("Unable to send message");
         setSnackbarVisible(true);
       }
+    } finally {
+      setSending(false);
     }
   }
 
@@ -337,10 +365,8 @@ export default function Match({ session }: { session: Session }) {
                           <View style={{ alignSelf: "flex-start" }}>
                             <Avatar
                               size={50}
-                              url={profile?.avatar_urls[0] || null}
-                              onPress={() =>
-                                navigate(`../${ROUTES.PROFILE}/${profile?.id}`)
-                              }
+                              url={avatarUrl}
+                              onPress={onPressHandler.current}
                             />
                           </View>
                         )}
@@ -375,6 +401,7 @@ export default function Match({ session }: { session: Session }) {
             />
             <View style={{ flexDirection: "row" }}>
               <TextInput
+                disabled={sending}
                 style={[styles.textInput, { flex: 1 }]}
                 value={message}
                 onChangeText={setMessage}
