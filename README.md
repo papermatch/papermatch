@@ -154,6 +154,23 @@ A pay-per-match dating app, using React Native and Supabase.
 4. [Configure OneSignal](https://documentation.onesignal.com/docs/react-native-expo-sdk-setup) for notifications
 5. [Configure Google Play](https://docs.expo.dev/submit/android/) for submission
 
+## Push Notifications
+
+### Android
+
+Google Android (FCM)
+
+### iOS
+
+Derived from: https://www.andrewhoefling.com/Blog/Post/how-to-develop-ios-without-a-mac
+
+1. `openssl genrsa -out mykey.key 2048`
+2. `openssl req -new -sha256 -key mykey.key -out ios_development.csr -subj "/emailAddress=drwahl@gmail.com, CN=Daniel Wahl, C=US"`
+3. Upload the .csr file to and download the .cer file from [Apple Developer Certificates](https://developer.apple.com/account/resources/certificates)
+4. `openssl x509 -inform DER -outform PEM -in aps.cer -out ios_development.pem`
+5. `openssl pkcs12 -inkey mykey.key -in ios_development.pem -export -out ios_development.p12 -name "Daniel Wahl"`
+6. Upload to [OneSignal](https://onesignal.com) Apple iOS (APNs) settings
+
 ## VSCode Setup
 
 ```json
