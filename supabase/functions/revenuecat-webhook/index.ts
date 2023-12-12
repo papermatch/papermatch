@@ -50,6 +50,9 @@ serve(async (req) => {
         case "ch.papermat.papermatch.credit":
           quantity = 1;
           break;
+        case "ch.papermat.papermatch.sixpack":
+          quantity = 6;
+          break;
         default:
           return new Response(JSON.stringify({ error: "Unknown product ID" }), {
             status: 200,

@@ -93,7 +93,7 @@ serve(async (req) => {
       billing_address_collection: "auto",
       line_items: [
         {
-          price: Deno.env.get("STRIPE_PRICE_ID") as string,
+          price: Deno.env.get("STRIPE_CREDIT_PRICE_ID") as string,
           quantity: quantity,
         },
       ],

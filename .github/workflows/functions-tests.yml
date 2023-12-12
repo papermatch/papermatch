@@ -16,7 +16,7 @@ jobs:
       - run: supabase start
       - run: |
           echo -e "ONESIGNAL_APP_ID=${{ secrets.ONESIGNAL_APP_ID }}\nONESIGNAL_REST_API_KEY=${{ secrets.ONESIGNAL_REST_API_KEY }}\nONESIGNAL_USER_AUTH_KEY=${{ secrets.ONESIGNAL_USER_AUTH_KEY }}" > .env
-          echo -e "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}\nSTRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}\nSTRIPE_WEBHOOK_SIGNING_SECRET=${{ secrets.STRIPE_WEBHOOK_SIGNING_SECRET }}" >> .env
+          echo -e "STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}\nSTRIPE_CREDIT_PRICE_ID=${{ secrets.STRIPE_CREDIT_PRICE_ID }}\nSTRIPE_WEBHOOK_SIGNING_SECRET=${{ secrets.STRIPE_WEBHOOK_SIGNING_SECRET }}" >> .env
           supabase functions serve --no-verify-jwt --env-file $PWD/.env &
         working-directory: ./supabase
       - run: |
