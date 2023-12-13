@@ -64,7 +64,6 @@ export default function App() {
     }
 
     Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
-
     if (Platform.OS === "android") {
       Purchases.configure({ apiKey: REVENUECAT_ANDROID_SDK_KEY });
     } else if (Platform.OS === "ios") {
@@ -86,9 +85,7 @@ export default function App() {
       const isConfigured = await Purchases.isConfigured();
       if (isConfigured) {
         if (session?.user.id) {
-          const { customerInfo, created } = await Purchases.logIn(
-            session.user.id
-          );
+          await Purchases.logIn(session.user.id);
         } else {
           await Purchases.logOut();
         }

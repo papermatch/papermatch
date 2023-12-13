@@ -196,6 +196,17 @@ export default function Profile({ session }: { session: Session }) {
     [session, id, navigate, getInteraction]
   );
 
+  const renderAvatar = useCallback(
+    (url: string) => (
+      <Avatar
+        size={styles.avatarSize.width}
+        url={url}
+        onPress={onPressHandlers.current.get(url)}
+      />
+    ),
+    [styles.avatarSize.width, onPressHandlers]
+  );
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar
@@ -243,14 +254,8 @@ export default function Profile({ session }: { session: Session }) {
               <View>
                 <AvatarCarousel
                   data={avatarUrls}
-                  renderItem={(item) => (
-                    <Avatar
-                      size={300}
-                      url={item}
-                      onPress={onPressHandlers.current.get(item)}
-                    />
-                  )}
-                  size={300}
+                  renderItem={renderAvatar}
+                  size={styles.avatarSize.width}
                   index={index ? parseInt(index) || 0 : 0}
                 />
                 <View style={styles.separator} />

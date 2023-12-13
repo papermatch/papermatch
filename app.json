@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Paper Match Dating",
+    "name": "Paper Match",
     "slug": "papermatch",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "bundler": "metro",

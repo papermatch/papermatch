@@ -280,6 +280,7 @@ export default function Account({ session }: { session: Session }) {
                   )}
                   size={200}
                   index={newAvatarIndex}
+                  pageControl={false}
                 />
               </View>
               <View style={styles.separator} />

@@ -9,6 +9,7 @@ import {
   useLocation as useLocationBrowser,
   useNavigate as useNavigateBrowser,
   useParams as useParamsBrowser,
+  NavigateFunction as BrowserNavigateFunction,
 } from "react-router-dom";
 import {
   NativeRouter,
@@ -19,6 +20,7 @@ import {
   useLocation as useLocationNative,
   useNavigate as useNavigateNative,
   useParams as useParamsNative,
+  NavigateFunction as NativeNavigateFunction,
 } from "react-router-native";
 
 export const ROUTES = {
@@ -52,6 +54,7 @@ export const useNavigate =
   Platform.OS === "web" ? useNavigateBrowser : useNavigateNative;
 export const useParams =
   Platform.OS === "web" ? useParamsBrowser : useParamsNative;
+export type NavigateFunction = BrowserNavigateFunction | NativeNavigateFunction;
 
 export const BackHandler = () => {
   const navigate = useNavigate();
@@ -72,4 +75,3 @@ export const BackHandler = () => {
 
   return null;
 };
-

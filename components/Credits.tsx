@@ -25,6 +25,7 @@ import Purchases, {
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = "https://www.papermat.ch";
   const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOfferings>();
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
@@ -85,6 +86,7 @@ export default function Credits({ session }: { session: Session }) {
 
   async function purchasePackage(purchasesPackage: PurchasesPackage) {
     try {
+      setPurchasing(true);
       const purchaseMade = await Purchases.purchasePackage(purchasesPackage);
     } catch (error) {
       if (error instanceof Error) {
@@ -92,6 +94,9 @@ export default function Credits({ session }: { session: Session }) {
         setSnackbarMessage("Unable to purchase package");
         setSnackbarVisible(true);
       }
+    }
+    finally {
+      setPurchasing(false);
     }
   }
 
@@ -184,18 +189,17 @@ export default function Credits({ session }: { session: Session }) {
                 keyExtractor={(item) => item.identifier}
                 renderItem={({ item }) => (
                   <View style={styles.verticallySpaced}>
-                    <Text style={styles.verticallySpaced}>
-                      {item.product.description}
-                    </Text>
                     <Button
                       mode="contained"
                       labelStyle={styles.buttonLabel}
-                      style={styles.verticallySpaced}
                       onPress={() => purchasePackage(item)}
-                      disabled={loading}
+                      disabled={purchasing}
                     >
-                      Purchase
+                      {item.identifier + " (" + item.product.priceString + ")"}
                     </Button>
+                    <HelperText type="info" visible={true}>
+                      {item.product.description}
+                    </HelperText>
                   </View>
                 )}
               />
