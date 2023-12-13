@@ -99,7 +99,10 @@ export const Avatar = memo(
     }
 
     return (
-      <Pressable onPress={onPress || uploadAvatar} disabled={uploading}>
+      <Pressable
+        onPress={onPress || uploadAvatar}
+        disabled={!(onPress || onUpload) || uploading}
+      >
         {avatarUrl && !error ? (
           <View>
             <ShimmerPlaceholder
@@ -138,7 +141,7 @@ export const Avatar = memo(
               icon="close"
               style={{ position: "absolute", margin: 12, right: 0, top: 0 }}
               customSize={30}
-              visible={!onPress}
+              visible={!!onUpload}
               onPress={() => onUpload && onUpload("")}
             />
           </View>
