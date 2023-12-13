@@ -126,8 +126,8 @@ export default function Matches({ session }: { session: Session }) {
                         {item.message
                           ? item.message.message
                               .replace(/\n/g, " ")
-                              .slice(0, 280) +
-                            (item.message.message.length > 280 ? "..." : "")
+                              .slice(0, 140) +
+                            (item.message.message.length > 140 ? "..." : "")
                           : "(No messages yet.)"}
                       </Text>
                     </View>

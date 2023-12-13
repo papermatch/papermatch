@@ -1,4 +1,4 @@
-import { ReactElement, Key, useState } from "react";
+import { ReactElement, Key, useState, useCallback } from "react";
 import { StyleProp, View, ViewStyle, FlatList } from "react-native";
 import { useStyles } from "../lib/styles";
 
@@ -10,6 +10,7 @@ type CarouselProps<T extends Key> = {
   size: number;
   index?: number;
   style?: StyleProp<ViewStyle>;
+  pageControl?: boolean;
 };
 
 export const Carousel = <T extends Key>({
@@ -18,36 +19,64 @@ export const Carousel = <T extends Key>({
   size,
   index = 0,
   style,
+  pageControl = true,
 }: CarouselProps<T>) => {
+  const [currentIndex, setCurrentIndex] = useState(index);
   const [width, setWidth] = useState<number>();
   const styles = useStyles();
 
+  const handleScroll = useCallback((event: any) => {
+    if (pageControl) {
+      const contentOffset = event.nativeEvent.contentOffset.x;
+      const newIndex = Math.floor(contentOffset / size + 0.5);
+      setCurrentIndex(newIndex);
+    }
+  }, []);
+
   return (
-    <View
-      style={[style, { minHeight: size }]}
-      onLayout={(event) => {
-        setWidth(event.nativeEvent.layout.width);
-      }}
-    >
-      {width && (
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.toString()}
-          renderItem={({ item, index }) => renderItem(item, index)}
-          horizontal={true}
-          snapToInterval={size + SEPARATOR_SIZE}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          getItemLayout={(data, index) => ({
-            length: size + SEPARATOR_SIZE,
-            offset: (size + SEPARATOR_SIZE) * index,
-            index,
-          })}
-          initialScrollIndex={index}
-          decelerationRate="fast"
-          contentContainerStyle={{
-            paddingHorizontal: (width - size) / 2,
-          }}
-        />
+    <View style={[style, { minHeight: size }]}>
+      <View
+        style={[style, { minHeight: size }]}
+        onLayout={(event) => {
+          setWidth(event.nativeEvent.layout.width);
+        }}
+      >
+        {width && (
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.toString()}
+            renderItem={({ item, index }) => renderItem(item, index)}
+            horizontal={true}
+            snapToInterval={size + SEPARATOR_SIZE}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            getItemLayout={(data, index) => ({
+              length: size + SEPARATOR_SIZE,
+              offset: (size + SEPARATOR_SIZE) * index,
+              index,
+            })}
+            initialScrollIndex={index}
+            decelerationRate="fast"
+            contentContainerStyle={{
+              paddingHorizontal: SEPARATOR_SIZE,
+            }}
+            onScroll={handleScroll}
+            scrollEventThrottle={16} // Adjust as needed
+            showsHorizontalScrollIndicator={false}
+          />
+        )}
+      </View>
+      {pageControl && (
+        <View style={styles.pageIndicatorContainer}>
+          {data.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.pageIndicator,
+                currentIndex === i ? styles.pageIndicatorActive : null,
+              ]}
+            />
+          ))}
+        </View>
       )}
     </View>
   );

@@ -86,5 +86,25 @@ export const useStyles = () => {
       justifyContent: "center",
       alignItems: "center",
     },
+    avatarSize: {
+      width: Math.min(600, dimensions.window.width) - 48,
+    },
+    pageIndicatorContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      height: 20,
+      marginTop: 10,
+    },
+    pageIndicator: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: theme.colors.primaryContainer,
+      marginHorizontal: 4,
+    },
+    pageIndicatorActive: {
+      backgroundColor: theme.colors.primary,
+    },
   });
 };

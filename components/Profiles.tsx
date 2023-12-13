@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { View, FlatList } from "react-native";
 import {
@@ -18,13 +18,10 @@ import { Navigation } from "./Navigation";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
-import { Attributes } from "./Attributes";
-import { Carousel } from "./Carousel";
 import { Appbar } from "./Appbar";
+import { calculateAge } from "../lib/utils";
 
 const PROFILES_PER_PAGE = 6;
-
-const AvatarCarousel = memo(Carousel<string>);
 
 export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -104,6 +101,8 @@ export default function Profiles({ session }: { session: Session }) {
     }
   }
 
+  const onPress = useCallback(() => {}, []);
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar
@@ -144,37 +143,16 @@ export default function Profiles({ session }: { session: Session }) {
                     style={[styles.verticallySpaced, { textAlign: "center" }]}
                   >
                     {item.profile.username}
+                    {item.profile.birthday &&
+                      ", " + calculateAge(Date.parse(item.profile.birthday))}
                   </Text>
-                  <AvatarCarousel
-                    data={
-                      item.profile.avatar_urls.length
-                        ? item.profile.avatar_urls
-                        : [""]
-                    }
-                    renderItem={(avatarUrl, index) => (
-                      <Avatar
-                        size={200}
-                        url={avatarUrl}
-                        onPress={() => {
-                          navigate(
-                            `../${ROUTES.PROFILE}/${item.profile.id}/${index}`
-                          );
-                        }}
-                      />
-                    )}
-                    size={200}
-                  />
-                  <View style={styles.separator} />
-                  <Attributes
-                    style={{
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                    }}
-                    distance={item.distance}
-                    profile={item.profile}
-                    loading={loading}
-                  />
+                  <View style={{ alignSelf: "center" }}>
+                    <Avatar
+                      size={styles.avatarSize.width}
+                      url={item.profile.avatar_urls[0] || null}
+                      onPress={onPress}
+                    />
+                  </View>
                   <View style={styles.separator} />
                 </View>
               </Card>
