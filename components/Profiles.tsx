@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Pressable } from "react-native";
 import {
   Card,
   Text,
@@ -10,6 +10,7 @@ import {
   Modal,
   Snackbar,
   useTheme,
+  Badge,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
@@ -32,7 +33,7 @@ export default function Profiles({ session }: { session: Session }) {
   const [initComplete, setInitComplete] = useState(false);
   const [settingsVisible, setHideSettings] = useState(false);
   const [hideInteractions, setHideInteractions] = useState(true);
-  const [hidePreferences, setHidePreferences] = useState(true);
+  const [hidePreferences, setHidePreferences] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
@@ -74,9 +75,11 @@ export default function Profiles({ session }: { session: Session }) {
       }
 
       await Promise.all(
-        nextData.map(async (item) => {
+        nextData.map(async (item: ProfilesData) => {
           try {
-            await Image.prefetch(item.profile.avatar_urls);
+            if (item.profile.avatar_urls[0]) {
+              await Image.prefetch(item.profile.avatar_urls[0]);
+            }
           } catch (error) {
             if (error instanceof Error) {
               console.error(error.message);
@@ -100,8 +103,6 @@ export default function Profiles({ session }: { session: Session }) {
       setLoading(false);
     }
   }
-
-  const onPress = useCallback(() => {}, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -130,32 +131,52 @@ export default function Profiles({ session }: { session: Session }) {
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             contentContainerStyle={{ paddingVertical: 12 }}
             renderItem={({ item }) => (
-              <Card
-                style={{ marginHorizontal: 12 }}
-                onPress={() => {
-                  navigate(`../${ROUTES.PROFILE}/${item.profile.id}`);
-                }}
+              <Pressable
+                onPress={() =>
+                  navigate(`../${ROUTES.PROFILE}/${item.profile.id}`)
+                }
               >
-                <View>
-                  <View style={styles.separator} />
-                  <Text
-                    variant="titleLarge"
-                    style={[styles.verticallySpaced, { textAlign: "center" }]}
+                {item.score && (
+                  <Badge
+                    theme={{
+                      colors: {
+                        error: theme.colors.secondaryContainer,
+                        onError: theme.colors.onSecondaryContainer,
+                      },
+                    }}
+                    visible={true}
+                    size={36}
+                    style={{
+                      position: "absolute",
+                      top: 12,
+                      right: 24,
+                      zIndex: 1,
+                    }}
                   >
-                    {item.profile.username}
-                    {item.profile.birthday &&
-                      ", " + calculateAge(Date.parse(item.profile.birthday))}
-                  </Text>
-                  <View style={{ alignSelf: "center" }}>
-                    <Avatar
-                      size={styles.avatarSize.width}
-                      url={item.profile.avatar_urls[0] || null}
-                      onPress={onPress}
-                    />
+                    {Math.round(item.score)}
+                  </Badge>
+                )}
+                <Card style={{ marginHorizontal: 12 }}>
+                  <View>
+                    <View style={styles.separator} />
+                    <Text
+                      variant="titleLarge"
+                      style={[styles.verticallySpaced, { textAlign: "center" }]}
+                    >
+                      {item.profile.username}
+                      {item.profile.birthday &&
+                        ", " + calculateAge(Date.parse(item.profile.birthday))}
+                    </Text>
+                    <View style={{ alignSelf: "center" }}>
+                      <Avatar
+                        size={styles.avatarSize.width}
+                        url={item.profile.avatar_urls[0] || null}
+                      />
+                    </View>
+                    <View style={styles.separator} />
                   </View>
-                  <View style={styles.separator} />
-                </View>
-              </Card>
+                </Card>
+              </Pressable>
             )}
             onEndReached={() => {
               if (hasMore) {
