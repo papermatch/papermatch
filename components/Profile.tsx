@@ -41,6 +41,7 @@ export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -79,7 +80,12 @@ export default function Profile({ session }: { session: Session }) {
 
   async function getData() {
     setLoading(true);
-    await Promise.all([getProfile(), getDistance(), getInteraction()]);
+    await Promise.all([
+      getProfile(),
+      getDistance(),
+      getScore(),
+      getInteraction(),
+    ]);
     setLoading(false);
   }
 
@@ -132,6 +138,27 @@ export default function Profile({ session }: { session: Session }) {
       if (error instanceof Error) {
         console.error(error.message);
         setSnackbarMessage("Unable to get distance");
+        setSnackbarVisible(true);
+      }
+    }
+  }
+
+  async function getScore() {
+    try {
+      const { data, error } = await supabase.rpc("get_user_score", {
+        user1_id: session?.user.id,
+        user2_id: id,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setScore(Math.round(data) || null);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setSnackbarMessage("Unable to get score");
         setSnackbarVisible(true);
       }
     }
@@ -266,6 +293,7 @@ export default function Profile({ session }: { session: Session }) {
                     justifyContent: "center",
                   }}
                   distance={distance}
+                  score={score}
                   profile={profile}
                   loading={loading}
                 />

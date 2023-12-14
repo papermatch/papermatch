@@ -17,12 +17,13 @@ import {
 type AttributesProps = {
   profile: ProfileData;
   distance: number | null;
+  score: number | null;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
 };
 
 export const Attributes = memo(
-  ({ profile, distance, style, loading }: AttributesProps) => {
+  ({ profile, distance, score, style, loading }: AttributesProps) => {
     const gender = GenderData.find((item) => item.value === profile.gender);
     const education = EducationData.find(
       (item) => item.value === profile.education
@@ -44,6 +45,11 @@ export const Attributes = memo(
 
     return (
       <View style={style}>
+        {score !== null && (
+          <Chip style={{ margin: 4 }} icon="gauge" disabled={loading}>
+            {score}
+          </Chip>
+        )}
         {profile.birthday && (
           <Chip style={{ margin: 4 }} icon="cake-variant" disabled={loading}>
             {calculateAge(Date.parse(profile.birthday))}

@@ -285,7 +285,7 @@ export default function Match({ session }: { session: Session }) {
     <View style={{ flex: 1 }}>
       <Appbar
         backAction={true}
-        title="Match"
+        title={profile?.username || "Match"}
         menuItems={[
           {
             title: "Profile",

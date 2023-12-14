@@ -88,14 +88,19 @@ export default function Credits({ session }: { session: Session }) {
     try {
       setPurchasing(true);
       const purchaseMade = await Purchases.purchasePackage(purchasesPackage);
+      if (purchaseMade.productIdentifier) {
+        setSnackbarMessage("Purchase successful!");
+        setSnackbarVisible(true);
+        await getCredits();
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
-        setSnackbarMessage("Unable to purchase package");
+        setSnackbarMessage("Purchase unsuccessful, you have not been charged.");
+
         setSnackbarVisible(true);
       }
-    }
-    finally {
+    } finally {
       setPurchasing(false);
     }
   }
@@ -139,11 +144,11 @@ export default function Credits({ session }: { session: Session }) {
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
     if (navState.url === `${currentOrigin}/credits/success`) {
       setCheckoutUrl(null);
-      setSnackbarMessage("Payment successful!");
+      setSnackbarMessage("Checkout successful!");
       setSnackbarVisible(true);
     } else if (navState.url === `${currentOrigin}/credits/cancel`) {
       setCheckoutUrl(null);
-      setSnackbarMessage("Payment unsuccessful, you have not been charged.");
+      setSnackbarMessage("Checkout unsuccessful, you have not been charged.");
       setSnackbarVisible(true);
     }
   };
