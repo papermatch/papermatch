@@ -21,6 +21,7 @@ import { ProfilesData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 import { calculateAge } from "../lib/utils";
+import { Storage } from "../lib/storage";
 
 const PROFILES_PER_PAGE = 6;
 
@@ -28,7 +29,7 @@ export default function Profiles({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [data, setData] = useState<ProfilesData[]>([]);
+  const [profiles, setProfiles] = useState<ProfilesData[]>([]);
   const [triggerCount, setTriggerCount] = useState(0);
   const [initComplete, setInitComplete] = useState(false);
   const [settingsVisible, setHideSettings] = useState(false);
@@ -42,21 +43,47 @@ export default function Profiles({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getData();
-      setInitComplete(true);
+      getSettings();
     }
-  }, [session, triggerCount]);
+  }, [session]);
+
+  useEffect(() => {
+    initComplete && getProfiles();
+  }, [triggerCount]);
 
   useEffect(() => {
     setPage(0);
     setHasMore(true);
     initComplete && setTriggerCount((prev) => prev + 1);
-  }, [hideInteractions, hidePreferences]);
+  }, [hideInteractions, hidePreferences, initComplete]);
 
-  async function getData() {
+  async function getSettings() {
+    const settings = {
+      hideInteractions: {
+        state: hideInteractions,
+        setter: setHideInteractions,
+      },
+      hidePreferences: {
+        state: hidePreferences,
+        setter: setHidePreferences,
+      },
+    };
+
+    for (const [key, value] of Object.entries(settings)) {
+      const storedValue = await Storage.getItem(key);
+      if (storedValue) {
+        value.setter(JSON.parse(storedValue));
+      } else {
+        Storage.setItem(key, JSON.stringify(value.state));
+      }
+    }
+
+    setInitComplete(true);
+  }
+
+  async function getProfiles() {
     try {
       setLoading(true);
-
       const { data, error } = await supabase
         .rpc("search_active_profiles", {
           hide_interactions: hideInteractions,
@@ -89,9 +116,9 @@ export default function Profiles({ session }: { session: Session }) {
       );
 
       if (page === 0) {
-        setData(nextData);
+        setProfiles(nextData);
       } else {
-        setData((prevData) => [...prevData, ...nextData]);
+        setProfiles((prevData) => [...prevData, ...nextData]);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -124,9 +151,9 @@ export default function Profiles({ session }: { session: Session }) {
         ]}
       />
       <View style={[styles.container, { paddingHorizontal: 0 }]}>
-        {data.length ? (
+        {profiles.length ? (
           <FlatList
-            data={data}
+            data={profiles}
             keyExtractor={(item) => item.profile.id.toString()}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             contentContainerStyle={{ paddingVertical: 12 }}
@@ -234,14 +261,28 @@ export default function Profiles({ session }: { session: Session }) {
                   labelStyle={{ color: theme.colors.onTertiaryContainer }}
                   label="Hide profiles you've already liked/passed"
                   status={hideInteractions ? "checked" : "unchecked"}
-                  onPress={() => setHideInteractions(!hideInteractions)}
+                  onPress={() => {
+                    const newHideInteractions = !hideInteractions;
+                    setHideInteractions(newHideInteractions);
+                    Storage.setItem(
+                      "hideInteractions",
+                      JSON.stringify(newHideInteractions)
+                    );
+                  }}
                   disabled={loading}
                 />
                 <Checkbox.Item
                   labelStyle={{ color: theme.colors.onTertiaryContainer }}
                   label="Hide profiles that don't meet all of your preferences"
                   status={hidePreferences ? "checked" : "unchecked"}
-                  onPress={() => setHidePreferences(!hidePreferences)}
+                  onPress={() => {
+                    const newHidePreferences = !hidePreferences;
+                    setHidePreferences(newHidePreferences);
+                    Storage.setItem(
+                      "hidePreferences",
+                      JSON.stringify(newHidePreferences)
+                    );
+                  }}
                   disabled={loading}
                 />
               </View>

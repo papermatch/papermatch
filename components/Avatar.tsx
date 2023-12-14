@@ -146,7 +146,7 @@ export const Avatar = memo(
             />
           </View>
         ) : (
-          <RNPAvatar.Icon size={size} icon={onPress ? "account" : "plus"} />
+          <RNPAvatar.Icon size={size} icon={onUpload ? "plus" : "account"} />
         )}
       </Pressable>
     );

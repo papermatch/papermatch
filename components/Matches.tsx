@@ -20,7 +20,7 @@ import { Appbar } from "./Appbar";
 
 export default function Matches({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<MatchesData[]>([]);
+  const [matches, setMatches] = useState<MatchesData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
@@ -28,11 +28,11 @@ export default function Matches({ session }: { session: Session }) {
 
   useEffect(() => {
     if (session) {
-      getData();
+      getMatches();
     }
   }, [session]);
 
-  async function getData() {
+  async function getMatches() {
     try {
       setLoading(true);
 
@@ -56,7 +56,7 @@ export default function Matches({ session }: { session: Session }) {
         })
       );
 
-      setData(data || []);
+      setMatches(data || []);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -79,9 +79,9 @@ export default function Matches({ session }: { session: Session }) {
         </View>
       ) : (
         <View style={[styles.container, { paddingHorizontal: 0 }]}>
-          {data.length ? (
+          {matches.length ? (
             <FlatList
-              data={data}
+              data={matches}
               keyExtractor={(item) => item.match.id.toString()}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
               contentContainerStyle={{
@@ -104,9 +104,6 @@ export default function Matches({ session }: { session: Session }) {
                       <Avatar
                         size={75}
                         url={item.profile.avatar_urls[0] || null}
-                        onPress={() => {
-                          navigate(`../${ROUTES.MATCH}/${item.match.id}`);
-                        }}
                       />
                     </View>
                     <View

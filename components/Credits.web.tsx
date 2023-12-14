@@ -45,8 +45,8 @@ export default function Credits({ session }: { session: Session }) {
     if (result) {
       setSnackbarMessage(
         result === "success"
-          ? "Payment successful!"
-          : "Payment unsuccessful, you have not been charged."
+          ? "Checkout successful!"
+          : "Checkout unsuccessful, you have not been charged."
       );
       setSnackbarVisible(true);
     }
