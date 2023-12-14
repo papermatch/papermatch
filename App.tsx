@@ -14,7 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { useStyles } from "./lib/styles";
 import theme from "./lib/theme";
 import { LogLevel, OneSignal } from "react-native-onesignal";
-import Constants, { ExecutionEnvironment } from "expo-constants";
+import Constants from "expo-constants";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { REVENUECAT_ANDROID_SDK_KEY, REVENUECAT_IOS_SDK_KEY } from "@env";
 
@@ -50,18 +50,16 @@ export default function App() {
       }
     });
 
-    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone) {
-      OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-      OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
-      // TODO(drw): use OneSignal.Notifications.addEventListener to handle notifications when app in focus
-      // OneSignal.Notifications.addEventListener(
-      //   "foregroundWillDisplay",
-      //   (event) => {
-      //     event.preventDefault();
-      //     event.getNotification().display();
-      //   }
-      // );
-    }
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
+    // TODO(drw): use OneSignal.Notifications.addEventListener to handle notifications when app in focus
+    // OneSignal.Notifications.addEventListener(
+    //   "foregroundWillDisplay",
+    //   (event) => {
+    //     event.preventDefault();
+    //     event.getNotification().display();
+    //   }
+    // );
 
     Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
     if (Platform.OS === "android") {
@@ -72,13 +70,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone) {
-      if (session?.user.id) {
-        OneSignal.login(session.user.id);
-        OneSignal.Notifications.requestPermission(true);
-      } else {
-        OneSignal.logout();
-      }
+    if (session?.user.id) {
+      OneSignal.login(session.user.id);
+      OneSignal.Notifications.requestPermission(true);
+    } else {
+      OneSignal.logout();
     }
 
     (async () => {
