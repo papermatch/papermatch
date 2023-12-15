@@ -22,6 +22,7 @@ import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 import { calculateAge } from "../lib/utils";
 import { Storage } from "../lib/storage";
+import { interpolateColor } from "react-native-reanimated";
 
 const PROFILES_PER_PAGE = 6;
 
@@ -37,6 +38,7 @@ export default function Profiles({ session }: { session: Session }) {
   const [hidePreferences, setHidePreferences] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [profileID, setProfileID] = useState<string | null>(null);
   const navigate = useNavigate();
   const styles = useStyles();
   const theme = useTheme();
@@ -167,13 +169,28 @@ export default function Profiles({ session }: { session: Session }) {
                   <Badge
                     theme={{
                       colors: {
-                        error: theme.colors.secondaryContainer,
-                        onError: theme.colors.onSecondaryContainer,
+                        error: interpolateColor(
+                          item.score,
+                          [1, 10],
+                          [
+                            theme.colors.primaryContainer,
+                            theme.colors.secondaryContainer,
+                          ]
+                        ),
+                        onError: interpolateColor(
+                          item.score,
+                          [1, 10],
+                          [
+                            theme.colors.onPrimaryContainer,
+                            theme.colors.onSecondaryContainer,
+                          ]
+                        ),
                       },
                     }}
                     visible={true}
                     size={36}
                     style={{
+                      fontFamily: theme.fonts.default.fontFamily,
                       position: "absolute",
                       top: 12,
                       right: 24,
@@ -221,6 +238,7 @@ export default function Profiles({ session }: { session: Session }) {
                     alignItems: "center",
                   }}
                 >
+                  <View style={styles.separator} />
                   <ActivityIndicator animating={true} size="large" />
                 </View>
               ) : null

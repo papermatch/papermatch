@@ -348,13 +348,7 @@ export default function Profile({ session }: { session: Session }) {
       <Portal>
         {!!imageUrl && (
           <Pressable
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: theme.colors.backdrop,
-              padding: 12,
-            }}
+            style={styles.portalContainer}
             onPress={() => setImageUrl(null)}
           >
             <Image

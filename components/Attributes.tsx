@@ -43,10 +43,26 @@ export const Attributes = memo(
     const family = FamilyData.find((item) => item.value === profile.family);
     const diet = DietData.find((item) => item.value === profile.diet);
 
+    const getScoreIcon = (score: number) => {
+      if (score < 4) {
+        return "gauge-empty";
+      } else if (score < 7) {
+        return "gauge-low";
+      } else if (score < 10) {
+        return "gauge";
+      } else {
+        return "gauge-full";
+      }
+    };
+
     return (
       <View style={style}>
         {score !== null && (
-          <Chip style={{ margin: 4 }} icon="gauge" disabled={loading}>
+          <Chip
+            style={{ margin: 4 }}
+            icon={getScoreIcon(score)}
+            disabled={loading}
+          >
             {score}
           </Chip>
         )}
