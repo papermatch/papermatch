@@ -156,7 +156,7 @@ export default function Router({ session }: { session: Session | null }) {
         />
         <Route path={ROUTES.PRIVACY} element={<Privacy />} />
         <Route
-          path={`${ROUTES.PROFILE}/:id/:index?`}
+          path={`${ROUTES.PROFILE}/:id`}
           element={
             session?.user ? (
               <Profile key={session.user.id} session={session} />

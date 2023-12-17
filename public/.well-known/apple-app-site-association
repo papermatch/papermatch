@@ -1,0 +1,25 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "584BW98KLD.ch.papermat.papermatch",
+        "paths": [
+          "/*",
+          "/match/*",
+          "/profile/*"
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": [
+      "584BW98KLD.ch.papermat.papermatch"
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "584BW98KLD.ch.papermat.papermatch"
+    ]
+  }
+}

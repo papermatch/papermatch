@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ch.papermat.papermatch",
+      "sha256_cert_fingerprints": [
+        "9F:6D:CE:D5:85:AF:BB:EF:82:56:66:F2:6B:7D:20:68:DB:68:C3:B4:A4:73:55:ED:E7:8B:38:7B:21:C1:5C:A5"
+      ]
+    }
+  }
+]

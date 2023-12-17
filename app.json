@@ -2,7 +2,7 @@
   "expo": {
     "name": "Paper Match",
     "slug": "papermatch",
-    "version": "0.3.4",
+    "version": "0.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,8 @@
       "bundleIdentifier": "ch.papermat.papermatch",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "associatedDomains": ["applinks:papermat.ch"]
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +26,21 @@
         "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch",
-      "versionCode": 11
+      "versionCode": 12,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.papermat.ch",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
