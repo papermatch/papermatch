@@ -1,15 +1,6 @@
-import {
-  memo,
-  Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import { memo, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView } from "react-native";
 import {
   FAB,
   Divider,
@@ -31,26 +22,18 @@ import { Appbar } from "./Appbar";
 
 const AvatarCarousel = memo(Carousel<string>);
 
-const createOnPressHandler =
-  (url: string | null, setImageUrl: Dispatch<SetStateAction<string | null>>) =>
-  () => {
-    setImageUrl(url);
-  };
-
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
   const [interaction, setInteraction] = useState(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
   const theme = useTheme();
-  const { id, index } = useParams<{ id: string; index: string | undefined }>();
-  const onPressHandlers = useRef(new Map());
+  const { id } = useParams<{ id: string }>();
   const avatarUrls = useMemo(() => {
     return profile?.avatar_urls?.length ? profile.avatar_urls : [""];
   }, [profile?.avatar_urls]);
@@ -60,23 +43,6 @@ export default function Profile({ session }: { session: Session }) {
       getData();
     }
   }, [id, session]);
-
-  useEffect(() => {
-    avatarUrls.forEach((url) => {
-      if (!onPressHandlers.current.has(url)) {
-        onPressHandlers.current.set(
-          url,
-          createOnPressHandler(url, setImageUrl)
-        );
-      }
-    });
-
-    setImageUrl(index ? avatarUrls[parseInt(index) || 0] : null);
-
-    return () => {
-      onPressHandlers.current.clear();
-    };
-  }, [profile?.avatar_urls]);
 
   async function getData() {
     setLoading(true);
@@ -228,10 +194,9 @@ export default function Profile({ session }: { session: Session }) {
       <Avatar
         size={styles.avatarSize.width}
         url={url}
-        onPress={onPressHandlers.current.get(url)}
       />
     ),
-    [styles.avatarSize.width, onPressHandlers]
+    [styles.avatarSize.width]
   );
 
   return (
@@ -283,7 +248,6 @@ export default function Profile({ session }: { session: Session }) {
                   data={avatarUrls}
                   renderItem={renderAvatar}
                   size={styles.avatarSize.width}
-                  index={index ? parseInt(index) || 0 : 0}
                 />
                 <View style={styles.separator} />
                 <Attributes
@@ -345,32 +309,6 @@ export default function Profile({ session }: { session: Session }) {
           />
         </View>
       )}
-      <Portal>
-        {!!imageUrl && (
-          <Pressable
-            style={styles.portalContainer}
-            onPress={() => setImageUrl(null)}
-          >
-            <Image
-              source={{ uri: imageUrl }}
-              style={{
-                width: "100%",
-                height: "100%",
-                borderRadius: 3 * theme.roundness,
-              }}
-              contentFit="scale-down"
-              onError={(error) => {
-                if (error instanceof Error) {
-                  console.error(error.message);
-                  setSnackbarMessage("Unable to load image");
-                  setSnackbarVisible(true);
-                }
-                setImageUrl(null);
-              }}
-            />
-          </Pressable>
-        )}
-      </Portal>
       <Portal>
         <Snackbar
           style={styles.snackbar}

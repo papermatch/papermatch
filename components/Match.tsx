@@ -414,7 +414,7 @@ export default function Match({ session }: { session: Session }) {
                   <TextInput.Icon
                     icon="send"
                     onPress={handleMessage}
-                    disabled={message.trim() === ""}
+                    disabled={message.trim() === "" || sending}
                   />
                 }
               />
