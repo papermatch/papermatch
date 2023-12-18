@@ -11,6 +11,7 @@ type CheckboxesProps<T extends Key> = {
   onChange: (nextValue: T[]) => void;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
+  collapsed?: boolean;
 };
 
 export const Checkboxes = <T extends Key>({
@@ -20,8 +21,9 @@ export const Checkboxes = <T extends Key>({
   onChange,
   style,
   loading,
+  collapsed = true,
 }: CheckboxesProps<T>) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(!collapsed);
   const styles = useStyles();
 
   return (

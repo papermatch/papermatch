@@ -251,6 +251,9 @@ export default function Preferences({ session }: { session: Session }) {
                 the better your matches will be!
               </Text>
               <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                Basic preferences
+              </Text>
               <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
                 <View style={{ flex: 1, marginRight: 8 }}>
                   <TextInput
@@ -289,63 +292,6 @@ export default function Preferences({ session }: { session: Session }) {
                   ) : null}
                 </View>
               </View>
-              <Divider style={styles.verticallySpaced} />
-              <GenderCheckboxes
-                label="Gender"
-                data={GenderData}
-                value={gender}
-                onChange={setGender}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <EducationCheckboxes
-                label="Education level"
-                data={EducationData}
-                value={education}
-                onChange={setEducation}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <ReligionCheckboxes
-                label="Religion"
-                data={ReligionData}
-                value={religion}
-                onChange={setReligion}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <SexualityCheckboxes
-                label="Sexuality"
-                data={SexualityData}
-                value={sexuality}
-                onChange={setSexuality}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <FamilyCheckboxes
-                label="Family plan"
-                data={FamilyData}
-                value={family}
-                onChange={setFamily}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <IntentionCheckboxes
-                label="Dating intention"
-                data={IntentionData}
-                value={intention}
-                onChange={setIntention}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <RelationshipCheckboxes
-                label="Relationship style"
-                data={RelationshipData}
-                value={relationship}
-                onChange={setRelationship}
-              />
-              <Divider style={styles.verticallySpaced} />
-              <DietCheckboxes
-                label="Diet"
-                data={DietData}
-                value={diet}
-                onChange={setDiet}
-              />
-              <Divider style={styles.verticallySpaced} />
               <View style={styles.verticallySpaced}>
                 <TextInput
                   style={styles.textInput}
@@ -364,6 +310,59 @@ export default function Preferences({ session }: { session: Session }) {
                   </HelperText>
                 ) : null}
               </View>
+              <GenderCheckboxes
+                label="Gender"
+                data={GenderData}
+                value={gender}
+                onChange={setGender}
+                collapsed={false}
+              />
+              <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                Additional preferences
+              </Text>
+              <EducationCheckboxes
+                label="Education level"
+                data={EducationData}
+                value={education}
+                onChange={setEducation}
+              />
+              <ReligionCheckboxes
+                label="Religion"
+                data={ReligionData}
+                value={religion}
+                onChange={setReligion}
+              />
+              <SexualityCheckboxes
+                label="Sexuality"
+                data={SexualityData}
+                value={sexuality}
+                onChange={setSexuality}
+              />
+              <FamilyCheckboxes
+                label="Family plan"
+                data={FamilyData}
+                value={family}
+                onChange={setFamily}
+              />
+              <IntentionCheckboxes
+                label="Dating intention"
+                data={IntentionData}
+                value={intention}
+                onChange={setIntention}
+              />
+              <RelationshipCheckboxes
+                label="Relationship style"
+                data={RelationshipData}
+                value={relationship}
+                onChange={setRelationship}
+              />
+              <DietCheckboxes
+                label="Diet"
+                data={DietData}
+                value={diet}
+                onChange={setDiet}
+              />
               <TextInput
                 style={[styles.verticallySpaced, styles.textInput]}
                 label="Keywords"

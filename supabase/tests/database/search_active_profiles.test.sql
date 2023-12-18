@@ -54,7 +54,7 @@ where
 update public.preferences
 set
     min_age = 25,
-    max_age = 35,
+    max_age = 45,
     gender = array['male'::gender_type, 'nonbinary'::gender_type],
     education = array[
         'high'::education_type,
@@ -104,7 +104,7 @@ set
         'gluten'::diet_type,
         'other'::diet_type
     ],
-    radius = 1000,
+    radius = 5000,
     keywords = array['beach']
 where
     id = '11111111-1111-1111-1111-111111111111';
@@ -128,7 +128,7 @@ where
 -- Third User lives in San Francisco
 update public.profiles
 set
-    gender = 'female'::gender_type,
+    gender = 'nonbinary'::gender_type,
     education = 'postgrad'::education_type,
     religion = 'catholic'::religion_type,
     sexuality = 'demi'::sexuality_type,
@@ -147,29 +147,28 @@ set
 
 set role 'authenticated';
 
--- First User is only compatible with Second User (Third User only satisfies min_age)
+-- First User is only compatible with Second User and Third User (compatible with basic preferences)
 select
     results_eq (
         'select (profile).id, score from public.search_active_profiles()',
         $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float),
-                 ('33333333-3333-3333-3333-333333333333'::uuid, 1.75::float),
-                 ('44444444-4444-4444-4444-444444444444'::uuid, 1::float)$$
+                 ('33333333-3333-3333-3333-333333333333'::uuid, 4::float)$$
     );
 
--- If hide_preferences, First User only sees Second User (who is compatible with all preferences)
+-- If hide_preferences, First User only sees Second User (compatible with additional preferences)
 select
     results_eq (
         'select (profile).id, score from public.search_active_profiles(false, true)',
         $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float)$$
     );
 
--- First User likes Third User and blocks Fourth User
+-- First User likes Second User and blocks Fourth User
 insert into
     public.interactions (user_id, target_id, interaction)
 values
     (
         '11111111-1111-1111-1111-111111111111',
-        '33333333-3333-3333-3333-333333333333',
+        '22222222-2222-2222-2222-222222222222',
         'like'
     ),
     (
@@ -182,7 +181,7 @@ values
 select
     results_eq (
         'select (profile).id, score from public.search_active_profiles(true, false)',
-        $$values ('22222222-2222-2222-2222-222222222222'::uuid, 10::float)$$
+        $$values ('33333333-3333-3333-3333-333333333333'::uuid, 4::float)$$
     );
 
 -- Cleanup
