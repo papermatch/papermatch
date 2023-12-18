@@ -21,7 +21,6 @@ import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { calculateAge } from "../lib/utils";
 import { Appbar } from "./Appbar";
-import App from "../App";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -229,7 +228,7 @@ export default function Auth() {
                     </View>
                     <DatePickerModal
                       label="Select your birthday"
-                      locale="en"
+                      locale="en-CA"
                       mode="single"
                       visible={datePickerVisible}
                       onDismiss={onDatePickerDismiss}
