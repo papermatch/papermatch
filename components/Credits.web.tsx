@@ -17,7 +17,7 @@ import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 import { CreditData } from "../lib/types";
-import { ROUTES, useNavigate } from "../lib/routing";
+import { History } from "./History";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = window.location.origin;
@@ -30,7 +30,6 @@ export default function Credits({ session }: { session: Session }) {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const styles = useStyles();
-  const navigate = useNavigate();
   const { result } = useParams<{ result: string }>();
 
   useEffect(() => {
@@ -184,43 +183,7 @@ export default function Credits({ session }: { session: Session }) {
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Credit history
           </Text>
-          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
-            <Text style={{ flex: 3 }}>Date</Text>
-            <Text style={{ flex: 1, textAlign: "right" }}>Credits</Text>
-            <Text style={{ flex: 2, textAlign: "right" }}>Type</Text>
-          </View>
-          <FlatList
-            data={history}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                style={[styles.verticallySpaced, { flexDirection: "row" }]}
-                onPress={
-                  item.creditor === "match"
-                    ? () => {
-                        navigate(`../${ROUTES.MATCH}/${item.creditor_id}`);
-                      }
-                    : null
-                }
-              >
-                <Text style={{ flex: 3 }}>
-                  {new Date(item.created_at).toLocaleString("EN-CA", {
-                    hour12: false,
-                  })}
-                </Text>
-                <Text style={{ flex: 1, textAlign: "right" }}>
-                  {item.credits}
-                </Text>
-                <Text style={{ flex: 2, textAlign: "right" }}>
-                  {item.creditor === "match"
-                    ? "Match"
-                    : item.creditor === "init"
-                    ? "Initial"
-                    : "Purchase"}
-                </Text>
-              </Pressable>
-            )}
-          />
+          <History history={history} />
         </ScrollView>
       )}
       <Portal>
