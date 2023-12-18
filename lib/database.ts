@@ -530,7 +530,7 @@ export interface Database {
       }
     }
     Enums: {
-      creditor_type: "init" | "match" | "stripe"
+      creditor_type: "init" | "match" | "stripe" | "revenuecat"
       diet_type:
         | "omnivore"
         | "pescatarian"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View } from "react-native";
+import { ScrollView, View, FlatList, Pressable } from "react-native";
 import {
   Button,
   TextInput,
@@ -16,6 +16,8 @@ import { Navigation } from "./Navigation";
 import { useParams } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+import { CreditData } from "../lib/types";
+import { ROUTES, useNavigate } from "../lib/routing";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = window.location.origin;
@@ -24,9 +26,11 @@ export default function Credits({ session }: { session: Session }) {
   const [quantity, setQuantity] = useState<string>("1");
   const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
+  const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const styles = useStyles();
+  const navigate = useNavigate();
   const { result } = useParams<{ result: string }>();
 
   useEffect(() => {
@@ -59,14 +63,16 @@ export default function Credits({ session }: { session: Session }) {
 
       const { data, error, status } = await supabase
         .from("credits")
-        .select("credits")
-        .eq("user_id", session?.user.id);
+        .select("*")
+        .eq("user_id", session?.user.id)
+        .order("created_at", { ascending: false });
       if (error && status !== 406) {
         throw error;
       }
 
       if (data) {
         setCredits(data.reduce((acc, curr) => acc + curr.credits, 0));
+        setHistory(data);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -135,7 +141,7 @@ export default function Credits({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <View style={styles.separator} />
           <Text style={styles.verticallySpaced}>
             You have {credits} credit{credits === 1 ? "" : "s"}. Each match
@@ -174,7 +180,48 @@ export default function Credits({ session }: { session: Session }) {
           >
             Checkout
           </Button>
-        </View>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Credit history
+          </Text>
+          <View style={[styles.verticallySpaced, { flexDirection: "row" }]}>
+            <Text style={{ flex: 3 }}>Date</Text>
+            <Text style={{ flex: 1, textAlign: "right" }}>Credits</Text>
+            <Text style={{ flex: 2, textAlign: "right" }}>Type</Text>
+          </View>
+          <FlatList
+            data={history}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Pressable
+                style={[styles.verticallySpaced, { flexDirection: "row" }]}
+                onPress={
+                  item.creditor === "match"
+                    ? () => {
+                        navigate(`../${ROUTES.MATCH}/${item.creditor_id}`);
+                      }
+                    : null
+                }
+              >
+                <Text style={{ flex: 3 }}>
+                  {new Date(item.created_at).toLocaleString("EN-CA", {
+                    hour12: false,
+                  })}
+                </Text>
+                <Text style={{ flex: 1, textAlign: "right" }}>
+                  {item.credits}
+                </Text>
+                <Text style={{ flex: 2, textAlign: "right" }}>
+                  {item.creditor === "match"
+                    ? "Match"
+                    : item.creditor === "init"
+                    ? "Initial"
+                    : "Purchase"}
+                </Text>
+              </Pressable>
+            )}
+          />
+        </ScrollView>
       )}
       <Portal>
         <Snackbar
