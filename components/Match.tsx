@@ -389,7 +389,7 @@ export default function Match({ session }: { session: Session }) {
                     }}
                   >
                     <HelperText type="info" visible={true}>
-                      {new Date(item.created_at).toLocaleString("EN-CA", {
+                      {new Date(item.created_at).toLocaleString("en-CA", {
                         hour12: false,
                       })}
                     </HelperText>

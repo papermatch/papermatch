@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Platform, View, KeyboardAvoidingView, FlatList } from "react-native";
+import {
+  Platform,
+  View,
+  KeyboardAvoidingView,
+  FlatList,
+  ScrollView,
+} from "react-native";
 import {
   Button,
   TextInput,
@@ -21,6 +27,8 @@ import Purchases, {
   PurchasesOfferings,
   PurchasesPackage,
 } from "react-native-purchases";
+import { CreditData } from "../lib/types";
+import { History } from "./History";
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = "https://www.papermat.ch";
@@ -31,6 +39,7 @@ export default function Credits({ session }: { session: Session }) {
   const [quantity, setQuantity] = useState<string>("1");
   const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
+  const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const styles = useStyles();
@@ -53,14 +62,16 @@ export default function Credits({ session }: { session: Session }) {
 
       const { data, error, status } = await supabase
         .from("credits")
-        .select("credits")
-        .eq("user_id", session?.user.id);
+        .select("*")
+        .eq("user_id", session?.user.id)
+        .order("created_at", { ascending: false });
       if (error && status !== 406) {
         throw error;
       }
 
       if (data) {
         setCredits(data.reduce((acc, curr) => acc + curr.credits, 0));
+        setHistory(data);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -177,7 +188,7 @@ export default function Credits({ session }: { session: Session }) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <View style={styles.container}>
+          <ScrollView style={styles.container}>
             <View style={styles.separator} />
             <Text style={styles.verticallySpaced}>
               You have {credits} credit{credits === 1 ? "" : "s"}. Each match
@@ -240,7 +251,12 @@ export default function Credits({ session }: { session: Session }) {
                 </Button>
               </View>
             )}
-          </View>
+            <Divider style={styles.verticallySpaced} />
+            <Text style={styles.verticallySpaced} variant="titleLarge">
+              Credit history
+            </Text>
+            <History history={history} />
+          </ScrollView>
         </KeyboardAvoidingView>
       )}
       <Portal>

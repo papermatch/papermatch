@@ -2,7 +2,7 @@ import { memo, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { View } from "react-native";
-import { Appbar, Badge, useTheme } from "react-native-paper";
+import { Appbar, Badge, Banner, useTheme } from "react-native-paper";
 import { ROUTES, useNavigate, useLocation } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { MatchesData } from "../lib/types";
@@ -104,13 +104,38 @@ export const Navigation = memo(({ session }: { session: Session }) => {
   }
 
   return (
-    <View
-      style={{
-        paddingHorizontal: 12,
-        backgroundColor: theme.colors.surface,
-      }}
-    >
-      <Appbar style={styles.bottom}>
+    <View>
+      <Banner
+        visible={!active}
+        actions={[
+          {
+            label: "Get credits",
+            onPress: () => {
+              navigate(`../${ROUTES.CREDITS}`);
+            },
+          },
+        ]}
+        style={{
+          backgroundColor: theme.colors.errorContainer,
+        }}
+        theme={{
+          colors: {
+            onSurface: theme.colors.onErrorContainer,
+            primary: theme.colors.onErrorContainer,
+          },
+        }}
+      >
+        Your profile is currently hidden because you're out of credits!
+      </Banner>
+      <Appbar
+        style={[
+          styles.bottom,
+          {
+            paddingHorizontal: 12,
+            backgroundColor: theme.colors.surface,
+          },
+        ]}
+      >
         <Appbar.Action
           icon={
             location.pathname === `/${ROUTES.PROFILES}`
