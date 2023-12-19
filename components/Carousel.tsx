@@ -57,7 +57,8 @@ export const Carousel = <T extends Key>({
             initialScrollIndex={index}
             decelerationRate="fast"
             contentContainerStyle={{
-              paddingHorizontal: SEPARATOR_SIZE,
+              paddingHorizontal:
+                data.length == 1 ? (width - size) / 2 : SEPARATOR_SIZE,
             }}
             onScroll={handleScroll}
             scrollEventThrottle={16} // Adjust as needed

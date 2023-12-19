@@ -291,7 +291,7 @@ export default function Profiles({ session }: { session: Session }) {
                 />
                 <Checkbox.Item
                   labelStyle={{ color: theme.colors.onTertiaryContainer }}
-                  label="Hide profiles that don't meet all of your preferences"
+                  label="Hide profiles that don't meet your additional preferences"
                   status={hidePreferences ? "checked" : "unchecked"}
                   onPress={() => {
                     const newHidePreferences = !hidePreferences;

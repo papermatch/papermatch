@@ -282,6 +282,9 @@ export default function Edit({ session }: { session: Session }) {
                 better your matches will be!
               </Text>
               <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                Basic details
+              </Text>
               <View style={styles.verticallySpaced}>
                 <TextInput
                   style={styles.textInput}
@@ -300,6 +303,30 @@ export default function Edit({ session }: { session: Session }) {
                   </HelperText>
                 ) : null}
               </View>
+              <View style={styles.verticallySpaced}>
+                <TextInput
+                  style={styles.textInput}
+                  label="Location (lng,lat)"
+                  value={lnglat}
+                  onChangeText={(text) => {
+                    setLnglat(text);
+                    validateLnglat(text);
+                  }}
+                  right={
+                    <TextInput.Icon
+                      icon="crosshairs-gps"
+                      onPress={updateLocation}
+                    />
+                  }
+                  error={!!lnglatError}
+                  editable={Platform.OS === "web"}
+                />
+                {lnglatError ? (
+                  <HelperText type="error" visible={!!lnglatError}>
+                    {lnglatError}
+                  </HelperText>
+                ) : null}
+              </View>
               <GenderDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Gender"
@@ -307,6 +334,10 @@ export default function Edit({ session }: { session: Session }) {
                 value={gender}
                 onChange={setGender}
               />
+              <Divider style={styles.verticallySpaced} />
+              <Text style={styles.verticallySpaced} variant="titleLarge">
+                Additional details
+              </Text>
               <EducationDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
                 label="Education level"
@@ -356,30 +387,6 @@ export default function Edit({ session }: { session: Session }) {
                 value={diet}
                 onChange={setDiet}
               />
-              <View style={styles.verticallySpaced}>
-                <TextInput
-                  style={styles.textInput}
-                  label="Location (lng,lat)"
-                  value={lnglat}
-                  onChangeText={(text) => {
-                    setLnglat(text);
-                    validateLnglat(text);
-                  }}
-                  right={
-                    <TextInput.Icon
-                      icon="crosshairs-gps"
-                      onPress={updateLocation}
-                    />
-                  }
-                  error={!!lnglatError}
-                  editable={Platform.OS === "web"}
-                />
-                {lnglatError ? (
-                  <HelperText type="error" visible={!!lnglatError}>
-                    {lnglatError}
-                  </HelperText>
-                ) : null}
-              </View>
               <TextInput
                 style={[styles.verticallySpaced, styles.textInput]}
                 label="About"
