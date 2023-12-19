@@ -33,6 +33,7 @@ import {
 import { MatchData, MessageData, ProfileData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+import { toDateTimeString } from "../lib/utils";
 
 const createOnPressHandler = (id: string, navigate: NavigateFunction) => () => {
   navigate(`../${ROUTES.PROFILE}/${id}`);
@@ -389,9 +390,7 @@ export default function Match({ session }: { session: Session }) {
                     }}
                   >
                     <HelperText type="info" visible={true}>
-                      {new Date(item.created_at).toLocaleString("en-CA", {
-                        hour12: false,
-                      })}
+                      {toDateTimeString(new Date(item.created_at))}
                     </HelperText>
                   </View>
                 </View>

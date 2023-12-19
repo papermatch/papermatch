@@ -4,6 +4,7 @@ import { Text } from "react-native-paper";
 import { useStyles } from "../lib/styles";
 import { CreditData } from "../lib/types";
 import { ROUTES, useNavigate } from "../lib/routing";
+import { toDateTimeString } from "../lib/utils";
 
 type HistoryProps = {
   history: CreditData[];
@@ -33,9 +34,7 @@ export const History = ({ history }: HistoryProps) => {
             }
           >
             <Text style={{ flex: 3 }}>
-              {new Date(item.created_at).toLocaleString("en-CA", {
-                hour12: false,
-              })}
+              {toDateTimeString(new Date(item.created_at))}
             </Text>
             <Text style={{ flex: 1, textAlign: "center" }}>{item.credits}</Text>
             <Text style={{ flex: 2, textAlign: "right" }}>

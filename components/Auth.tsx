@@ -19,7 +19,7 @@ import {
 import { DatePickerModal } from "react-native-paper-dates";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
-import { calculateAge } from "../lib/utils";
+import { calculateAge, toDateString } from "../lib/utils";
 import { Appbar } from "./Appbar";
 
 export default function Auth() {
@@ -121,7 +121,7 @@ export default function Auth() {
     (params: { date: Date | undefined }) => {
       setDatePickerVisible(false);
       if (params.date) {
-        const birthday = params.date.toLocaleDateString("en-CA");
+        const birthday = toDateString(params.date);
         setBirthday(birthday);
         validateBirthday(birthday);
       }

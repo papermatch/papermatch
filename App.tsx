@@ -17,6 +17,7 @@ import { LogLevel, OneSignal } from "react-native-onesignal";
 import Constants from "expo-constants";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { REVENUECAT_ANDROID_SDK_KEY, REVENUECAT_IOS_SDK_KEY } from "@env";
+import { en, registerTranslation } from "react-native-paper-dates";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -67,6 +68,8 @@ export default function App() {
     } else if (Platform.OS === "ios") {
       Purchases.configure({ apiKey: REVENUECAT_IOS_SDK_KEY });
     }
+
+    registerTranslation("en-CA", en);
   }, []);
 
   useEffect(() => {
