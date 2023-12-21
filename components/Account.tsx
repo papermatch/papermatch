@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -24,8 +24,6 @@ import { Carousel } from "./Carousel";
 import { Appbar } from "./Appbar";
 
 const MAX_AVATARS = 6;
-
-const AvatarCarousel = memo(Carousel<string>);
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -113,57 +111,54 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function updateAvatarUrl({
-    newUrl,
-    oldUrl,
-  }: {
-    newUrl: string;
-    oldUrl: string;
-  }) {
-    try {
-      if (!session?.user) throw new Error("No user on the session!");
+  const updateAvatarUrl = useCallback(
+    (oldUrl: string) => async (newUrl: string) => {
+      try {
+        if (!session?.user) throw new Error("No user on the session!");
 
-      const nextAvatarUrls = [...avatarUrls] || [];
-      const index = nextAvatarUrls.indexOf(oldUrl);
-      if (newUrl) {
-        // Replace the old URL with the new one
-        if (index > -1) {
-          nextAvatarUrls[index] = newUrl;
+        const nextAvatarUrls = [...avatarUrls] || [];
+        const index = nextAvatarUrls.indexOf(oldUrl);
+        if (newUrl) {
+          // Replace the old URL with the new one
+          if (index > -1) {
+            nextAvatarUrls[index] = newUrl;
+          }
+          // Or add the new URL to the end of the list
+          else {
+            nextAvatarUrls.push(newUrl);
+          }
         }
-        // Or add the new URL to the end of the list
-        else {
-          nextAvatarUrls.push(newUrl);
+        // If no new URL, just remove the old one
+        else if (index > -1) {
+          nextAvatarUrls.splice(index, 1);
+        }
+
+        const updates = {
+          avatar_urls: nextAvatarUrls,
+          updated_at: new Date(),
+        };
+
+        const { error } = await supabase
+          .from("profiles")
+          .update(updates)
+          .eq("id", session.user.id);
+
+        if (error) {
+          throw error;
+        }
+
+        setAvatarUrls(nextAvatarUrls);
+        setNewAvatarIndex(index > -1 ? index : nextAvatarUrls.length - 1);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          setSnackbarMessage("Unable to update avatar URL");
+          setSnackbarVisible(true);
         }
       }
-      // If no new URL, just remove the old one
-      else if (index > -1) {
-        nextAvatarUrls.splice(index, 1);
-      }
-
-      const updates = {
-        avatar_urls: nextAvatarUrls,
-        updated_at: new Date(),
-      };
-
-      const { error } = await supabase
-        .from("profiles")
-        .update(updates)
-        .eq("id", session.user.id);
-
-      if (error) {
-        throw error;
-      }
-
-      setAvatarUrls(nextAvatarUrls);
-      setNewAvatarIndex(index > -1 ? index : nextAvatarUrls.length - 1);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to update avatar URL");
-        setSnackbarVisible(true);
-      }
-    }
-  }
+    },
+    [avatarUrls, session]
+  );
 
   async function updateEmail({ email }: { email: string }) {
     if (!validateEmail(email)) {
@@ -261,7 +256,7 @@ export default function Account({ session }: { session: Session }) {
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
                 />
-                <AvatarCarousel
+                <Carousel
                   data={
                     avatarUrls
                       ? avatarUrls.length < MAX_AVATARS
@@ -273,9 +268,7 @@ export default function Account({ session }: { session: Session }) {
                     <Avatar
                       size={200}
                       url={item}
-                      onUpload={(url: string) => {
-                        updateAvatarUrl({ newUrl: url, oldUrl: item });
-                      }}
+                      onUpload={updateAvatarUrl(item)}
                     />
                   )}
                   size={200}

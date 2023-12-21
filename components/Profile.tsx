@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView } from "react-native";
 import {
@@ -19,8 +19,6 @@ import { useStyles } from "../lib/styles";
 import { Attributes } from "./Attributes";
 import { Carousel } from "./Carousel";
 import { Appbar } from "./Appbar";
-
-const AvatarCarousel = memo(Carousel<string>);
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -190,12 +188,7 @@ export default function Profile({ session }: { session: Session }) {
   );
 
   const renderAvatar = useCallback(
-    (url: string) => (
-      <Avatar
-        size={styles.avatarSize.width}
-        url={url}
-      />
-    ),
+    (url: string) => <Avatar size={styles.avatarSize.width} url={url} />,
     [styles.avatarSize.width]
   );
 
@@ -244,7 +237,7 @@ export default function Profile({ session }: { session: Session }) {
             <View style={styles.separator} />
             {profile ? (
               <View>
-                <AvatarCarousel
+                <Carousel
                   data={avatarUrls}
                   renderItem={renderAvatar}
                   size={styles.avatarSize.width}

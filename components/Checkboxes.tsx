@@ -1,10 +1,10 @@
-import { useState, Key } from "react";
+import { useState } from "react";
 import { StyleProp, View, ViewStyle, Pressable } from "react-native";
 import { Text, Checkbox, IconButton } from "react-native-paper";
 import { AttributeData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 
-type CheckboxesProps<T extends Key> = {
+type CheckboxesProps<T> = {
   label: string;
   data: AttributeData<T>[];
   value: T[];
@@ -14,7 +14,7 @@ type CheckboxesProps<T extends Key> = {
   collapsed?: boolean;
 };
 
-export const Checkboxes = <T extends Key>({
+export const Checkboxes = <T extends string>({
   label,
   data,
   value,

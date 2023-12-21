@@ -109,8 +109,5 @@ vector_port = 54328
 # Configure one of the supported backends: `postgres`, `bigquery`
 backend = "postgres"
 
-[functions.revenuecat-webhook]
-verify_jwt = false
-
 [functions.stripe-webhook]
 verify_jwt = false
