@@ -6,7 +6,7 @@ select
 select
     has_function (
         'public',
-        'get_test_id',
+        'get_mean_score',
         'get_mean_score function should exist'
     );
 
