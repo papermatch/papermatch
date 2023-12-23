@@ -63,7 +63,7 @@ export const Avatar = memo(
           });
 
         if (error) {
-          throw error;
+          throw Error(error.message);
         }
 
         const { data } = await supabase.storage
@@ -80,8 +80,6 @@ export const Avatar = memo(
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
-        } else {
-          throw error;
         }
       } finally {
         setUploading(false);

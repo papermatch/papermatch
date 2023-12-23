@@ -36,8 +36,9 @@ export default function Blocked({ session }: { session: Session }) {
       .select("target_id")
       .eq("user_id", session?.user.id)
       .eq("interaction", "block");
+
     if (error && status !== 406) {
-      throw error;
+      throw Error(error.message);
     }
 
     return data?.map((interaction) => interaction.target_id) || [];
@@ -53,9 +54,8 @@ export default function Blocked({ session }: { session: Session }) {
         .from("profiles")
         .select("*")
         .in("id", blockedIDs);
-
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setProfiles(data || []);
@@ -82,7 +82,7 @@ export default function Blocked({ session }: { session: Session }) {
       ]);
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setSnackbarMessage("User unblocked!");

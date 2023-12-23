@@ -72,7 +72,7 @@ serve(async (req) => {
         ]);
 
         if (error) {
-          throw error;
+          throw Error(error.message);
         }
       } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {

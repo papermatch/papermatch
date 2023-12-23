@@ -66,7 +66,7 @@ export default function Credits({ session }: { session: Session }) {
         .eq("user_id", session?.user.id)
         .order("created_at", { ascending: false });
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {
@@ -108,7 +108,6 @@ export default function Credits({ session }: { session: Session }) {
       if (error instanceof Error) {
         console.error(error.message);
         setSnackbarMessage("Purchase unsuccessful, you have not been charged.");
-
         setSnackbarVisible(true);
       }
     } finally {

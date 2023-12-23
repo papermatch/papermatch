@@ -63,7 +63,7 @@ export default function Account({ session }: { session: Session }) {
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {
@@ -88,7 +88,7 @@ export default function Account({ session }: { session: Session }) {
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {
@@ -144,7 +144,7 @@ export default function Account({ session }: { session: Session }) {
           .eq("id", session.user.id);
 
         if (error) {
-          throw error;
+          throw Error(error.message);
         }
 
         setAvatarUrls(nextAvatarUrls);
@@ -172,7 +172,7 @@ export default function Account({ session }: { session: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       } else {
         navigate(`../${ROUTES.OTP}`, { state: { email } });
       }
@@ -192,7 +192,7 @@ export default function Account({ session }: { session: Session }) {
       setLoading(true);
       const { error } = await supabase.rpc("delete_current_user");
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       supabase.auth.signOut();

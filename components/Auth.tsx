@@ -66,7 +66,7 @@ export default function Auth() {
               options: { shouldCreateUser: false },
             });
       if (error) {
-        throw error;
+        throw Error(error.message);
       } else {
         navigate(`../${ROUTES.OTP}`, { state: { email } });
       }

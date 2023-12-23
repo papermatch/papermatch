@@ -83,7 +83,7 @@ export default function Preferences({ session }: { session: Session }) {
         .eq("id", session?.user.id)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {
@@ -174,7 +174,7 @@ export default function Preferences({ session }: { session: Session }) {
         .eq("id", session.user.id);
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setSnackbarMessage("Preferences updated!");

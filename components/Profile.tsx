@@ -61,7 +61,7 @@ export default function Profile({ session }: { session: Session }) {
         .eq("id", id)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       await Promise.all(
@@ -94,7 +94,7 @@ export default function Profile({ session }: { session: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setDistance(data || null);
@@ -115,7 +115,7 @@ export default function Profile({ session }: { session: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setScore(Math.round(data) || null);
@@ -138,7 +138,7 @@ export default function Profile({ session }: { session: Session }) {
         .limit(1)
         .maybeSingle();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {
@@ -168,7 +168,7 @@ export default function Profile({ session }: { session: Session }) {
         ]);
 
         if (error) {
-          throw error;
+          throw Error(error.message);
         }
 
         if (type == "pass" || type == "block") {

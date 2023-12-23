@@ -39,7 +39,7 @@ export default function Matches({ session }: { session: Session }) {
       const { data, error } = await supabase.rpc("get_matches_data");
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       await Promise.all(
