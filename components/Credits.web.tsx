@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { ScrollView, View, FlatList, Pressable } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   Button,
   TextInput,
@@ -66,7 +66,7 @@ export default function Credits({ session }: { session: Session }) {
         .eq("user_id", session?.user.id)
         .order("created_at", { ascending: false });
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data) {

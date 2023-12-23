@@ -46,7 +46,7 @@ export default function Report({ session }: { session: Session }) {
         .eq("id", id)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       setProfile(data);

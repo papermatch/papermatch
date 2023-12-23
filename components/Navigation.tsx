@@ -38,7 +38,7 @@ export const Navigation = memo(({ session }: { session: Session }) => {
         .maybeSingle();
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setActive(!!data);
@@ -54,7 +54,7 @@ export const Navigation = memo(({ session }: { session: Session }) => {
       const { data, error } = await supabase.rpc("get_matches_data");
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setNewOrUnread(

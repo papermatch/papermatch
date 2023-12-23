@@ -52,7 +52,7 @@ export default function Otp({ session = undefined }: { session?: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data.session) {

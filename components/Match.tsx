@@ -133,7 +133,7 @@ export default function Match({ session }: { session: Session }) {
         .single();
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       await getProfile(
@@ -159,7 +159,7 @@ export default function Match({ session }: { session: Session }) {
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setMessages(data || []);
@@ -180,7 +180,7 @@ export default function Match({ session }: { session: Session }) {
         .eq("id", userID)
         .single();
       if (error && status !== 406) {
-        throw error;
+        throw Error(error.message);
       }
 
       if (data.avatar_urls[0]) {
@@ -212,7 +212,7 @@ export default function Match({ session }: { session: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setMessage("");
@@ -234,7 +234,7 @@ export default function Match({ session }: { session: Session }) {
       });
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -269,7 +269,7 @@ export default function Match({ session }: { session: Session }) {
         .eq("id", deleteMessageID);
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       setDeleteMessageID("");

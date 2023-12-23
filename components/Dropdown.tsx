@@ -1,10 +1,10 @@
-import { useState, Key } from "react";
+import { useState } from "react";
 import { StyleProp, View, ViewStyle, Pressable } from "react-native";
 import { TextInput, Menu } from "react-native-paper";
 import { AttributeData } from "../lib/types";
 import { useStyles } from "../lib/styles";
 
-type DropdownProps<T extends Key> = {
+type DropdownProps<T> = {
   label: string;
   data: AttributeData<T>[];
   value: T | null;
@@ -13,7 +13,7 @@ type DropdownProps<T extends Key> = {
   loading?: boolean;
 };
 
-export const Dropdown = <T extends Key>({
+export const Dropdown = <T extends string>({
   label,
   data,
   value,

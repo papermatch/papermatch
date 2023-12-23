@@ -33,7 +33,7 @@ export type ReligionType = Database["public"]["Enums"]["religion_type"];
 export type ReasonType = Database["public"]["Enums"]["reason_type"];
 export type SexualityType = Database["public"]["Enums"]["sexuality_type"];
 
-export type AttributeData<T extends Key> = {
+export type AttributeData<T> = {
   value: T;
   label: string;
   icon: string;

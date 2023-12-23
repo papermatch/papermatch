@@ -95,7 +95,7 @@ export default function Profiles({ session }: { session: Session }) {
         .range(page * PROFILES_PER_PAGE, (page + 1) * PROFILES_PER_PAGE - 1);
 
       if (error) {
-        throw error;
+        throw Error(error.message);
       }
 
       let nextData = data || [];
