@@ -109,7 +109,7 @@ export default function Profile({ session }: { session: Session }) {
 
   async function getScore() {
     try {
-      const { data, error } = await supabase.rpc("get_user_score", {
+      const { data, error } = await supabase.rpc("get_users_score", {
         user1_id: session?.user.id,
         user2_id: id,
       });
