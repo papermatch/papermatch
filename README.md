@@ -19,6 +19,7 @@ A pay-per-match dating app, using React Native and Supabase.
    ONESIGNAL_USER_AUTH_KEY=***
    STRIPE_API_KEY=***
    STRIPE_CREDIT_PRICE_ID=***
+   STRIPE_SIXPACK_PRICE_ID=***
    STRIPE_WEBHOOK_SIGNING_SECRET=***
    ```
 4. Also create a new Encryption Key (e.g. papermatch) on your Project Settings/Vault page, then insert your `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, and `TEST_USER_ID` as new "secrets"
@@ -192,6 +193,7 @@ Add the following (test!) secrets to [GitHub settings](/settings/secrets/actions
 - `ONESIGNAL_USER_AUTH_KEY`
 - `STRIPE_API_KEY`
 - `STRIPE_CREDIT_PRICE_ID`
+- `STRIPE_SIXPACK_PRICE_ID`
 - `STRIPE_WEBHOOK_SIGNING_SECRET`
 
 Or use [act](https://github.com/nektos/act) to run locally: `act --secret-file supabase/.env.test.local`

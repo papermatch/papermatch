@@ -88,13 +88,16 @@ serve(async (req) => {
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
-      expand: ["line_items"],
+      expand: ["line_item s"],
       client_reference_id: id,
       billing_address_collection: "auto",
       line_items: [
         {
-          price: Deno.env.get("STRIPE_CREDIT_PRICE_ID") as string,
-          quantity: quantity,
+          price:
+            quantity === 6
+              ? (Deno.env.get("STRIPE_SIXPACK_PRICE_ID") as string)
+              : (Deno.env.get("STRIPE_CREDIT_PRICE_ID") as string),
+          quantity: quantity === 6 ? 1 : quantity,
         },
       ],
       mode: "payment",
