@@ -88,7 +88,7 @@ serve(async (req) => {
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
-      expand: ["line_item s"],
+      expand: ["line_items"],
       client_reference_id: id,
       billing_address_collection: "auto",
       line_items: [

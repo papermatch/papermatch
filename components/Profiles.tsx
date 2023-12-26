@@ -38,7 +38,6 @@ export default function Profiles({ session }: { session: Session }) {
   const [hidePreferences, setHidePreferences] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [profileID, setProfileID] = useState<string | null>(null);
   const navigate = useNavigate();
   const styles = useStyles();
   const theme = useTheme();

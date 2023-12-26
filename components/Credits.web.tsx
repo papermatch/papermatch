@@ -3,7 +3,6 @@ import { supabase } from "../lib/supabase";
 import { ScrollView, View } from "react-native";
 import {
   Button,
-  TextInput,
   Text,
   ActivityIndicator,
   HelperText,
@@ -23,8 +22,6 @@ export default function Credits({ session }: { session: Session }) {
   const currentOrigin = window.location.origin;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState<string>("1");
-  const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
   const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -84,11 +81,7 @@ export default function Credits({ session }: { session: Session }) {
     }
   }
 
-  const fetchCheckoutUrl = async () => {
-    if (!validateQuantity(quantity)) {
-      return;
-    }
-
+  const fetchCheckoutUrl = async (quantity: number) => {
     try {
       setLoading(true);
       if (!session?.user) {
@@ -98,7 +91,7 @@ export default function Credits({ session }: { session: Session }) {
       const response = await supabase.functions.invoke("stripe-checkout", {
         body: {
           id: session?.user.id,
-          quantity: parseInt(quantity) || 1,
+          quantity: quantity,
           origin: currentOrigin,
         },
       });
@@ -118,16 +111,6 @@ export default function Credits({ session }: { session: Session }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const validateQuantity = (quantity: string) => {
-    const regex = /^[0-9]+$/;
-    if (!regex.test(quantity)) {
-      setQuantityError("Quantity must be a number");
-      return false;
-    }
-    setQuantityError("");
-    return true;
   };
 
   return (
@@ -152,33 +135,35 @@ export default function Credits({ session }: { session: Session }) {
             Purchase credits
           </Text>
           <View style={styles.verticallySpaced}>
-            <TextInput
-              style={styles.textInput}
-              label="Credits"
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={(text) => {
-                setQuantity(text);
-                validateQuantity(text);
+            <Button
+              mode="contained"
+              labelStyle={styles.buttonLabel}
+              onPress={() => {
+                fetchCheckoutUrl(1);
               }}
-              placeholder="Enter Quantity"
-              error={!!quantityError}
-            />
-            {quantityError ? (
-              <HelperText type="error" visible={!!quantityError}>
-                {quantityError}
-              </HelperText>
-            ) : null}
+              disabled={loading}
+            >
+              Single Credit ($1.49)
+            </Button>
+            <HelperText type="info" visible={true}>
+              Each credit is good for one match!
+            </HelperText>
+          </View>{" "}
+          <View style={styles.verticallySpaced}>
+            <Button
+              mode="contained"
+              labelStyle={styles.buttonLabel}
+              onPress={() => {
+                fetchCheckoutUrl(6);
+              }}
+              disabled={loading}
+            >
+              Six Pack ($5.99)
+            </Button>
+            <HelperText type="info" visible={true}>
+              A six pack of Paper Match credits!
+            </HelperText>
           </View>
-          <Button
-            mode="contained"
-            labelStyle={styles.buttonLabel}
-            style={styles.verticallySpaced}
-            onPress={fetchCheckoutUrl}
-            disabled={loading}
-          >
-            Checkout
-          </Button>
           <Divider style={styles.verticallySpaced} />
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Credit history

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import {
   Button,
-  TextInput,
   Text,
   ActivityIndicator,
   HelperText,
@@ -18,8 +17,6 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { WebView, WebViewNavigation } from "react-native-webview";
-import { StatusBar } from "expo-status-bar";
 import { Navigation } from "./Navigation";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
@@ -31,13 +28,9 @@ import { CreditData } from "../lib/types";
 import { History } from "./History";
 
 export default function Credits({ session }: { session: Session }) {
-  const currentOrigin = "https://www.papermat.ch";
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOfferings>();
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState<string>("1");
-  const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
   const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -115,64 +108,6 @@ export default function Credits({ session }: { session: Session }) {
     }
   }
 
-  const fetchCheckoutUrl = async () => {
-    if (!validateQuantity(quantity)) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (!session?.user) {
-        throw new Error("No user on the session!");
-      }
-
-      const response = await supabase.functions.invoke("stripe-checkout", {
-        body: {
-          id: session?.user.id,
-          quantity: parseInt(quantity) || 1,
-          origin: currentOrigin,
-        },
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      const data = await response.data;
-      setCheckoutUrl(data.url);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to fetch checkout URL");
-        setSnackbarVisible(true);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    if (navState.url === `${currentOrigin}/credits/success`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Checkout successful!");
-      setSnackbarVisible(true);
-    } else if (navState.url === `${currentOrigin}/credits/cancel`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Checkout unsuccessful, you have not been charged.");
-      setSnackbarVisible(true);
-    }
-  };
-
-  const validateQuantity = (quantity: string) => {
-    const regex = /^[0-9]+$/;
-    if (!regex.test(quantity)) {
-      setQuantityError("Quantity must be a number");
-      return false;
-    }
-    setQuantityError("");
-    return true;
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar title="Credits" />
@@ -219,36 +154,14 @@ export default function Credits({ session }: { session: Session }) {
                 )}
               />
             ) : (
-              <View>
-                <View style={styles.verticallySpaced}>
-                  <TextInput
-                    style={styles.textInput}
-                    label="Credits"
-                    keyboardType="numeric"
-                    value={quantity}
-                    onChangeText={(text) => {
-                      setQuantity(text);
-                      validateQuantity(text);
-                    }}
-                    placeholder="Enter Quantity"
-                    error={!!quantityError}
-                  />
-                  {quantityError ? (
-                    <HelperText type="error" visible={!!quantityError}>
-                      {quantityError}
-                    </HelperText>
-                  ) : null}
-                </View>
-                <Button
-                  mode="contained"
-                  labelStyle={styles.buttonLabel}
-                  style={styles.verticallySpaced}
-                  onPress={fetchCheckoutUrl}
-                  disabled={loading}
-                >
-                  Checkout
-                </Button>
-              </View>
+              <Text
+              style={[
+                styles.verticallySpaced,
+                { marginTop: 12, paddingHorizontal: 12 },
+              ]}
+            >
+              No purchase offerings found, please try again later.
+            </Text>
             )}
             <Divider style={styles.verticallySpaced} />
             <Text style={styles.verticallySpaced} variant="titleLarge">
@@ -271,16 +184,6 @@ export default function Credits({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      {Platform.OS !== "web" && checkoutUrl ? (
-        <Portal>
-          <StatusBar hidden={true} />
-          <WebView
-            style={{ flex: 1 }}
-            source={{ uri: checkoutUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-          />
-        </Portal>
-      ) : null}
       <Navigation key={session.user.id} session={session} />
     </View>
   );
