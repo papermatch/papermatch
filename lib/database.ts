@@ -461,6 +461,13 @@ export interface Database {
           unread: boolean
         }[]
       }
+      get_mean_score: {
+        Args: {
+          s1: number
+          s2: number
+        }
+        Returns: number
+      }
       get_test_id: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -476,6 +483,12 @@ export interface Database {
         Args: {
           user1_id: string
           user2_id: string
+        }
+        Returns: number
+      }
+      get_users_score: {
+        Args: {
+          user_id: string
         }
         Returns: number
       }
@@ -530,7 +543,7 @@ export interface Database {
       }
     }
     Enums: {
-      creditor_type: "init" | "match" | "stripe" | "revenuecat"
+      creditor_type: "init" | "match" | "stripe" | "revenuecat" | "admin"
       diet_type:
         | "omnivore"
         | "pescatarian"

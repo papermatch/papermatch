@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { ScrollView, View } from "react-native";
+import { View, FlatList, ScrollView } from "react-native";
 import {
   Button,
   Text,
@@ -17,6 +17,28 @@ import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 import { CreditData } from "../lib/types";
 import { History } from "./History";
+
+type PriceData = {
+  name: string;
+  description: string;
+  quantity: number;
+  price: string;
+};
+
+const PRICE_DATA: PriceData[] = [
+  {
+    name: "Single Credit",
+    description: "Each credit is good for one match!",
+    quantity: 1,
+    price: "$1.49",
+  },
+  {
+    name: "Six Pack",
+    description: "A six pack of Paper Match credits!",
+    quantity: 6,
+    price: "$5.99",
+  },
+];
 
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = window.location.origin;
@@ -134,36 +156,25 @@ export default function Credits({ session }: { session: Session }) {
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Purchase credits
           </Text>
-          <View style={styles.verticallySpaced}>
-            <Button
-              mode="contained"
-              labelStyle={styles.buttonLabel}
-              onPress={() => {
-                fetchCheckoutUrl(1);
-              }}
-              disabled={loading}
-            >
-              Single Credit ($1.49)
-            </Button>
-            <HelperText type="info" visible={true}>
-              Each credit is good for one match!
-            </HelperText>
-          </View>{" "}
-          <View style={styles.verticallySpaced}>
-            <Button
-              mode="contained"
-              labelStyle={styles.buttonLabel}
-              onPress={() => {
-                fetchCheckoutUrl(6);
-              }}
-              disabled={loading}
-            >
-              Six Pack ($5.99)
-            </Button>
-            <HelperText type="info" visible={true}>
-              A six pack of Paper Match credits!
-            </HelperText>
-          </View>
+          <FlatList
+            data={PRICE_DATA}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+              <View style={styles.verticallySpaced}>
+                <Button
+                  mode="contained"
+                  labelStyle={styles.buttonLabel}
+                  onPress={() => fetchCheckoutUrl(item.quantity)}
+                  disabled={loading}
+                >
+                  {item.name + " (" + item.price + ")"}
+                </Button>
+                <HelperText type="info" visible={true}>
+                  {item.description}
+                </HelperText>
+              </View>
+            )}
+          />
           <Divider style={styles.verticallySpaced} />
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Credit history

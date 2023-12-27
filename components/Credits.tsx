@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  Platform,
-  View,
-  KeyboardAvoidingView,
-  FlatList,
-  ScrollView,
-} from "react-native";
+import { View, FlatList, ScrollView } from "react-native";
 import {
   Button,
   Text,
@@ -118,43 +112,39 @@ export default function Credits({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <ScrollView style={styles.container}>
-            <View style={styles.separator} />
-            <Text style={styles.verticallySpaced}>
-              You have {credits} credit{credits === 1 ? "" : "s"}. Each match
-              costs 1 credit, and your profile will not be searchable if you
-              have 0 credits.
-            </Text>
-            <Divider style={styles.verticallySpaced} />
-            <Text style={styles.verticallySpaced} variant="titleLarge">
-              Purchase credits
-            </Text>
-            {offerings?.current ? (
-              <FlatList
-                data={offerings.current.availablePackages}
-                keyExtractor={(item) => item.identifier}
-                renderItem={({ item }) => (
-                  <View style={styles.verticallySpaced}>
-                    <Button
-                      mode="contained"
-                      labelStyle={styles.buttonLabel}
-                      onPress={() => purchasePackage(item)}
-                      disabled={purchasing}
-                    >
-                      {item.identifier + " (" + item.product.priceString + ")"}
-                    </Button>
-                    <HelperText type="info" visible={true}>
-                      {item.product.description}
-                    </HelperText>
-                  </View>
-                )}
-              />
-            ) : (
-              <Text
+        <ScrollView style={styles.container}>
+          <View style={styles.separator} />
+          <Text style={styles.verticallySpaced}>
+            You have {credits} credit{credits === 1 ? "" : "s"}. Each match
+            costs 1 credit, and your profile will not be searchable if you have
+            0 credits.
+          </Text>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Purchase credits
+          </Text>
+          {offerings?.current ? (
+            <FlatList
+              data={offerings.current.availablePackages}
+              keyExtractor={(item) => item.identifier}
+              renderItem={({ item }) => (
+                <View style={styles.verticallySpaced}>
+                  <Button
+                    mode="contained"
+                    labelStyle={styles.buttonLabel}
+                    onPress={() => purchasePackage(item)}
+                    disabled={purchasing}
+                  >
+                    {item.identifier + " (" + item.product.priceString + ")"}
+                  </Button>
+                  <HelperText type="info" visible={true}>
+                    {item.product.description}
+                  </HelperText>
+                </View>
+              )}
+            />
+          ) : (
+            <Text
               style={[
                 styles.verticallySpaced,
                 { marginTop: 12, paddingHorizontal: 12 },
@@ -162,14 +152,13 @@ export default function Credits({ session }: { session: Session }) {
             >
               No purchase offerings found, please try again later.
             </Text>
-            )}
-            <Divider style={styles.verticallySpaced} />
-            <Text style={styles.verticallySpaced} variant="titleLarge">
-              Credit history
-            </Text>
-            <History history={history} />
-          </ScrollView>
-        </KeyboardAvoidingView>
+          )}
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Credit history
+          </Text>
+          <History history={history} />
+        </ScrollView>
       )}
       <Portal>
         <Snackbar
