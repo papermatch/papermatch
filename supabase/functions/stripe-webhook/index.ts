@@ -62,12 +62,22 @@ serve(async (req) => {
         );
       }
 
-      let quantity;
+      let quantity = 0;
       try {
         const session = await stripe.checkout.sessions.retrieve(sessionID, {
           expand: ["line_items"],
         });
-        quantity = parseInt(session.line_items.data[0].quantity) || 0;
+        if (
+          session.line_items.data[0].price.id ===
+          (Deno.env.get("STRIPE_CREDIT_PRICE_ID") as string)
+        ) {
+          quantity = 1;
+        } else if (
+          session.line_items.data[0].price.id ===
+          (Deno.env.get("STRIPE_SIXPACK_PRICE_ID") as string)
+        ) {
+          quantity = 6;
+        }
       } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {
           status: 200,

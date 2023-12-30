@@ -2,7 +2,7 @@
   "expo": {
     "name": "Paper Match",
     "slug": "papermatch",
-    "version": "0.4.6",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,7 +26,6 @@
         "backgroundColor": "#fdfef5"
       },
       "package": "ch.papermat.papermatch",
-      "versionCode": 18,
       "intentFilters": [
         {
           "action": "VIEW",

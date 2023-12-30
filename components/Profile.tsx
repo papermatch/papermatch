@@ -22,6 +22,7 @@ import { Appbar } from "./Appbar";
 
 export default function Profile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
+  const [interacting, setInteracting] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
@@ -157,6 +158,7 @@ export default function Profile({ session }: { session: Session }) {
   const handleInteraction = useCallback(
     async (type: string) => {
       try {
+        setInteracting(true);
         const { error } = await supabase.from("interactions").upsert([
           {
             user_id: session?.user.id,
@@ -181,6 +183,8 @@ export default function Profile({ session }: { session: Session }) {
           setSnackbarMessage("Unable to update interaction");
           setSnackbarVisible(true);
         }
+      } finally {
+        setInteracting(false);
       }
     },
     [session, id, navigate, getInteraction]
@@ -285,7 +289,7 @@ export default function Profile({ session }: { session: Session }) {
                 ? handleInteraction("none")
                 : handleInteraction("pass")
             }
-            disabled={loading}
+            disabled={interacting}
           />
           <FAB
             icon={interaction == "like" ? "heart" : "heart-outline"}
@@ -297,7 +301,7 @@ export default function Profile({ session }: { session: Session }) {
                 ? handleInteraction("none")
                 : handleInteraction("like")
             }
-            disabled={loading}
+            disabled={interacting}
           />
         </View>
       )}

@@ -1,9 +1,17 @@
-import { View, ScrollView, FlatList, Linking } from "react-native";
-import { Button, Text, Divider } from "react-native-paper";
+import { View, ScrollView, FlatList, Linking, Pressable } from "react-native";
+import {
+  Button,
+  Text,
+  Divider,
+  IconButton,
+  Icon,
+  HelperText,
+} from "react-native-paper";
 import { Image } from "expo-image";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+import { Link } from "react-router-native";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -32,9 +40,7 @@ export default function Home() {
               { width: 150, height: 150, alignSelf: "center" },
             ]}
             onError={(error) => {
-              if (error instanceof Error) {
-                console.error(error.message);
-              }
+              console.error(error.error);
             }}
           />
           <Text style={styles.verticallySpaced}>
@@ -69,22 +75,38 @@ export default function Home() {
           <Text variant="titleLarge" style={styles.verticallySpaced}>
             Try the app
           </Text>
-          <Text style={styles.verticallySpaced}>
-            Paper Match for Android and iOS coming soon! In the meantime, the
-            web app is available below.
-          </Text>
-          <Button
-            style={styles.verticallySpaced}
-            mode="contained"
-            onPress={() => navigate(ROUTES.APP)}
+          <View
+            style={[
+              styles.verticallySpaced,
+              { flexDirection: "row", justifyContent: "space-evenly" },
+            ]}
           >
-            Web App
-          </Button>
+            <IconButton
+              icon="web"
+              size={60}
+              onPress={() => navigate(ROUTES.APP)}
+            />
+            <IconButton
+              icon="google-play"
+              size={60}
+              onPress={() =>
+                Linking.openURL(
+                  "https://play.google.com/apps/testing/ch.papermat.papermatch"
+                )
+              }
+            />
+            <IconButton
+              icon="apple"
+              size={60}
+              onPress={() => {
+                Linking.openURL("https://testflight.apple.com/join/xHBmZrnY");
+              }}
+            />
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>
             Other resources
           </Text>
-
           <Button
             style={styles.verticallySpaced}
             mode="outlined"

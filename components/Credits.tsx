@@ -1,15 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  Platform,
-  View,
-  KeyboardAvoidingView,
-  FlatList,
-  ScrollView,
-} from "react-native";
+import { View, FlatList, ScrollView } from "react-native";
 import {
   Button,
-  TextInput,
   Text,
   ActivityIndicator,
   HelperText,
@@ -18,8 +11,6 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { Session } from "@supabase/supabase-js";
-import { WebView, WebViewNavigation } from "react-native-webview";
-import { StatusBar } from "expo-status-bar";
 import { Navigation } from "./Navigation";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
@@ -31,13 +22,9 @@ import { CreditData } from "../lib/types";
 import { History } from "./History";
 
 export default function Credits({ session }: { session: Session }) {
-  const currentOrigin = "https://www.papermat.ch";
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOfferings>();
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState<string>("1");
-  const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
   const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -115,64 +102,6 @@ export default function Credits({ session }: { session: Session }) {
     }
   }
 
-  const fetchCheckoutUrl = async () => {
-    if (!validateQuantity(quantity)) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (!session?.user) {
-        throw new Error("No user on the session!");
-      }
-
-      const response = await supabase.functions.invoke("stripe-checkout", {
-        body: {
-          id: session?.user.id,
-          quantity: parseInt(quantity) || 1,
-          origin: currentOrigin,
-        },
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      const data = await response.data;
-      setCheckoutUrl(data.url);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-        setSnackbarMessage("Unable to fetch checkout URL");
-        setSnackbarVisible(true);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    if (navState.url === `${currentOrigin}/credits/success`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Checkout successful!");
-      setSnackbarVisible(true);
-    } else if (navState.url === `${currentOrigin}/credits/cancel`) {
-      setCheckoutUrl(null);
-      setSnackbarMessage("Checkout unsuccessful, you have not been charged.");
-      setSnackbarVisible(true);
-    }
-  };
-
-  const validateQuantity = (quantity: string) => {
-    const regex = /^[0-9]+$/;
-    if (!regex.test(quantity)) {
-      setQuantityError("Quantity must be a number");
-      return false;
-    }
-    setQuantityError("");
-    return true;
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <Appbar title="Credits" />
@@ -183,80 +112,53 @@ export default function Credits({ session }: { session: Session }) {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <ScrollView style={styles.container}>
-            <View style={styles.separator} />
-            <Text style={styles.verticallySpaced}>
-              You have {credits} credit{credits === 1 ? "" : "s"}. Each match
-              costs 1 credit, and your profile will not be searchable if you
-              have 0 credits.
-            </Text>
-            <Divider style={styles.verticallySpaced} />
-            <Text style={styles.verticallySpaced} variant="titleLarge">
-              Purchase credits
-            </Text>
-            {offerings?.current ? (
-              <FlatList
-                data={offerings.current.availablePackages}
-                keyExtractor={(item) => item.identifier}
-                renderItem={({ item }) => (
-                  <View style={styles.verticallySpaced}>
-                    <Button
-                      mode="contained"
-                      labelStyle={styles.buttonLabel}
-                      onPress={() => purchasePackage(item)}
-                      disabled={purchasing}
-                    >
-                      {item.identifier + " (" + item.product.priceString + ")"}
-                    </Button>
-                    <HelperText type="info" visible={true}>
-                      {item.product.description}
-                    </HelperText>
-                  </View>
-                )}
-              />
-            ) : (
-              <View>
+        <ScrollView style={styles.container}>
+          <View style={styles.separator} />
+          <Text style={styles.verticallySpaced}>
+            You have {credits} credit{credits === 1 ? "" : "s"}. Each match
+            costs 1 credit, and your profile will not be searchable if you have
+            0 credits.
+          </Text>
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Purchase credits
+          </Text>
+          {offerings?.current ? (
+            <FlatList
+              data={offerings.current.availablePackages}
+              keyExtractor={(item) => item.identifier}
+              renderItem={({ item }) => (
                 <View style={styles.verticallySpaced}>
-                  <TextInput
-                    style={styles.textInput}
-                    label="Credits"
-                    keyboardType="numeric"
-                    value={quantity}
-                    onChangeText={(text) => {
-                      setQuantity(text);
-                      validateQuantity(text);
-                    }}
-                    placeholder="Enter Quantity"
-                    error={!!quantityError}
-                  />
-                  {quantityError ? (
-                    <HelperText type="error" visible={!!quantityError}>
-                      {quantityError}
-                    </HelperText>
-                  ) : null}
+                  <Button
+                    mode="contained"
+                    labelStyle={styles.buttonLabel}
+                    onPress={() => purchasePackage(item)}
+                    disabled={purchasing}
+                  >
+                    {item.identifier + " (" + item.product.priceString + ")"}
+                  </Button>
+                  <HelperText type="info" visible={true}>
+                    {item.product.description}
+                  </HelperText>
                 </View>
-                <Button
-                  mode="contained"
-                  labelStyle={styles.buttonLabel}
-                  style={styles.verticallySpaced}
-                  onPress={fetchCheckoutUrl}
-                  disabled={loading}
-                >
-                  Checkout
-                </Button>
-              </View>
-            )}
-            <Divider style={styles.verticallySpaced} />
-            <Text style={styles.verticallySpaced} variant="titleLarge">
-              Credit history
+              )}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.verticallySpaced,
+                { marginTop: 12, paddingHorizontal: 12 },
+              ]}
+            >
+              No purchase offerings found, please try again later.
             </Text>
-            <History history={history} />
-          </ScrollView>
-        </KeyboardAvoidingView>
+          )}
+          <Divider style={styles.verticallySpaced} />
+          <Text style={styles.verticallySpaced} variant="titleLarge">
+            Credit history
+          </Text>
+          <History history={history} />
+        </ScrollView>
       )}
       <Portal>
         <Snackbar
@@ -271,16 +173,6 @@ export default function Credits({ session }: { session: Session }) {
           {snackbarMessage}
         </Snackbar>
       </Portal>
-      {Platform.OS !== "web" && checkoutUrl ? (
-        <Portal>
-          <StatusBar hidden={true} />
-          <WebView
-            style={{ flex: 1 }}
-            source={{ uri: checkoutUrl }}
-            onNavigationStateChange={handleNavigationStateChange}
-          />
-        </Portal>
-      ) : null}
       <Navigation key={session.user.id} session={session} />
     </View>
   );

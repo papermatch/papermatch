@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { ScrollView, View } from "react-native";
+import { View, FlatList, ScrollView } from "react-native";
 import {
   Button,
-  TextInput,
   Text,
   ActivityIndicator,
   HelperText,
@@ -19,12 +18,32 @@ import { Appbar } from "./Appbar";
 import { CreditData } from "../lib/types";
 import { History } from "./History";
 
+type PriceData = {
+  name: string;
+  description: string;
+  quantity: number;
+  price: string;
+};
+
+const PRICE_DATA: PriceData[] = [
+  {
+    name: "Single Credit",
+    description: "Each credit is good for one match!",
+    quantity: 1,
+    price: "$1.49",
+  },
+  {
+    name: "Six Pack",
+    description: "A six pack of Paper Match credits!",
+    quantity: 6,
+    price: "$5.99",
+  },
+];
+
 export default function Credits({ session }: { session: Session }) {
   const currentOrigin = window.location.origin;
   const [loading, setLoading] = useState(true);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState<string>("1");
-  const [quantityError, setQuantityError] = useState<string>("");
   const [credits, setCredits] = useState(0);
   const [history, setHistory] = useState<CreditData[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -84,11 +103,7 @@ export default function Credits({ session }: { session: Session }) {
     }
   }
 
-  const fetchCheckoutUrl = async () => {
-    if (!validateQuantity(quantity)) {
-      return;
-    }
-
+  const fetchCheckoutUrl = async (quantity: number) => {
     try {
       setLoading(true);
       if (!session?.user) {
@@ -98,7 +113,7 @@ export default function Credits({ session }: { session: Session }) {
       const response = await supabase.functions.invoke("stripe-checkout", {
         body: {
           id: session?.user.id,
-          quantity: parseInt(quantity) || 1,
+          quantity: quantity,
           origin: currentOrigin,
         },
       });
@@ -118,16 +133,6 @@ export default function Credits({ session }: { session: Session }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const validateQuantity = (quantity: string) => {
-    const regex = /^[0-9]+$/;
-    if (!regex.test(quantity)) {
-      setQuantityError("Quantity must be a number");
-      return false;
-    }
-    setQuantityError("");
-    return true;
   };
 
   return (
@@ -151,34 +156,25 @@ export default function Credits({ session }: { session: Session }) {
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Purchase credits
           </Text>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              style={styles.textInput}
-              label="Credits"
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={(text) => {
-                setQuantity(text);
-                validateQuantity(text);
-              }}
-              placeholder="Enter Quantity"
-              error={!!quantityError}
-            />
-            {quantityError ? (
-              <HelperText type="error" visible={!!quantityError}>
-                {quantityError}
-              </HelperText>
-            ) : null}
-          </View>
-          <Button
-            mode="contained"
-            labelStyle={styles.buttonLabel}
-            style={styles.verticallySpaced}
-            onPress={fetchCheckoutUrl}
-            disabled={loading}
-          >
-            Checkout
-          </Button>
+          <FlatList
+            data={PRICE_DATA}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+              <View style={styles.verticallySpaced}>
+                <Button
+                  mode="contained"
+                  labelStyle={styles.buttonLabel}
+                  onPress={() => fetchCheckoutUrl(item.quantity)}
+                  disabled={loading}
+                >
+                  {item.name + " (" + item.price + ")"}
+                </Button>
+                <HelperText type="info" visible={true}>
+                  {item.description}
+                </HelperText>
+              </View>
+            )}
+          />
           <Divider style={styles.verticallySpaced} />
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Credit history

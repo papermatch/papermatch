@@ -37,7 +37,11 @@ export const History = ({ history }: HistoryProps) => {
               </Link>
             ) : (
               <Text style={{ flex: 2, textAlign: "right" }}>
-                {item.creditor === "init" ? "Initial" : "Purchase"}
+                {item.creditor === "init"
+                  ? "Initial"
+                  : item.creditor === "admin"
+                  ? "Admin"
+                  : "Purchase"}
               </Text>
             )}
           </View>

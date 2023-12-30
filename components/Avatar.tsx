@@ -125,9 +125,7 @@ export const Avatar = memo(
                 }}
                 source={{ uri: avatarUrl }}
                 onError={(error) => {
-                  if (error instanceof Error) {
-                    console.error(error.message);
-                  }
+                  console.error(error.error);
                   setError(true);
                 }}
                 onLoadEnd={() => {
