@@ -11,6 +11,7 @@ import { Image } from "expo-image";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
+import { Link } from "react-router-native";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -90,16 +91,17 @@ export default function Home() {
               size={60}
               onPress={() =>
                 Linking.openURL(
-                  "https://play.google.com/store/apps/details?id=ch.papermat.papermatch"
+                  "https://play.google.com/apps/testing/ch.papermat.papermatch"
                 )
               }
             />
-            <View style={{ flexDirection: "column", alignItems: "center" }}>
-              <IconButton icon="apple" size={60} disabled={true} />
-              <HelperText type="info" visible={true}>
-                Coming soon!
-              </HelperText>
-            </View>
+            <IconButton
+              icon="apple"
+              size={60}
+              onPress={() => {
+                Linking.openURL("https://testflight.apple.com/join/xHBmZrnY");
+              }}
+            />
           </View>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>
