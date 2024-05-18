@@ -1,21 +1,20 @@
-import { View, ScrollView, FlatList, Linking, Pressable } from "react-native";
+import { View, ScrollView, FlatList, Linking } from "react-native";
 import {
   Button,
   Text,
   Divider,
   IconButton,
-  Icon,
-  HelperText,
+  useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { ROUTES, useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
-import { Link } from "react-router-native";
 
 export default function Home() {
   const navigate = useNavigate();
   const styles = useStyles();
+  const theme = useTheme();
 
   return (
     <View style={{ flex: 1 }}>
@@ -91,17 +90,22 @@ export default function Home() {
               size={60}
               onPress={() =>
                 Linking.openURL(
-                  "https://play.google.com/apps/testing/ch.papermat.papermatch"
+                  "https://play.google.com/store/apps/details?id=ch.papermat.papermatch"
                 )
               }
             />
-            <IconButton
-              icon="apple"
-              size={60}
-              onPress={() => {
-                Linking.openURL("https://testflight.apple.com/join/xHBmZrnY");
-              }}
-            />
+            <View style={{ flexDirection: "column", alignContent: "center" }}>
+              <IconButton
+                icon="apple"
+                size={60}
+                iconColor={theme.colors.onSurfaceDisabled}
+                onPress={() =>
+                  Linking.openURL(
+                    "https://manifold.markets/danwahl/when-will-my-paypermatch-dating-app?r=ZGFud2FobA"
+                  )
+                }
+              />
+            </View>
           </View>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>
