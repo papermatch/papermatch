@@ -1,12 +1,10 @@
 import { View, ScrollView, Linking, Pressable } from "react-native";
 import { Text } from "react-native-paper";
-import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import Constants from "expo-constants";
 import { Appbar } from "./Appbar";
 
 export default function Home() {
-  const navigate = useNavigate();
   const styles = useStyles();
 
   return (

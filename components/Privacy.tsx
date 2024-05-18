@@ -1,11 +1,9 @@
 import { View, ScrollView, FlatList } from "react-native";
 import { Text, Divider } from "react-native-paper";
-import { useNavigate } from "../lib/routing";
 import { useStyles } from "../lib/styles";
 import { Appbar } from "./Appbar";
 
 export default function Privacy() {
-  const navigate = useNavigate();
   const styles = useStyles();
 
   return (

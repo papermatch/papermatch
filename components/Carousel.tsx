@@ -69,7 +69,7 @@ export const Carousel = memo(
                   data.length == 1 ? (width - size) / 2 : SEPARATOR_SIZE,
               }}
               onScroll={handleScroll}
-              scrollEventThrottle={16} // Adjust as needed
+              scrollEventThrottle={16}
               showsHorizontalScrollIndicator={false}
             />
           )}
