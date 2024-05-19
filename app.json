@@ -1,80 +1,78 @@
 {
-  "expo": {
-    "name": "Paper Match",
-    "slug": "papermatch",
-    "version": "1.0.1",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
+  "name": "Paper Match",
+  "slug": "papermatch",
+  "version": "1.0.2",
+  "orientation": "portrait",
+  "icon": "./assets/icon.png",
+  "userInterfaceStyle": "light",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#fdfef5"
+  },
+  "assetBundlePatterns": ["**/*"],
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "ch.papermat.papermatch",
+    "config": {
+      "usesNonExemptEncryption": false
+    },
+    "associatedDomains": ["applinks:papermat.ch"]
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
       "backgroundColor": "#fdfef5"
     },
-    "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "ch.papermat.papermatch",
-      "config": {
-        "usesNonExemptEncryption": false
-      },
-      "associatedDomains": ["applinks:papermat.ch"]
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#fdfef5"
-      },
-      "package": "ch.papermat.papermatch",
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "*.papermat.ch",
-              "pathPrefix": "/"
-            }
-          ],
-          "category": ["BROWSABLE", "DEFAULT"]
-        }
-      ]
-    },
-    "web": {
-      "bundler": "metro",
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you upload them to your profile."
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
-        }
-      ],
-      ["expo-router"],
-      [
-        "onesignal-expo-plugin",
-        {
-          "mode": "development"
-        }
-      ],
-      ["./scripts/withDrawableAssets", "./assets/onesignal"]
-    ],
-    "sdkVersion": "49.0.0",
-    "extra": {
-      "eas": {
-        "projectId": "a9f567cc-0977-4189-9ac3-e8bb1a80b2d0"
-      },
-      "oneSignalAppId": "a7d4e561-c578-447a-aac8-809075f9e326"
-    },
-    "scheme": "papermatch"
+    "package": "ch.papermat.papermatch",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "autoVerify": true,
+        "data": [
+          {
+            "scheme": "https",
+            "host": "*.papermat.ch",
+            "pathPrefix": "/"
+          }
+        ],
+        "category": ["BROWSABLE", "DEFAULT"]
+      }
+    ]
   },
-  "name": "papermatch"
+  "web": {
+    "bundler": "metro",
+    "favicon": "./assets/favicon.png"
+  },
+  "plugins": [
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "The app accesses your photos to let you upload them to your profile."
+      }
+    ],
+    "expo-font",
+    [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "The app accesses your location to let you find nearby profiles."
+      }
+    ],
+    "expo-secure-store",
+    [
+      "onesignal-expo-plugin",
+      {
+        "mode": "development"
+      }
+    ],
+    ["./scripts/withDrawableAssets", "./assets/onesignal"]
+  ],
+  "sdkVersion": "51.0.0",
+  "extra": {
+    "eas": {
+      "projectId": "a9f567cc-0977-4189-9ac3-e8bb1a80b2d0"
+    },
+    "oneSignalAppId": "a7d4e561-c578-447a-aac8-809075f9e326"
+  },
+  "scheme": "papermatch"
 }
