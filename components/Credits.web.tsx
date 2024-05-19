@@ -156,11 +156,9 @@ export default function Credits({ session }: { session: Session }) {
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Purchase credits
           </Text>
-          <FlatList
-            data={PRICE_DATA}
-            keyExtractor={(item) => item.name}
-            renderItem={({ item }) => (
-              <View style={styles.verticallySpaced}>
+          <View>
+            {PRICE_DATA.map((item) => (
+              <View key={item.name} style={styles.verticallySpaced}>
                 <Button
                   mode="contained"
                   labelStyle={styles.buttonLabel}
@@ -173,8 +171,8 @@ export default function Credits({ session }: { session: Session }) {
                   {item.description}
                 </HelperText>
               </View>
-            )}
-          />
+            ))}
+          </View>
           <Divider style={styles.verticallySpaced} />
           <Text style={styles.verticallySpaced} variant="titleLarge">
             Credit history

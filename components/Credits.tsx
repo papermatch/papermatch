@@ -124,11 +124,9 @@ export default function Credits({ session }: { session: Session }) {
             Purchase credits
           </Text>
           {offerings?.current ? (
-            <FlatList
-              data={offerings.current.availablePackages}
-              keyExtractor={(item) => item.identifier}
-              renderItem={({ item }) => (
-                <View style={styles.verticallySpaced}>
+            <View>
+              {offerings.current.availablePackages.map((item) => (
+                <View key={item.identifier} style={styles.verticallySpaced}>
                   <Button
                     mode="contained"
                     labelStyle={styles.buttonLabel}
@@ -141,8 +139,8 @@ export default function Credits({ session }: { session: Session }) {
                     {item.product.description}
                   </HelperText>
                 </View>
-              )}
-            />
+              ))}
+            </View>
           ) : (
             <Text
               style={[
