@@ -13,7 +13,7 @@ export default function Privacy() {
         <View style={styles.container}>
           <View style={styles.separator} />
           <Text style={styles.verticallySpaced}>
-            Last updated: October 27th, 2023
+            Last updated: May 19th, 2024
           </Text>
           <Divider style={styles.verticallySpaced} />
 
@@ -21,10 +21,9 @@ export default function Privacy() {
             Who We Are
           </Text>
           <Text style={styles.verticallySpaced}>
-            Paper Match is a dating app that connects people based on their
-            interests and preferences. We are committed to protecting your
-            privacy and ensuring that your personal information is handled
-            responsibly.
+            Paper Match helps you meet new people based on your interests
+            and preferences. We are committed to protecting your privacy
+            and ensuring that your personal information is handled responsibly.
           </Text>
           <Divider style={styles.verticallySpaced} />
 

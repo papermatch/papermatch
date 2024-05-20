@@ -148,7 +148,7 @@ export const GenderData: AttributeData<GenderType>[] = [
 export const IntentionData: AttributeData<IntentionType>[] = [
   {
     value: "unsure",
-    label: "Figuring out my dating intention",
+    label: "Figuring out my match intention",
     icon: "head-question",
   },
   {

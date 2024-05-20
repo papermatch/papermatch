@@ -337,7 +337,7 @@ export default function Account({ session }: { session: Session }) {
                   onPress={() => navigate(`../${ROUTES.PREFERENCES}`)}
                   disabled={loading}
                 >
-                  Dating Preferences
+                  Match Preferences
                 </Button>
               </View>
               <Divider style={styles.verticallySpaced} />
