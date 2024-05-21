@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -92,11 +92,13 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        try {
-          await Image.prefetch(data.avatar_urls);
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message);
+        if (data.avatar_urls && data.avatar_urls.length > 0) {
+          try {
+            await Image.prefetch(data.avatar_urls);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         }
         setProfileOnboarding(!data.updated_at);
