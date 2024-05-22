@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { View, FlatList, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import {
   Button,
   Text,

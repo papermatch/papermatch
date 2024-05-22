@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -92,11 +92,13 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        try {
-          await Image.prefetch(data.avatar_urls);
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message);
+        if (data.avatar_urls && data.avatar_urls.length > 0) {
+          try {
+            await Image.prefetch(data.avatar_urls);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error(error.message);
+            }
           }
         }
         setProfileOnboarding(!data.updated_at);
@@ -255,6 +257,7 @@ export default function Account({ session }: { session: Session }) {
                   visible={!loading && avatarUrls.length === 0}
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
+                  theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
                 />
                 <Carousel
                   data={
@@ -313,6 +316,7 @@ export default function Account({ session }: { session: Session }) {
                   visible={!loading && profileOnboarding}
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
+                  theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
                 />
                 <Button
                   mode="outlined"
@@ -329,6 +333,7 @@ export default function Account({ session }: { session: Session }) {
                   visible={!loading && preferencesOnboarding}
                   size={10}
                   style={{ position: "absolute", top: 10, right: 10 }}
+                  theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
                 />
                 <Button
                   mode="outlined"
@@ -337,7 +342,7 @@ export default function Account({ session }: { session: Session }) {
                   onPress={() => navigate(`../${ROUTES.PREFERENCES}`)}
                   disabled={loading}
                 >
-                  Dating Preferences
+                  Match Preferences
                 </Button>
               </View>
               <Divider style={styles.verticallySpaced} />
@@ -364,6 +369,7 @@ export default function Account({ session }: { session: Session }) {
               </Button>
               <Button
                 mode="contained-tonal"
+                theme={{ colors: { secondaryContainer: theme.colors.tertiaryContainer, onSecondaryContainer: theme.colors.onTertiaryContainer } }}
                 style={styles.verticallySpaced}
                 labelStyle={styles.buttonLabel}
                 onPress={() => setDeleteDialogVisible(true)}
@@ -393,7 +399,7 @@ export default function Account({ session }: { session: Session }) {
               </Dialog.Content>
               <Dialog.Actions>
                 <Button
-                  textColor={theme.colors.onTertiaryContainer}
+                  textColor={theme.colors.onSecondaryContainer}
                   mode="text"
                   labelStyle={styles.buttonLabel}
                   onPress={() => setDeleteDialogVisible(false)}
@@ -401,7 +407,7 @@ export default function Account({ session }: { session: Session }) {
                   Cancel
                 </Button>
                 <Button
-                  textColor={theme.colors.onTertiaryContainer}
+                  textColor={theme.colors.onSecondaryContainer}
                   mode="text"
                   labelStyle={styles.buttonLabel}
                   onPress={handleDeleteUser}

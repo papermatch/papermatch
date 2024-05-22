@@ -93,8 +93,8 @@ export const Navigation = memo(({ session }: { session: Session }) => {
 
       setOnboarding(
         !profilesData.updated_at ||
-          profilesData.avatar_urls.length === 0 ||
-          !preferencesData.updated_at
+        profilesData.avatar_urls.length === 0 ||
+        !preferencesData.updated_at
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -116,12 +116,12 @@ export const Navigation = memo(({ session }: { session: Session }) => {
           },
         ]}
         style={{
-          backgroundColor: theme.colors.errorContainer,
+          backgroundColor: theme.colors.secondaryContainer,
         }}
         theme={{
           colors: {
-            onSurface: theme.colors.onErrorContainer,
-            primary: theme.colors.onErrorContainer,
+            onSurface: theme.colors.onSecondaryContainer,
+            primary: theme.colors.onSecondaryContainer,
           },
         }}
       >
@@ -153,6 +153,7 @@ export const Navigation = memo(({ session }: { session: Session }) => {
             visible={!loading && newOrUnread}
             size={10}
             style={{ position: "absolute", top: 10, right: 10 }}
+            theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
           />
           <Appbar.Action
             icon={
@@ -172,6 +173,7 @@ export const Navigation = memo(({ session }: { session: Session }) => {
             visible={!loading && !active}
             size={10}
             style={{ position: "absolute", top: 10, right: 10 }}
+            theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
           />
           <Appbar.Action
             icon={
@@ -191,6 +193,7 @@ export const Navigation = memo(({ session }: { session: Session }) => {
             visible={!loading && onboarding}
             size={10}
             style={{ position: "absolute", top: 10, right: 10 }}
+            theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
           />
           <Appbar.Action
             icon={

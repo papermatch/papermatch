@@ -346,7 +346,7 @@ export default function Preferences({ session }: { session: Session }) {
                 onChange={setFamily}
               />
               <IntentionCheckboxes
-                label="Dating intention"
+                label="Match intention"
                 data={IntentionData}
                 value={intention}
                 onChange={setIntention}

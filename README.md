@@ -1,6 +1,6 @@
 # papermatch
 
-A pay-per-match dating app, using React Native and Supabase.
+A pay-per-match app for meeting new people, using React Native and Supabase.
 
 ## Supabase Setup
 

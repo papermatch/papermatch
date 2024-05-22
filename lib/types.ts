@@ -1,4 +1,3 @@
-import { Key } from "react";
 import { Database } from "./database";
 
 export type CreditData = Database["public"]["Tables"]["credits"]["Row"];
@@ -148,7 +147,7 @@ export const GenderData: AttributeData<GenderType>[] = [
 export const IntentionData: AttributeData<IntentionType>[] = [
   {
     value: "unsure",
-    label: "Figuring out my dating intention",
+    label: "Figuring out my match intention",
     icon: "head-question",
   },
   {
@@ -170,6 +169,11 @@ export const IntentionData: AttributeData<IntentionType>[] = [
     value: "friends",
     label: "Friendship",
     icon: "account-group",
+  },
+  {
+    value: "networking",
+    label: "Networking",
+    icon: "handshake-outline",
   },
 ];
 

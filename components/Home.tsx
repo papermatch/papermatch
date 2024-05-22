@@ -43,10 +43,10 @@ export default function Home() {
             }}
           />
           <Text style={styles.verticallySpaced}>
-            At Paper Match, we believe in dating without hidden fees or costly
-            subscriptions (or fancy websites). Our unique pay-per-match (get
-            it?) policy means that you're only charged when you make an actual
-            connection.
+            At Paper Match, we believe in meeting new people without hidden fees
+            or costly subscriptions (or fancy websites). Our unique
+            pay-per-match (get it?) policy means that you're only charged when
+            you make an actual connection.
           </Text>
           <Divider style={styles.verticallySpaced} />
           <Text variant="titleLarge" style={styles.verticallySpaced}>

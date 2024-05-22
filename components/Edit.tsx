@@ -368,7 +368,7 @@ export default function Edit({ session }: { session: Session }) {
               />
               <IntentionDropdown
                 style={[styles.verticallySpaced, { flex: 1 }]}
-                label="Dating intention"
+                label="Match intention"
                 data={IntentionData}
                 value={intention}
                 onChange={setIntention}
