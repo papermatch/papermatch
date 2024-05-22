@@ -275,7 +275,7 @@ export default function Profiles({ session }: { session: Session }) {
               <View style={styles.verticallySpaced}>
                 <Text variant="titleLarge">Settings</Text>
                 <Checkbox.Item
-                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  labelStyle={{ color: theme.colors.onSecondaryContainer }}
                   label="Hide profiles you've already liked/passed"
                   status={hideInteractions ? "checked" : "unchecked"}
                   onPress={() => {
@@ -289,7 +289,7 @@ export default function Profiles({ session }: { session: Session }) {
                   disabled={loading}
                 />
                 <Checkbox.Item
-                  labelStyle={{ color: theme.colors.onTertiaryContainer }}
+                  labelStyle={{ color: theme.colors.onSecondaryContainer }}
                   label="Hide profiles that don't meet your additional preferences"
                   status={hidePreferences ? "checked" : "unchecked"}
                   onPress={() => {

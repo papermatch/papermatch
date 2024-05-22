@@ -54,7 +54,7 @@ export default function Match({ session }: { session: Session }) {
   const styles = useStyles();
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
-  const onPressHandler = useRef(() => {});
+  const onPressHandler = useRef(() => { });
   const avatarUrl = useMemo(() => {
     return profile?.avatar_urls?.length ? profile.avatar_urls[0] : null;
   }, [profile?.avatar_urls]);
@@ -114,7 +114,7 @@ export default function Match({ session }: { session: Session }) {
     }
 
     return () => {
-      onPressHandler.current = () => {};
+      onPressHandler.current = () => { };
     };
   }, [profile]);
 
@@ -361,6 +361,7 @@ export default function Match({ session }: { session: Session }) {
                           }
                           size={10}
                           style={{ position: "absolute", top: 10, right: 10 }}
+                          theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
                         />
                         {item.user_id != session.user.id && (
                           <View style={{ alignSelf: "flex-start" }}>
@@ -436,7 +437,7 @@ export default function Match({ session }: { session: Session }) {
               </Dialog.Content>
               <Dialog.Actions>
                 <Button
-                  textColor={theme.colors.onTertiaryContainer}
+                  textColor={theme.colors.onSecondaryContainer}
                   mode="text"
                   labelStyle={styles.buttonLabel}
                   onPress={() => setDeleteDialogVisible(false)}
@@ -444,7 +445,7 @@ export default function Match({ session }: { session: Session }) {
                   Cancel
                 </Button>
                 <Button
-                  textColor={theme.colors.onTertiaryContainer}
+                  textColor={theme.colors.onSecondaryContainer}
                   mode="text"
                   labelStyle={styles.buttonLabel}
                   onPress={() => {

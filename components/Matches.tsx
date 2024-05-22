@@ -8,6 +8,7 @@ import {
   Badge,
   Portal,
   Snackbar,
+  useTheme,
 } from "react-native-paper";
 import { Image } from "expo-image";
 import { Session } from "@supabase/supabase-js";
@@ -25,6 +26,7 @@ export default function Matches({ session }: { session: Session }) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
   const styles = useStyles();
+  const theme = useTheme();
 
   useEffect(() => {
     if (session) {
@@ -99,6 +101,7 @@ export default function Matches({ session }: { session: Session }) {
                       visible={item.message === null || item.unread}
                       size={10}
                       style={{ position: "absolute", top: 10, right: 10 }}
+                      theme={{ colors: { error: theme.colors.tertiaryContainer, onError: theme.colors.onTertiaryContainer } }}
                     />
                     <View style={{ alignSelf: "center" }}>
                       <Avatar
@@ -122,9 +125,9 @@ export default function Matches({ session }: { session: Session }) {
                       <Text>
                         {item.message
                           ? item.message.message
-                              .replace(/\n/g, " ")
-                              .slice(0, 140) +
-                            (item.message.message.length > 140 ? "..." : "")
+                            .replace(/\n/g, " ")
+                            .slice(0, 140) +
+                          (item.message.message.length > 140 ? "..." : "")
                           : "(No messages yet.)"}
                       </Text>
                     </View>

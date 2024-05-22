@@ -292,9 +292,9 @@ export default function Profile({ session }: { session: Session }) {
             disabled={interacting}
           />
           <FAB
-            icon={interaction == "like" ? "heart" : "heart-outline"}
+            icon={interaction == "like" ? "fire-circle" : "fire"}
             style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
-            color={theme.colors.secondary}
+            color={theme.colors.tertiaryContainer}
             size="medium"
             onPress={() =>
               interaction == "like"

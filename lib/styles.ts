@@ -51,10 +51,10 @@ export const useStyles = () => {
     appbarTitle: {},
     dialog: {
       marginHorizontal: 12,
-      backgroundColor: theme.colors.tertiaryContainer,
+      backgroundColor: theme.colors.secondaryContainer,
     },
     dialogText: {
-      color: theme.colors.onTertiaryContainer,
+      color: theme.colors.onSecondaryContainer,
     },
     snackbar: {
       marginHorizontal: 12,
@@ -71,7 +71,7 @@ export const useStyles = () => {
       marginHorizontal: 12,
       padding: 26,
       borderRadius: 21,
-      backgroundColor: theme.colors.tertiaryContainer,
+      backgroundColor: theme.colors.secondaryContainer,
     },
     separator: {
       height: 12,
