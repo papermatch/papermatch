@@ -8,7 +8,7 @@
   "splash": {
     "image": "./assets/splash.png",
     "resizeMode": "contain",
-    "backgroundColor": "#fdfef5"
+    "backgroundColor": "#ebf2f2"
   },
   "assetBundlePatterns": ["**/*"],
   "ios": {
@@ -22,7 +22,7 @@
   "android": {
     "adaptiveIcon": {
       "foregroundImage": "./assets/adaptive-icon.png",
-      "backgroundColor": "#fdfef5"
+      "backgroundColor": "#ebf2f2"
     },
     "package": "ch.papermat.papermatch",
     "intentFilters": [
